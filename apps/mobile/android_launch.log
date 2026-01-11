@@ -1,0 +1,66 @@
+
+> @norijjak/mobile@0.1.0 android /Users/tapasyadubey/Documents/GitHub/NoriJjak/apps/mobile
+> expo run:android
+
+› Building app...
+Downloading https://services.gradle.org/distributions/gradle-8.10.2-all.zip
+.....................10%......................20%......................30%.....................40%......................50%......................60%......................70%.....................80%......................90%......................100%
+
+Welcome to Gradle 8.10.2!
+
+Here are the highlights of this release:
+ - Support for Java 23
+ - Faster configuration cache
+ - Better configuration cache reports
+
+For more details see https://docs.gradle.org/8.10.2/release-notes.html
+
+Starting a Gradle Daemon (subsequent builds will be faster)
+Configuration on demand is an incubating feature.
+> Task :gradle-plugin:settings-plugin:checkKotlinGradlePluginConfigurationErrors
+> Task :gradle-plugin:shared:checkKotlinGradlePluginConfigurationErrors
+> Task :gradle-plugin:shared:processResources NO-SOURCE
+> Task :gradle-plugin:settings-plugin:pluginDescriptors
+> Task :gradle-plugin:settings-plugin:processResources
+> Task :gradle-plugin:shared:compileKotlin
+> Task :gradle-plugin:shared:compileJava NO-SOURCE
+> Task :gradle-plugin:shared:classes UP-TO-DATE
+> Task :gradle-plugin:shared:jar
+> Task :gradle-plugin:settings-plugin:compileKotlin
+> Task :gradle-plugin:settings-plugin:compileJava NO-SOURCE
+> Task :gradle-plugin:settings-plugin:classes
+> Task :gradle-plugin:settings-plugin:jar
+w: Detected multiple Kotlin daemon sessions at kotlin/sessions
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+A problem occurred configuring root project '@norijjakmobile'.
+> Timeout waiting to lock build logic queue. It is currently in use by another Gradle instance.
+  Owner PID: 31862
+  Our PID: 17445
+  Owner Operation: 
+  Our operation: 
+  Lock file: /Users/tapasyadubey/Documents/GitHub/NoriJjak/apps/mobile/android/.gradle/noVersion/buildLogic.lock
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
+> Get more help at https://help.gradle.org.
+
+BUILD FAILED in 22m 14s
+8 actionable tasks: 8 executed
+Error: /Users/tapasyadubey/Documents/GitHub/NoriJjak/apps/mobile/android/gradlew app:assembleDebug -x lint -x test --configure-on-demand --build-cache -PreactNativeDevServerPort=8081 -PreactNativeArchitectures=arm64-v8a exited with non-zero code: 1
+Error: /Users/tapasyadubey/Documents/GitHub/NoriJjak/apps/mobile/android/gradlew app:assembleDebug -x lint -x test --configure-on-demand --build-cache -PreactNativeDevServerPort=8081 -PreactNativeArchitectures=arm64-v8a exited with non-zero code: 1
+    at ChildProcess.completionListener (/Users/tapasyadubey/Documents/GitHub/NoriJjak/node_modules/.pnpm/@expo+spawn-async@1.7.2/node_modules/@expo/spawn-async/src/spawnAsync.ts:67:13)
+    at Object.onceWrapper (node:events:622:26)
+    at ChildProcess.emit (node:events:507:28)
+    at maybeClose (node:internal/child_process:1101:16)
+    at Process.ChildProcess._handle.onexit (node:internal/child_process:305:5)
+    ...
+    at spawnAsync (/Users/tapasyadubey/Documents/GitHub/NoriJjak/node_modules/.pnpm/@expo+spawn-async@1.7.2/node_modules/@expo/spawn-async/src/spawnAsync.ts:28:21)
+    at spawnGradleAsync (/Users/tapasyadubey/Documents/GitHub/NoriJjak/node_modules/.pnpm/@expo+cli@0.22.27/node_modules/@expo/cli/src/start/platforms/android/gradle.ts:134:28)
+    at assembleAsync (/Users/tapasyadubey/Documents/GitHub/NoriJjak/node_modules/.pnpm/@expo+cli@0.22.27/node_modules/@expo/cli/src/start/platforms/android/gradle.ts:83:16)
+    at runAndroidAsync (/Users/tapasyadubey/Documents/GitHub/NoriJjak/node_modules/.pnpm/@expo+cli@0.22.27/node_modules/@expo/cli/src/run/android/runAndroidAsync.ts:48:24)
+ ELIFECYCLE  Command failed with exit code 1.
