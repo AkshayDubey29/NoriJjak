@@ -1,0 +1,7 @@
+
+> @norijjak/api@0.1.0 start /Users/tapasyadubey/Documents/GitHub/NoriJjak/apps/api
+> node dist/index.js
+
+/Users/tapasyadubey/Documents/GitHub/NoriJjak/apps/api:
+ ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL  @norijjak/api@0.1.0 start: `node dist/index.js`
+Command failed with signal "SIGTERM"

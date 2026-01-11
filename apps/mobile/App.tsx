@@ -75,61 +75,11 @@ function ClubsStack() {
     </Stack.Navigator>
   );
 }
+import HomeScreen from './src/screens/HomeScreen';
+import ExploreScreen from './src/screens/ExploreScreen';
+import ProfileScreen from './src/screens/ProfileScreen';
+
 const LOCALE_KEY = '@norijjak_locale';
-
-function HomeScreen({ locale }: { locale: Locale }) {
-  const t = TRANSLATIONS[locale];
-  const onShare = async () => {
-    try {
-      await Share.share({ message: `Join me on ${t.app_name}!` });
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  return (
-    <View style={styles.container}>
-      <Text style={styles.title}>{t.landing.find_games}</Text>
-      <TouchableOpacity style={styles.shareButton} onPress={onShare}>
-        <Text style={styles.shareText}>{t.labels.share}</Text>
-      </TouchableOpacity>
-    </View>
-  );
-}
-
-function ExploreScreen({ locale }: { locale: Locale }) {
-  const t = TRANSLATIONS[locale];
-  return (
-    <View style={styles.container}>
-      <Text style={styles.title}>{t.landing.book_venues}</Text>
-    </View>
-  );
-}
-
-function ProfileScreen({ locale, setLocale }: { locale: Locale, setLocale: (l: Locale) => void }) {
-  const t = TRANSLATIONS[locale];
-  const { logout, user } = useAuth();
-  
-  const toggleLocale = async () => {
-    const newLocale = locale === 'ko-KR' ? 'en-US' : 'ko-KR';
-    setLocale(newLocale);
-    await AsyncStorage.setItem(LOCALE_KEY, newLocale);
-  };
-
-  return (
-    <View style={styles.container}>
-      <Text style={styles.title}>{t.nav.profile}</Text>
-      <Text style={styles.email}>{user?.email}</Text>
-      <View style={styles.settingItem}>
-        <Text>{t.labels.language}: {locale === 'ko-KR' ? '한국어' : 'English'}</Text>
-        <Button title="Toggle" onPress={toggleLocale} />
-      </View>
-      <View style={styles.logoutContainer}>
-        <Button title="Logout" color="red" onPress={logout} />
-      </View>
-    </View>
-  );
-}
 
 function AppContent() {
   const { user, loading } = useAuth();
@@ -154,7 +104,7 @@ function AppContent() {
   const t = TRANSLATIONS[locale];
 
   return (
-    <NavigationContainer linking={linking} fallback={<Text>Loading...</Text>}>
+    <NavigationContainer linking={linking as any} fallback={<Text>Loading...</Text>}>
       <StatusBar style="auto" />
       {user ? (
         user.onboardingStep === 'DONE' ? (

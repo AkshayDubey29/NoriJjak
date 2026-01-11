@@ -4,6 +4,7 @@ import GamesListScreen from './src/screens/games/GamesListScreen';
 import { NavigationContainer } from '@react-navigation/native';
 
 // Mock global fetch
+// @ts-ignore
 global.fetch = jest.fn(() =>
   Promise.resolve({
     json: () => Promise.resolve({ games: [] }),

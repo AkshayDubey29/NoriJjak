@@ -22,6 +22,18 @@ This playbook defines the manual verification steps required when automated E2E 
 **Status**: The automated environment lacks Android/iOS Simulators.
 **Action**: QA Owner must use their local machine or real device.
 
+## Web E2E Verification
+To run Web E2E against a production build:
+1. Building: `pnpm --filter @norijjak/web build`
+2. Starting: `pnpm --filter @norijjak/web start`
+3. Testing: `pnpm --filter @norijjak/web exec playwright test`
+
+## Android SDK / Emulator Setup
+Verified provisioning steps for ARM64 Mac:
+1. Install cmdline-tools: `sdkmanager "cmdline-tools;latest"`
+2. Create AVD: `avdmanager create avd -n pixel_e2e -k "system-images;android-33;google_apis;arm64-v8a"`
+3. Launch: `emulator -avd pixel_e2e -no-audio -no-window`.
+
 ### Manual Mobile Verification
 1.  **Build**: Run `pnpm mobile:build` to ensure type/lint safety.
 2.  **Runtime**:

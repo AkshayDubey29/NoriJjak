@@ -129,7 +129,7 @@ export default function GameChat({ gameId }: { gameId: string }) {
 }
 
 const styles = StyleSheet.create({
-  container: { height: 400, backgroundColor: '#f9f9f9', borderRadius: 15, overflow: 'hidden', borderWeight: 1, borderColor: '#eee' },
+  container: { height: 400, backgroundColor: '#f9f9f9', borderRadius: 15, overflow: 'hidden', borderWidth: 1, borderColor: '#eee' },
   loader: { padding: 20 },
   errorContainer: { padding: 20, backgroundColor: '#FFF5F5', borderRadius: 10 },
   errorText: { color: '#C53030', textAlign: 'center', fontSize: 14 },

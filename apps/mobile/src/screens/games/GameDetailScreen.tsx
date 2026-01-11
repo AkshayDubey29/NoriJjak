@@ -196,8 +196,8 @@ export default function GameDetailScreen() {
         <View style={{ padding: 20 }}>
           <Text style={styles.sectionTitle}>Rate Participants</Text>
           {game.participants
-            .filter(p => p.userId !== user?.id && p.status === 'APPROVED')
-            .map(p => (
+            .filter((p: any) => p.userId !== user?.id && p.status === 'APPROVED')
+            .map((p: any) => (
               <RatingForm 
                 key={p.userId} 
                 gameId={game.id} 
@@ -277,7 +277,7 @@ const styles = StyleSheet.create({
   inviteLabel: { fontSize: 14, fontWeight: '600', marginBottom: 8 },
   inviteCode: { fontSize: 24, fontWeight: 'bold', textAlign: 'center', letterSpacing: 4, color: '#007AFF' },
   shareHint: { fontSize: 10, color: '#999', textAlign: 'center', marginTop: 4 },
-  generateButton: { borderWeight: 1, borderColor: '#007AFF', borderWidth: 1, padding: 12, borderRadius: 8, alignItems: 'center' },
+  generateButton: { borderWidth: 1, borderColor: '#007AFF', padding: 12, borderRadius: 8, alignItems: 'center' },
   generateButtonText: { color: '#007AFF', fontWeight: 'bold' },
   descriptionContainer: { padding: 20, borderTopWidth: 1, borderTopColor: '#f0f0f0' },
   descriptionText: { fontSize: 16, color: '#666', lineHeight: 24 },

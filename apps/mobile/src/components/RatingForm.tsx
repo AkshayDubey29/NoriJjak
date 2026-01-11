@@ -84,7 +84,7 @@ const styles = StyleSheet.create({
   scoreBtnActive: { backgroundColor: '#007AFF', borderColor: '#007AFF' },
   scoreText: { fontWeight: 'bold', color: '#999' },
   scoreTextActive: { color: '#FFF' },
-  input: { borderWeight: 1, borderColor: '#EEE', borderRadius: 10, padding: 10, height: 60, backgroundColor: '#F9F9F9', marginBottom: 15 },
+  input: { borderWidth: 1, borderColor: '#EEE', borderRadius: 10, padding: 10, height: 60, backgroundColor: '#F9F9F9', marginBottom: 15 },
   submitBtn: { backgroundColor: '#007AFF', padding: 12, borderRadius: 10, alignItems: 'center' },
   submitText: { color: '#FFF', fontWeight: 'bold' },
   disabled: { backgroundColor: '#CCC' }

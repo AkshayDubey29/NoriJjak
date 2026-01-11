@@ -10,7 +10,7 @@ export async function sendNotification(
       data: {
         userId,
         type,
-        payload,
+        payload: payload as any,
       },
     });
   } catch (error) {

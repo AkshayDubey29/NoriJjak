@@ -1,0 +1,37 @@
+
+> @norijjak/api@0.1.0 start /Users/tapasyadubey/Documents/GitHub/NoriJjak/apps/api
+> node dist/index.js
+
+node:internal/modules/cjs/loader:1408
+  throw err;
+  ^
+
+Error: Cannot find module '.prisma/client/default'
+Require stack:
+- /Users/tapasyadubey/Documents/GitHub/NoriJjak/node_modules/.pnpm/@prisma+client@6.2.1_prisma@6.2.1/node_modules/@prisma/client/default.js
+- /Users/tapasyadubey/Documents/GitHub/NoriJjak/apps/api/dist/lib/db.js
+- /Users/tapasyadubey/Documents/GitHub/NoriJjak/apps/api/dist/routes/auth.js
+- /Users/tapasyadubey/Documents/GitHub/NoriJjak/apps/api/dist/index.js
+    at Module._resolveFilename (node:internal/modules/cjs/loader:1405:15)
+    at defaultResolveImpl (node:internal/modules/cjs/loader:1061:19)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1066:22)
+    at Module._load (node:internal/modules/cjs/loader:1215:37)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1491:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (/Users/tapasyadubey/Documents/GitHub/NoriJjak/node_modules/.pnpm/@prisma+client@6.2.1_prisma@6.2.1/node_modules/@prisma/client/default.js:2:6)
+    at Module._compile (node:internal/modules/cjs/loader:1734:14) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    '/Users/tapasyadubey/Documents/GitHub/NoriJjak/node_modules/.pnpm/@prisma+client@6.2.1_prisma@6.2.1/node_modules/@prisma/client/default.js',
+    '/Users/tapasyadubey/Documents/GitHub/NoriJjak/apps/api/dist/lib/db.js',
+    '/Users/tapasyadubey/Documents/GitHub/NoriJjak/apps/api/dist/routes/auth.js',
+    '/Users/tapasyadubey/Documents/GitHub/NoriJjak/apps/api/dist/index.js'
+  ]
+}
+
+Node.js v24.1.0
+/Users/tapasyadubey/Documents/GitHub/NoriJjak/apps/api:
+ ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL  @norijjak/api@0.1.0 start: `node dist/index.js`
+Exit status 1

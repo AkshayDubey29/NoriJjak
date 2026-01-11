@@ -1,4 +1,12 @@
 {
   "/not-found": "app/not-found.js",
-  "/page": "app/page.js"
+  "/clubs/page": "app/clubs/page.js",
+  "/signup/page": "app/signup/page.js",
+  "/games/page": "app/games/page.js",
+  "/profile/page": "app/profile/page.js",
+  "/games/create/page": "app/games/create/page.js",
+  "/dashboard/page": "app/dashboard/page.js",
+  "/venues/page": "app/venues/page.js",
+  "/login/page": "app/login/page.js",
+  "/notifications/page": "app/notifications/page.js"
 }

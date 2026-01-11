@@ -1,27 +1,16 @@
-import { Router } from 'express';
+import { Router, Response } from 'express';
 import { NotificationService } from '../services/NotificationService';
-// Assuming auth middleware exists
-// import { requireAuth } from '../middleware/auth';
+import { authenticate, AuthRequest } from '../middlewares/auth';
 
 const router = Router();
 
-// Mock auth middleware (replace with real one when integrated)
-const requireAuth = (req: any, res: any, next: any) => {
-  if (!req.user) {
-    // For dev ease if not fully auth'd or create a mock user
-    // req.user = { id: 'mock-user-id' };
-    return res.status(401).json({ error: 'Unauthorized' });
-  }
-  next();
-};
-
 // POST /device - Register token
-router.post('/device', requireAuth, async (req, res) => {
+router.post('/device', authenticate, async (req: AuthRequest, res: Response) => {
   try {
     const { token, platform } = req.body;
     if (!token || !platform) return res.status(400).json({ error: 'Missing fields' });
     
-    const result = await NotificationService.registerDevice(req.user.id, token, platform);
+    const result = await NotificationService.registerDevice(req.user!.id, token, platform);
     res.json(result);
   } catch (err: any) {
     res.status(500).json({ error: err.message });
@@ -29,9 +18,9 @@ router.post('/device', requireAuth, async (req, res) => {
 });
 
 // GET /preferences
-router.get('/preferences', requireAuth, async (req, res) => {
+router.get('/preferences', authenticate, async (req: AuthRequest, res: Response) => {
   try {
-    const prefs = await NotificationService.getPreferences(req.user.id);
+    const prefs = await NotificationService.getPreferences(req.user!.id);
     res.json(prefs);
   } catch (err: any) {
     res.status(500).json({ error: err.message });
@@ -39,9 +28,9 @@ router.get('/preferences', requireAuth, async (req, res) => {
 });
 
 // PUT /preferences
-router.put('/preferences', requireAuth, async (req, res) => {
+router.put('/preferences', authenticate, async (req: AuthRequest, res: Response) => {
   try {
-    const result = await NotificationService.updatePreferences(req.user.id, req.body);
+    const result = await NotificationService.updatePreferences(req.user!.id, req.body);
     res.json(result);
   } catch (err: any) {
      res.status(500).json({ error: err.message });

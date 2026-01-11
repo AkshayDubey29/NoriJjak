@@ -1,0 +1,6 @@
+
+> @norijjak/api@0.1.0 dev /Users/tapasyadubey/Documents/GitHub/NoriJjak/apps/api
+> ts-node-dev src/index.ts
+
+[INFO] 17:28:10 ts-node-dev ver. 2.0.0 (using ts-node ver. 10.9.2, typescript ver. 5.9.3)
+Compilation error in /Users/tapasyadubey/Documents/GitHub/NoriJjak/apps/api/src/index.ts

@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -21,33 +18,33 @@ model User {
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt
   deletedAt       DateTime?
-  onboardingStep  String           @default("START") // START, PROFILE, SPORTS, DONE
+  onboardingStep  String           @default("START")
+  blockedBy       Block[]          @relation("BlockedByUsers")
+  blockedUsers    Block[]          @relation("BlockingUsers")
+  chatMessages    ChatMessage[]
+  clubMemberships ClubMember[]
   consents        Consent[]
   deletionRequest DeletionRequest?
-  preferences     UserPreference?
-  userSports      UserSport[]
   deviceTokens    DeviceToken[]
   hostedGames     Game[]           @relation("HostedGames")
-  participations  Participant[]
   notifications   Notification[]
-  clubMemberships ClubMember[]
-  chatMessages    ChatMessage[]
-  blockedUsers    Block[]          @relation("BlockingUsers")
-  blockedBy       Block[]          @relation("BlockedByUsers")
-  reportsMade     Report[]         @relation("Reporter")
-  reportsReceived Report[]         @relation("ReportedUser")
+  participations  Participant[]
   ratingsMade     Rating[]         @relation("Rater")
   ratingsReceived Rating[]         @relation("TargetUser")
+  reportsReceived Report[]         @relation("ReportedUser")
+  reportsMade     Report[]         @relation("Reporter")
+  preferences     UserPreference?
+  userSports      UserSport[]
 }
 
 model Consent {
   id        String   @id @default(uuid())
   userId    String
-  user      User     @relation(fields: [userId], references: [id])
-  type      String // e.g., "TERMS", "PRIVACY", "LOCATION"
+  type      String
   version   String
   accepted  Boolean
   updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id])
 
   @@unique([userId, type])
 }
@@ -55,45 +52,45 @@ model Consent {
 model DeletionRequest {
   id        String   @id @default(uuid())
   userId    String   @unique
-  user      User     @relation(fields: [userId], references: [id])
   reason    String?
-  status    String   @default("PENDING") // PENDING, COMPLETED, CANCELLED
+  status    String   @default("PENDING")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id])
 }
 
 model Sport {
-  id          String      @id @default(uuid())
-  slug        String      @unique // e.g., "football"
-  name_ko     String
-  name_en     String
-  userSports  UserSport[]
-  games       Game[]
-  venues      Venue[]     @relation("VenueSports")
-  clubs       Club[]      @relation("ClubSports")
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+  id         String      @id @default(uuid())
+  slug       String      @unique
+  name_ko    String
+  name_en    String
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  games      Game[]
+  userSports UserSport[]
+  clubs      Club[]      @relation("ClubSports")
+  venues     Venue[]     @relation("VenueSports")
 }
 
 model UserPreference {
-  id              String      @id @default(uuid())
-  userId          String      @unique
-  user            User        @relation(fields: [userId], references: [id])
-  homeArea        String? // Coarse area representation
-  preferredRadius Int         @default(10) // km
-  availability    Json? // Simple structure: { "weekdays": ["MON", "WED"], "times": ["EVENING"] }
-  updatedAt       DateTime    @updatedAt
+  id              String   @id @default(uuid())
+  userId          String   @unique
+  homeArea        String?
+  preferredRadius Int      @default(10)
+  availability    Json?
+  updatedAt       DateTime @updatedAt
+  user            User     @relation(fields: [userId], references: [id])
 }
 
 model UserSport {
   id        String   @id @default(uuid())
   userId    String
-  user      User     @relation(fields: [userId], references: [id])
   sportId   String
-  sport     Sport    @relation(fields: [sportId], references: [id])
-  level     String // e.g., "BEGINNER", "INTERMEDIATE", "ADVANCED"
+  level     String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  sport     Sport    @relation(fields: [sportId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
 
   @@unique([userId, sportId])
 }
@@ -101,56 +98,56 @@ model UserSport {
 model DeviceToken {
   id        String   @id @default(uuid())
   userId    String
-  user      User     @relation(fields: [userId], references: [id])
-  platform  String // "IOS", "ANDROID", "WEB"
+  platform  String
   token     String   @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id])
 }
 
 model Venue {
-  id          String   @id @default(uuid())
-  name        String
-  area        String // e.g., "Seoul Gangnam-gu"
-  address     String?
-  category    String // e.g., "PUBLIC_PARK", "PRIVATE_CENTER", "SCHOOL"
-  amenities   Json? // e.g., ["PARKING", "SHOWER", "RENTAL"]
-  images      Json? // e.g., ["url1", "url2"]
-  contact     String?
-  mapLink     String?
-  status      String   @default("ACTIVE") // ACTIVE, INACTIVE
-  sports      Sport[]  @relation("VenueSports")
-  games       Game[]
-  ratings     Rating[]
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id        String   @id @default(uuid())
+  name      String
+  area      String
+  address   String?
+  category  String
+  amenities Json?
+  images    Json?
+  contact   String?
+  mapLink   String?
+  status    String   @default("ACTIVE")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  games     Game[]
+  ratings   Rating[]
+  sports    Sport[]  @relation("VenueSports")
 }
 
 model Club {
   id          String       @id @default(uuid())
   name        String
   description String?
-  visibility  String       @default("PUBLIC") // PUBLIC, PRIVATE
-  joinPolicy  String       @default("OPEN") // OPEN, APPROVAL, INVITE
-  homeArea    String // Coarse area representation
+  visibility  String       @default("PUBLIC")
+  joinPolicy  String       @default("OPEN")
+  homeArea    String
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
-  sports      Sport[]      @relation("ClubSports")
   members     ClubMember[]
   games       Game[]
   ratings     Rating[]
+  sports      Sport[]      @relation("ClubSports")
 }
 
 model ClubMember {
   id        String   @id @default(uuid())
   clubId    String
-  club      Club     @relation(fields: [clubId], references: [id])
   userId    String
-  user      User     @relation(fields: [userId], references: [id])
-  role      String   @default("MEMBER") // OWNER, ADMIN, MEMBER
-  status    String   @default("APPROVED") // REQUESTED, APPROVED, DENIED
+  role      String   @default("MEMBER")
+  status    String   @default("APPROVED")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  club      Club     @relation(fields: [clubId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
 
   @@unique([clubId, userId])
 }
@@ -158,40 +155,40 @@ model ClubMember {
 model Game {
   id           String        @id @default(uuid())
   sportId      String
-  sport        Sport         @relation(fields: [sportId], references: [id])
   hostId       String
-  host         User          @relation("HostedGames", fields: [hostId], references: [id])
   venueId      String?
-  venue        Venue?        @relation(fields: [venueId], references: [id])
   clubId       String?
-  club         Club?         @relation(fields: [clubId], references: [id])
   title        String
   description  String?
   startTime    DateTime
   endTime      DateTime
-  homeArea     String // For coarse filtering
+  homeArea     String
   capacity     Int
-  visibility   String        @default("PUBLIC") // PUBLIC, PRIVATE
-  joinPolicy   String        @default("OPEN") // OPEN, APPROVAL
-  status       String        @default("OPEN") // OPEN, CANCELLED, COMPLETED
-  participants Participant[]
-  invites      GameInvite[]
-  chatMessages ChatMessage[]
-  ratings      Rating[]
+  visibility   String        @default("PUBLIC")
+  joinPolicy   String        @default("OPEN")
+  status       String        @default("OPEN")
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
+  chatMessages ChatMessage[]
+  club         Club?         @relation(fields: [clubId], references: [id])
+  host         User          @relation("HostedGames", fields: [hostId], references: [id])
+  sport        Sport         @relation(fields: [sportId], references: [id])
+  venue        Venue?        @relation(fields: [venueId], references: [id])
+  invites      GameInvite[]
+  participants Participant[]
+  ratings      Rating[]
 }
 
 model Participant {
   id        String   @id @default(uuid())
   gameId    String
-  game      Game     @relation(fields: [gameId], references: [id])
   userId    String
-  user      User     @relation(fields: [userId], references: [id])
-  role      String   @default("PARTICIPANT") // HOST, PARTICIPANT
-  status    String   @default("APPROVED") // REQUESTED, APPROVED, DENIED, CANCELLED, LEFT, WAITLISTED
+  role      String   @default("PARTICIPANT")
+  status    String   @default("APPROVED")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  game      Game     @relation(fields: [gameId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
 
   @@unique([gameId, userId])
 }
@@ -199,37 +196,37 @@ model Participant {
 model GameInvite {
   id        String    @id @default(uuid())
   gameId    String
-  game      Game      @relation(fields: [gameId], references: [id])
   token     String    @unique
   maxUses   Int       @default(1)
   uses      Int       @default(0)
   expiresAt DateTime?
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
+  game      Game      @relation(fields: [gameId], references: [id])
 }
 
 model ChatMessage {
   id        String   @id @default(uuid())
   gameId    String
-  game      Game     @relation(fields: [gameId], references: [id])
   senderId  String
-  sender    User     @relation(fields: [senderId], references: [id])
   body      String
   isDeleted Boolean  @default(false)
-  reports   Report[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  game      Game     @relation(fields: [gameId], references: [id])
+  sender    User     @relation(fields: [senderId], references: [id])
+  reports   Report[]
 
   @@index([gameId, createdAt])
 }
 
 model Block {
-  id            String   @id @default(uuid())
-  blockerId     String
-  blocker       User     @relation("BlockingUsers", fields: [blockerId], references: [id])
-  blockedId     String
-  blocked       User     @relation("BlockedByUsers", fields: [blockedId], references: [id])
-  createdAt     DateTime @default(now())
+  id        String   @id @default(uuid())
+  blockerId String
+  blockedId String
+  createdAt DateTime @default(now())
+  blocked   User     @relation("BlockedByUsers", fields: [blockedId], references: [id])
+  blocker   User     @relation("BlockingUsers", fields: [blockerId], references: [id])
 
   @@unique([blockerId, blockedId])
 }
@@ -237,25 +234,21 @@ model Block {
 model Rating {
   id            String   @id @default(uuid())
   gameId        String?
-  game          Game?    @relation(fields: [gameId], references: [id])
   raterId       String
-  rater         User     @relation("Rater", fields: [raterId], references: [id])
-  
-  // Target of the rating
   targetUserId  String?
-  targetUser    User?    @relation("TargetUser", fields: [targetUserId], references: [id])
   targetVenueId String?
-  targetVenue   Venue?   @relation(fields: [targetVenueId], references: [id])
   targetClubId  String?
-  targetClub    Club?    @relation(fields: [targetClubId], references: [id])
-
-  score         Int // 1-5
+  score         Int
   comment       String?
-  categories    Json? // e.g., ["SKILL", "MANNER", "PUNCTUALITY"] for users; ["CLEANLINESS", "EQUIPMENT"] for venues
-  
-  reports       Report[] @relation("ReportedRating")
+  categories    Json?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
+  game          Game?    @relation(fields: [gameId], references: [id])
+  rater         User     @relation("Rater", fields: [raterId], references: [id])
+  targetClub    Club?    @relation(fields: [targetClubId], references: [id])
+  targetUser    User?    @relation("TargetUser", fields: [targetUserId], references: [id])
+  targetVenue   Venue?   @relation(fields: [targetVenueId], references: [id])
+  reports       Report[] @relation("ReportedRating")
 
   @@unique([raterId, gameId, targetUserId])
   @@unique([raterId, gameId, targetVenueId])
@@ -266,43 +259,30 @@ model Rating {
 }
 
 model Report {
-  id            String       @id @default(uuid())
-  reporterId    String
-  reporter      User         @relation("Reporter", fields: [reporterId], references: [id])
-  reportedId    String
-  reportedUser  User         @relation("ReportedUser", fields: [reportedId], references: [id])
-  messageId     String?
-  message       ChatMessage? @relation(fields: [messageId], references: [id])
-  ratingId      String?
-  rating        Rating?      @relation("ReportedRating", fields: [ratingId], references: [id])
-  gameId        String?
-  reasonCode    String // e.g., "SPAM", "ABUSE", "INAPPROPRIATE"
-  note          String?
-  status        String       @default("PENDING") // PENDING, RESOLVED, DISMISSED
-  createdAt     DateTime     @default(now())
-  updatedAt     DateTime     @updatedAt
+  id           String       @id @default(uuid())
+  reporterId   String
+  reportedId   String
+  messageId    String?
+  ratingId     String?
+  gameId       String?
+  reasonCode   String
+  note         String?
+  status       String       @default("PENDING")
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  message      ChatMessage? @relation(fields: [messageId], references: [id])
+  rating       Rating?      @relation("ReportedRating", fields: [ratingId], references: [id])
+  reportedUser User         @relation("ReportedUser", fields: [reportedId], references: [id])
+  reporter     User         @relation("Reporter", fields: [reporterId], references: [id])
 }
 
 model Notification {
   id        String   @id @default(uuid())
   userId    String
-  user      User     @relation(fields: [userId], references: [id])
-  type      String // e.g., "GAME_REQUEST", "GAME_APPROVED", "GAME_DENIED", "GAME_CANCELLED", "WAITLIST_PROMOTED"
-  payload   Json // Store relevant data like gameId, gameTitle, etc.
+  type      String
+  payload   Json
   isRead    Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id])
 }
-
-model NotificationPreferences {
-  id              String   @id @default(uuid())
-  userId          String   @unique
-  user            User     @relation(fields: [userId], references: [id])
-  quietHoursStart String? // "HH:mm" 24h format
-  quietHoursEnd   String? // "HH:mm" 24h format
-  timezone        String   @default("Asia/Seoul")
-  typesEnabled    Json // { "chat": true, "game": true }
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-}
-

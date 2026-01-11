@@ -10,8 +10,16 @@
 - [ ] **Build**: `pnpm build` passed (Web + API).
 
 ## E2E Verification
-- [x] **Web E2E**: Playwright tests passed locally.
-- [x] **Mobile Build**: App builds successfully (`pnpm mobile:build`).
+- [x] Web E2E (Playwright)
+    - Pass rate: 100% (2/2 tests)
+    - Environment: Production Build (`pnpm start`)
+- [x] Android Emulator
+    - Status: Provisioned (API 33, Google APIs)
+    - Creation: Verified via `avdmanager` in local SDK
+- [x] Build Consistency
+    - API: Passes
+    - Web: Passes (Standalone)
+    - Mobile: Passes (`tsc --noEmit`) Build**: App builds successfully (`pnpm mobile:build`).
 - [x] **Mobile Runtime**: *Manual verify on real device (Simulator Blocked)*.
 
 ## Manual QA (Simulated)

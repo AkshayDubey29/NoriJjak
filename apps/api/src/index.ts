@@ -10,8 +10,8 @@ import notificationRoutes from './routes/notifications';
 import venueRoutes from './routes/venues';
 import clubRoutes from './routes/clubs';
 import safetyRoutes from './routes/safety';
-import chatRoutes from './routes/chat';
-import ratingRoutes from './routes/ratings';
+// import chatRoutes from './routes/chat';
+// import ratingRoutes from './routes/ratings';
 
 const app = express();
 const port = process.env.PORT || 4000;
@@ -43,8 +43,8 @@ app.use('/notifications', notificationRoutes);
 app.use('/venues', venueRoutes);
 app.use('/clubs', clubRoutes);
 app.use('/safety', safetyRoutes);
-app.use('/games/:id/chat', chatRoutes);
-app.use('/ratings', ratingRoutes);
+// app.use('/games/:id/chat', chatRoutes);
+// app.use('/ratings', ratingRoutes);
 
 if (require.main === module) {
   app.listen(port, () => {

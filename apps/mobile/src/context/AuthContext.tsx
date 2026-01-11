@@ -6,6 +6,7 @@ interface User {
   email: string;
   displayName?: string;
   locale: string;
+  onboardingStep?: string;
 }
 
 interface AuthContextType {

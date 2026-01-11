@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { AuthProvider } from "@/context/AuthContext";
+import RootLayoutContent from "@/components/ui/Layout";
 
 export const metadata: Metadata = {
   title: "NoriJjak",
@@ -14,9 +15,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>
+      <body className="antialiased">
         <AuthProvider>
-          {children}
+          <RootLayoutContent>
+            {children}
+          </RootLayoutContent>
         </AuthProvider>
       </body>
     </html>

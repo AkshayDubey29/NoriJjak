@@ -1,0 +1,327 @@
+{
+  "prompt_meta": {
+    "prompt_id": "STEP-0018",
+    "title": "Best-in-class UI/UX Overhaul (Web + Mobile) + Proof-based QA + E2E stays Green + GitHub push",
+    "created_by": "ChatGPT",
+    "executed_by": "__IDE_AGENT__",
+    "timezone": "Asia/Seoul",
+    "product_identity": {
+      "name_ko_one_word": "놀이짝",
+      "name_en": "NoriJjak",
+      "primary_locales": ["ko-KR", "en-US"],
+      "brand_positioning": "Premium, modern, playful-but-professional sports social platform (best-in-class UX in Korea)"
+    },
+    "repo": {
+      "git_remote_name": "origin",
+      "git_remote_url": "https://github.com/AkshayDubey29/NoriJjak.git",
+      "default_branch": "main",
+      "push_required": true
+    },
+    "links": {
+      "manifest_path": "ops/manifest.json",
+      "report_path": "reports/STEP-0018.report.json",
+      "evidence_dir": "reports/assets/STEP-0018/"
+    }
+  },
+
+  "non_negotiable_rules": {
+    "implementation_autonomy": true,
+    "chatgpt_does_not_instruct_code": true,
+    "no_scope_creep": true,
+    "no_skipping_tests": true,
+    "all_user_visible_text_localized": true,
+    "must_not_commit_secrets": true,
+    "always_update_manifest": true,
+    "always_write_report": true,
+    "report_must_have_no_placeholders": true,
+
+    "executor_must_not_delegate_actions_to_owner": true,
+    "owner_must_not_be_asked_to_run_commands": true,
+
+    "must_capture_visual_evidence": true,
+    "must_keep_web_e2e_green": true,
+    "must_keep_build_green": true,
+    "must_push_to_github": true,
+
+    "ui_must_be_best_in_class": true,
+    "ui_must_not_look_like_college_project": true,
+    "must_include_modern_ui_patterns": true,
+    "must_include_delight_microinteractions": true,
+    "must_include_accessibility_basics": true,
+    "must_include_performance_basics": true,
+    "must_include_consistent_design_system": true,
+    "must_include_loading_error_empty_states_everywhere": true
+  },
+
+  "owner_actions": [
+    {
+      "id": "OWNER-STEP-0018-UX-REVIEW",
+      "when": "after IDE shares screenshots and short walkthrough notes in report",
+      "instruction": "Review the best-in-class UI screenshots for web + mobile and approve or request changes. No command execution.",
+      "expected_output": "APPROVE_UI or UI_CHANGES_REQUESTED with bullet feedback"
+    }
+  ],
+
+  "step_objectives": {
+    "goal": "Transform NoriJjak into a premium, best-in-class product experience. Web + Mobile must feel like a top-tier Korean consumer app with exceptional polish and intuitive flows. Provide proof-based QA evidence that everything still works end-to-end.",
+    "outcomes": [
+      "A coherent, premium design system with consistent typography, spacing, iconography, elevation, and motion",
+      "A world-class information architecture: navigation is obvious, content hierarchy is clear, key actions are always reachable",
+      "Delightful but restrained microinteractions (hover/press, transitions, skeletons, optimistic updates where safe)",
+      "Fast-feeling UX: perceived performance improvements via skeletons, caching, pagination, and smart loading",
+      "High-quality forms: inline validation, clear error copy, disabled/active states, password UX, and success toasts",
+      "Best-in-class empty states: helpful CTAs, examples, and “start here” guidance",
+      "Proof-based QA: hard evidence of Web E2E, emulator run, and key flows captured as assets",
+      "All gates remain green; pushed to GitHub main"
+    ],
+    "constraints": [
+      "Do not add new domain features or change backend contracts unless strictly required to support UX (minor fixes allowed).",
+      "All new user-visible strings must be localized via the shared dictionary.",
+      "No visual regressions: avoid random styling; everything must be systemized."
+    ],
+    "definition_of_done": [
+      "Web looks like a premium consumer product (not dev scaffolding): app shell, dashboards, cards, filters, modals, toasts, skeletons, and cohesive branding",
+      "Mobile looks premium: polished navigation, card layouts, consistent components, and smooth interactions",
+      "Screenshots demonstrate best-in-class UI across the required screens (web + Android emulator; iOS if feasible)",
+      "Web Playwright E2E passes via automated run and evidence is captured",
+      "Root gates pass: integrity/lint/test/build + web e2e",
+      "Changes committed and pushed to GitHub main"
+    ]
+  },
+
+  "best_in_class_ui_requirements": {
+    "global_principles": [
+      "Design for comfort: big tap targets, clear spacing, readable text, calm hierarchy",
+      "One primary action per screen; secondary actions are discoverable but not noisy",
+      "Reduce cognitive load: progressive disclosure (details reveal only when needed)",
+      "Consistency: same components, same patterns everywhere",
+      "Korean consumer app polish: clean, subtle shadows, rounded corners, soft separators, delightful micro-motion"
+    ],
+    "must_have_modern_patterns": [
+      "App Shell with persistent navigation (web) and bottom tabs (mobile)",
+      "Command palette or quick action launcher (web) OR quick action FAB (mobile) for create/join",
+      "Smart filters with chips and clear reset",
+      "Skeleton loading + shimmer-like effect (implementation up to IDE)",
+      "Toast/snackbar notifications for actions",
+      "Optimistic UI updates for low-risk actions (e.g., marking notification read)",
+      "Pull-to-refresh on mobile lists",
+      "Sticky key actions (e.g., Join/Request) on detail pages",
+      "Share UX: compact, beautiful share cards or share sheets trigger points",
+      "Avatar + badge visuals on profiles and lists"
+    ],
+    "design_system_requirements": {
+      "web": {
+        "component_system": "IDE chooses a modern system (e.g., shadcn/ui) and enforces consistent tokens",
+        "tokens": ["spacing scale", "typography scale", "radii", "elevation", "border", "motion"],
+        "layout": [
+          "Top bar with search + notifications + profile",
+          "Left nav or tabbed nav for main modules (Games, Clubs, Venues, Notifications, Profile)",
+          "Responsive behavior for mobile widths"
+        ],
+        "ui_elements_required": [
+          "Search bar + filter chips",
+          "Card-based lists with clear metadata",
+          "Polished detail pages with sections",
+          "Modals/drawers for create/join actions when appropriate",
+          "Empty state illustrations or tasteful iconography (no heavy images required)"
+        ]
+      },
+      "mobile": {
+        "theme": "Single theme provider with consistent tokens (typography, spacing, colors)",
+        "navigation": [
+          "Bottom tabs: Games, Clubs, Venues, Notifications, Profile",
+          "Consistent header styling and back behavior",
+          "Safe area + keyboard avoidance"
+        ],
+        "ui_elements_required": [
+          "Card-based lists with hero metadata",
+          "Sticky bottom CTA on detail pages",
+          "Pull-to-refresh",
+          "Inline form validation",
+          "Delight animations for button press / transitions (lightweight)"
+        ]
+      }
+    },
+    "must_polish_screens": {
+      "web": [
+        "Landing (premium marketing feel + clear CTA)",
+        "Login/Signup (beautiful, modern auth UI)",
+        "Onboarding (stepper/progress UI, not plain form)",
+        "Games: list (search/filter), detail (sticky action), create (guided form)",
+        "Clubs: list/detail/create (premium community feel)",
+        "Venues: list/detail (amenities + map link CTA styling)",
+        "Notifications (grouped, clear, actionable)",
+        "Profile (reputation, badges, history sections)",
+        "Chat (clean bubble UI + safety actions unobtrusive)"
+      ],
+      "mobile": [
+        "Login/Signup",
+        "Onboarding",
+        "Games list/detail/create",
+        "Clubs list/detail",
+        "Venues list/detail",
+        "Notifications",
+        "Profile",
+        "Chat"
+      ]
+    },
+    "ux_quality_must_include": [
+      "Loading state for every list/detail view",
+      "Empty state for every list view with a helpful CTA",
+      "Error state + retry for API calls",
+      "Toasts/snackbars for actions (join, approve, report, rate)",
+      "Form validation with friendly copy and disabled submit until valid",
+      "Accessibility: focus rings (web), readable contrast, aria labels where applicable",
+      "Perceived performance: skeletons + cache where reasonable",
+      "Localization correctness: no hard-coded strings"
+    ]
+  },
+
+  "proof_based_qa_requirements": {
+    "evidence_assets_required": [
+      "Playwright automated run output (stdout/stderr tails) + HTML report path (if generated)",
+      "At least 12 web screenshots covering key flows and screens",
+      "Android emulator boot proof + at least 12 mobile screenshots across key screens",
+      "If iOS feasible: at least 8 iOS screenshots; else capture exact blocker output (commands + errors) as logs"
+    ],
+    "web_e2e_minimum_flows": [
+      "Signup -> onboarding -> reach dashboard",
+      "Create game -> see it in list -> open detail",
+      "Join/request join -> notification created -> open notification -> navigates correctly"
+    ],
+    "mobile_proof_minimum_flows_android": [
+      "Login -> games list -> open game detail -> open chat",
+      "Open notifications tab -> tap an item -> navigates correctly"
+    ]
+  },
+
+  "execution_plan_for_ide": {
+    "workflow": "sequential",
+    "tasks": [
+      {
+        "id": "T1",
+        "name": "Design system foundation (Web + Mobile)",
+        "objective": "Introduce a cohesive premium design system with tokens and shared UI patterns. Refactor existing screens to use system components consistently.",
+        "constraints": ["No visual randomness; systemize everything", "Keep localization intact"],
+        "acceptance": [
+          "All key screens use the design system components",
+          "Screenshots show consistent typography/spacing"
+        ]
+      },
+      {
+        "id": "T2",
+        "name": "Web UI overhaul (premium app shell + polished screens)",
+        "objective": "Transform web UI into premium product experience across required screens with modern patterns (filters, cards, modals, toasts, skeletons, empty/error states).",
+        "constraints": ["No new features; only UX/polish and minor bug fixes"],
+        "acceptance": [
+          "12+ web screenshots show premium UI",
+          "No broken navigation; flows remain functional"
+        ]
+      },
+      {
+        "id": "T3",
+        "name": "Mobile UI overhaul (premium look + comfort UX)",
+        "objective": "Transform mobile UI into premium experience with theme, polished navigation, sticky CTAs, pull-to-refresh, toasts, skeletons, and refined components.",
+        "constraints": ["No new domain features"],
+        "acceptance": [
+          "12+ Android emulator screenshots show premium UI",
+          "Core flows navigable and stable"
+        ]
+      },
+      {
+        "id": "T4",
+        "name": "Proof-based QA run (Web E2E + evidence)",
+        "objective": "Run Playwright E2E in automation and store evidence assets and outputs under reports/assets/STEP-0018/.",
+        "constraints": ["No manual claims; must be automated"],
+        "acceptance": ["Web E2E passes; evidence captured"]
+      },
+      {
+        "id": "T5",
+        "name": "Proof-based simulator run (Android emulator mandatory; iOS best-effort)",
+        "objective": "Boot Android emulator and capture evidence. Attempt iOS simulator and capture evidence or exact blocker logs.",
+        "constraints": ["Owner cannot run commands"],
+        "acceptance": ["Android proof exists; iOS proof or clear blocker logs exist"]
+      },
+      {
+        "id": "T6",
+        "name": "Performance basics + build sanity",
+        "objective": "Ensure web/mobile feel fast: reduce unnecessary re-renders, add caching where safe, keep bundle reasonable. Ensure build remains green.",
+        "constraints": ["Do not add heavy dependencies without justification"],
+        "acceptance": ["pnpm -r build passes; major screens feel snappy; report includes perf notes"]
+      },
+      {
+        "id": "T7",
+        "name": "Gates + GitHub push",
+        "objective": "Run all gates, fix any failures, commit and push to main, keep CI green.",
+        "constraints": ["No secrets", "CI must pass"],
+        "acceptance": ["Commit hash + push evidence in report"]
+      }
+    ],
+    "checks_to_run_before_finish": [
+      { "name": "integrity", "cmd": "pnpm -r integrity", "must_pass": true },
+      { "name": "lint", "cmd": "pnpm -r lint", "must_pass": true },
+      { "name": "test", "cmd": "pnpm -r test", "must_pass": true },
+      { "name": "build", "cmd": "pnpm -r build", "must_pass": true },
+      { "name": "web_e2e", "cmd": "pnpm --filter @norijjak/web e2e", "must_pass": true }
+    ]
+  },
+
+  "report_contract": {
+    "report_path": "reports/STEP-0018.report.json",
+    "report_schema": {
+      "step_id": "STEP-0018",
+      "status": "COMPLETED|COMPLETED_WITH_NOTES|BLOCKED|FAILED",
+      "summary": "string",
+      "major_decisions": [
+        { "area": "string", "decision": "string", "reason": "string", "tradeoffs": "string" }
+      ],
+      "commands_run": [
+        { "cmd": "string", "cwd": "string", "exit_code": 0, "stdout_tail": "string", "stderr_tail": "string" }
+      ],
+      "e2e_results": {
+        "web": { "tool": "Playwright", "passed": true, "tests_count": 0, "runtime_seconds": 0, "notes": "string" }
+      },
+      "simulators": {
+        "android": { "ran": true, "evidence": "string", "notes": "string" },
+        "ios": { "ran": false, "evidence": "string", "notes": "string" }
+      },
+      "ui_evidence": {
+        "web_screenshots": ["string"],
+        "mobile_android_screenshots": ["string"],
+        "mobile_ios_screenshots": ["string"],
+        "walkthrough_notes": "string"
+      },
+      "ux_checklist": [
+        { "item": "Design system consistency", "met": true, "evidence": "string" },
+        { "item": "Loading/empty/error states everywhere", "met": true, "evidence": "string" },
+        { "item": "Toasts/snackbars for actions", "met": true, "evidence": "string" },
+        { "item": "Comfort UX (tap targets, spacing)", "met": true, "evidence": "string" },
+        { "item": "Accessibility basics", "met": true, "evidence": "string" }
+      ],
+      "files_changed": [
+        { "path": "string", "change_type": "created|modified|deleted" }
+      ],
+      "git_push": {
+        "origin": "string",
+        "branch": "string",
+        "pushed_commit": "string",
+        "push_evidence": "string"
+      },
+      "errors": [
+        { "where": "string", "error": "string", "how_fixed_or_next_steps": "string" }
+      ],
+      "automation_limitations": [
+        { "limitation": "string", "evidence": "string", "required_owner_permission_or_action": "string" }
+      ],
+      "manifest_update": {
+        "path": "ops/manifest.json",
+        "final_status_written": "string",
+        "updated_at_written": "string"
+      },
+      "next_recommendations": ["string"]
+    }
+  },
+
+  "final_instruction_to_ide": "Execute this prompt exactly. Do not ask the owner to run commands. Overhaul Web + Mobile UI to best-in-class premium UX (modern patterns, delight, comfort, consistency). Add loading/empty/error states everywhere, toasts, refined forms, and professional navigation. Capture hard proof assets (screenshots + automated Playwright output + emulator proof). Keep all gates green, commit and push to GitHub main, update ops/manifest.json, and write a complete reports/STEP-0018.report.json with no placeholders."
+}
+
