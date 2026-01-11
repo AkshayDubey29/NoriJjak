@@ -1,0 +1,242 @@
+{
+  "prompt_meta": {
+    "prompt_id": "STEP-0015",
+    "title": "GA E2E Validation: Android + iOS simulators + Web E2E + RC Checklist (all core flows end-to-end) + GitHub push",
+    "created_by": "ChatGPT",
+    "executed_by": "__IDE_AGENT__",
+    "timezone": "Asia/Seoul",
+    "product_identity": {
+      "name_ko_one_word": "놀이짝",
+      "name_en": "NoriJjak",
+      "primary_locales": ["ko-KR", "en-US"],
+      "release_policy": "GA_ONLY_FIRST_PUBLIC_RELEASE"
+    },
+    "repo": {
+      "git_remote_name": "origin",
+      "git_remote_url": "https://github.com/AkshayDubey29/NoriJjak.git",
+      "default_branch": "main",
+      "push_required": true
+    },
+    "links": {
+      "manifest_path": "ops/manifest.json",
+      "report_path": "reports/STEP-0015.report.json"
+    }
+  },
+
+  "non_negotiable_rules": {
+    "implementation_autonomy": true,
+    "chatgpt_does_not_instruct_code": true,
+    "ide_chooses_tools_frameworks_patterns": true,
+    "ide_must_document_major_choices": true,
+    "no_scope_creep": true,
+    "no_skipping_tests": true,
+    "all_user_visible_text_localized": true,
+    "must_not_commit_secrets": true,
+    "always_update_manifest": true,
+    "always_write_report": true,
+    "report_must_have_no_placeholders": true,
+    "executor_must_not_delegate_actions_to_owner": true,
+    "must_run_android_simulator_or_emulator": true,
+    "must_run_ios_simulator_if_possible": true,
+    "must_run_web_e2e": true,
+    "must_capture_e2e_evidence": true,
+    "must_keep_ci_green": true,
+    "must_push_to_github": true,
+    "push_delivery_may_be_mocked": true,
+    "if_push_is_mocked_must_verify_send_attempt_logs": true
+  },
+
+  "owner_actions": [
+    {
+      "id": "OWNER-STEP-0015-APPROVAL-1",
+      "when": "after STEP-0015 report is shared with ChatGPT",
+      "instruction": "Approve ops/RELEASE_CANDIDATE_CHECKLIST.md results (no execution).",
+      "expected_output": "APPROVE or edits",
+      "must_not_require_execution": true
+    }
+  ],
+
+  "step_objectives": {
+    "goal": "Run true end-to-end validation across Mobile (Android + iOS simulators) and Web for all GA features, with automated E2E tests, evidence capture, and a clear RC checklist.",
+    "outcomes": [
+      "Android emulator runs app end-to-end against local API/infra",
+      "iOS Simulator runs app end-to-end (or BLOCKED with exact limitation)",
+      "Web passes E2E tests against local API/infra",
+      "All critical journeys verified and documented",
+      "Push flows verified: if provider is mock, verify NotificationService 'send attempted' logs + tap-to-open deep link behavior",
+      "Evidence captured and referenced (avoid committing huge binaries)",
+      "RC checklist created with pass/fail status per journey",
+      "Fixes applied for any failures and pushed to GitHub main with CI green"
+    ],
+    "constraints": [
+      "No new product features; only bug fixes, test harness, tooling and E2E coverage.",
+      "Owner does not execute local commands manually.",
+      "No secrets committed; use env + documented setup.",
+      "If simulator tooling needs UI approvals (Xcode license, Android Studio, etc.), attempt automation first, then report limitation clearly."
+    ],
+    "definition_of_done": [
+      "Local infra comes up automatically (docker compose) and API/Web/Mobile run against it",
+      "Automated E2E suite exists for Web and Mobile (Android required; iOS if feasible)",
+      "E2E covers minimum critical journeys list (below)",
+      "Evidence assets stored under reports/assets/STEP-0015/ and referenced in report",
+      "ops/RELEASE_CANDIDATE_CHECKLIST.md complete (no placeholders) with all passes or clearly documented blockers",
+      "pnpm -r integrity/lint/test/build pass AND E2E commands pass",
+      "All changes committed and pushed to GitHub main"
+    ]
+  },
+
+  "critical_journeys_minimum_coverage": [
+    "Auth: signup -> login -> logout -> session persists -> protected screens gated",
+    "Onboarding: profile + preferred sports -> gating removed -> reaches dashboard",
+    "Games: create (public/open) -> discover -> join -> leave",
+    "Games approval: create (approval) -> request -> host approve/deny -> notifications generated -> join state changes",
+    "Private invite: create private -> generate token -> redeem -> join flow works",
+    "Venues: list/search -> detail -> create game with venue -> game detail shows venue",
+    "Clubs: create (web) -> discover -> request join -> approve -> create club-hosted game -> linkage verified",
+    "Chat: approved participants can chat -> polling updates -> blocked user messages hidden -> report created",
+    "Safety: block user -> verify chat visibility changes -> report persists",
+    "Ratings/Reputation: after completed game -> rate -> edit within window -> profile shows aggregation/badges",
+    "Notifications: in-app list -> tap -> navigates correctly",
+    "Deep links: unauth -> login -> redirect; onboarding-needed -> onboarding -> redirect; ready -> direct open",
+    "Push: If provider is mock/logging, verify server 'send attempted' logs are emitted for at least 2 events (chat + game approval) and that payload mapping matches docs; if real push is available, verify 1 real delivery + tap-to-open."
+  ],
+
+  "execution_plan_for_ide": {
+    "workflow": "sequential",
+    "tasks": [
+      {
+        "id": "T1",
+        "name": "Bring up infra and run apps end-to-end locally",
+        "objective": "Ensure docker compose infra is up and API/Web/Mobile run against it.",
+        "constraints": ["No owner execution"],
+        "acceptance": ["All services reachable and smoke flows work"]
+      },
+      {
+        "id": "T2",
+        "name": "Android emulator + app run proof",
+        "objective": "Launch Android emulator, run the app, capture evidence screenshots.",
+        "constraints": ["Automate as much as possible"],
+        "acceptance": ["Android run verified + evidence captured"]
+      },
+      {
+        "id": "T3",
+        "name": "iOS Simulator + app run proof (if possible)",
+        "objective": "Launch iOS Simulator, run the app, capture evidence screenshots.",
+        "constraints": ["If blocked, report exact limitation and remediation without delegating to owner"],
+        "acceptance": ["iOS run verified OR BLOCKED with precise evidence"]
+      },
+      {
+        "id": "T4",
+        "name": "Implement Web E2E suite",
+        "objective": "Add Web E2E tests for critical journeys.",
+        "constraints": ["Deterministic and CI-friendly"],
+        "acceptance": ["Web E2E passes and is runnable via root scripts"]
+      },
+      {
+        "id": "T5",
+        "name": "Implement Mobile E2E suite",
+        "objective": "Add Mobile E2E tests runnable on Android; iOS if feasible.",
+        "constraints": ["IDE chooses tooling; must be reliable in CI/dev"],
+        "acceptance": ["Mobile E2E passes on Android at minimum"]
+      },
+      {
+        "id": "T6",
+        "name": "Verify push/notification E2E behavior",
+        "objective": "Validate notification generation, navigation, deep links; if push provider is mock/logging, assert send-attempt logs and payload mapping.",
+        "constraints": ["No secrets; do not require real push delivery"],
+        "acceptance": ["Evidence includes logs + navigation proof + checklist entries"]
+      },
+      {
+        "id": "T7",
+        "name": "RC checklist + docs + evidence",
+        "objective": "Write docs/checklist and store evidence assets.",
+        "constraints": ["No placeholders; do not commit huge binaries"],
+        "acceptance": ["Docs complete and referenced in report"]
+      },
+      {
+        "id": "T8",
+        "name": "Quality gates + GitHub push",
+        "objective": "Run gates including E2E; fix failures; commit and push to main.",
+        "constraints": ["Keep CI green"],
+        "acceptance": ["Commit hash + push evidence in report"]
+      }
+    ],
+    "checks_to_run_before_finish": [
+      { "name": "integrity", "cmd": "pnpm -r integrity", "must_pass": true },
+      { "name": "lint", "cmd": "pnpm -r lint", "must_pass": true },
+      { "name": "test", "cmd": "pnpm -r test", "must_pass": true },
+      { "name": "build", "cmd": "pnpm -r build", "must_pass": true },
+      { "name": "web_e2e", "cmd": "pnpm --filter @norijjak/web e2e", "must_pass": true },
+      { "name": "mobile_e2e", "cmd": "pnpm --filter @norijjak/mobile e2e", "must_pass": true }
+    ]
+  },
+
+  "docs_required": [
+    "ops/E2E_TEST_PLAN.md",
+    "ops/RELEASE_CANDIDATE_CHECKLIST.md",
+    "ops/SIMULATOR_SETUP.md"
+  ],
+
+  "report_contract": {
+    "report_path": "reports/STEP-0015.report.json",
+    "report_schema": {
+      "step_id": "STEP-0015",
+      "status": "COMPLETED|COMPLETED_WITH_NOTES|BLOCKED|FAILED",
+      "summary": "string",
+      "major_decisions": [
+        { "area": "string", "decision": "string", "reason": "string", "tradeoffs": "string" }
+      ],
+      "commands_run": [
+        { "cmd": "string", "cwd": "string", "exit_code": 0, "stdout_tail": "string", "stderr_tail": "string" }
+      ],
+      "simulators": {
+        "android": { "ran": true, "evidence": "string", "notes": "string" },
+        "ios": { "ran": true, "evidence": "string", "notes": "string" }
+      },
+      "e2e_results": {
+        "web": { "tool": "string", "passed": true, "tests_count": 0, "runtime_seconds": 0, "notes": "string" },
+        "mobile_android": { "tool": "string", "passed": true, "tests_count": 0, "runtime_seconds": 0, "notes": "string" },
+        "mobile_ios": { "tool": "string", "passed": true, "tests_count": 0, "runtime_seconds": 0, "notes": "string" }
+      },
+      "push_verification": {
+        "provider": "real|mock_logging",
+        "verified": true,
+        "evidence": "string",
+        "notes": "string"
+      },
+      "rc_checklist": {
+        "path": "ops/RELEASE_CANDIDATE_CHECKLIST.md",
+        "all_passed": true,
+        "known_issues": ["string"]
+      },
+      "evidence_assets": [
+        { "path": "string", "type": "screenshot|video|log", "notes": "string" }
+      ],
+      "git_push": {
+        "origin": "string",
+        "branch": "string",
+        "pushed_commit": "string",
+        "push_evidence": "string"
+      },
+      "files_changed": [
+        { "path": "string", "change_type": "created|modified|deleted" }
+      ],
+      "errors": [
+        { "where": "string", "error": "string", "how_fixed_or_next_steps": "string" }
+      ],
+      "automation_limitations": [
+        { "limitation": "string", "evidence": "string", "required_owner_permission_or_action": "string" }
+      ],
+      "manifest_update": {
+        "path": "ops/manifest.json",
+        "final_status_written": "string",
+        "updated_at_written": "string"
+      },
+      "next_recommendations": ["string"]
+    },
+    "must_be_filled": true
+  },
+
+  "final_instruction_to_ide": "Execute this prompt exactly. Do not delegate any execution to the owner. Choose implementation freely. Add E2E coverage (web + mobile), run Android emulator and iOS simulator if feasible, capture evidence, verify push flows (mock logs are acceptable), fix any E2E-found bugs, keep CI green, commit and push to GitHub main, update ops/manifest.json, and write a complete reports/STEP-0015.report.json with no placeholders."
+}
+

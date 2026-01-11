@@ -1,14 +1,4 @@
 {
-  "/_not-found": "app/_not-found.js",
-  "/games/page": "app/games/page.js",
-  "/clubs/page": "app/clubs/page.js",
-  "/login/page": "app/login/page.js",
-  "/dashboard/page": "app/dashboard/page.js",
-  "/games/create/page": "app/games/create/page.js",
-  "/notifications/page": "app/notifications/page.js",
-  "/profile/page": "app/profile/page.js",
-  "/page": "app/page.js",
-  "/onboarding/page": "app/onboarding/page.js",
-  "/venues/[id]/page": "app/venues/[id]/page.js",
-  "/venues/page": "app/venues/page.js"
+  "/not-found": "app/not-found.js",
+  "/page": "app/page.js"
 }

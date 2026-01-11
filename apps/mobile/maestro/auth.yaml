@@ -1,0 +1,9 @@
+appId: com.norijjak.mobile
+---
+- launchApp
+- tapOn: "Sign Up"
+- inputText: "testuser@norijjak.com"
+- tapOn: "Password Input"
+- inputText: "password123"
+- tapOn: "Submit"
+- assertVisible: "Welcome to NoriJjak"

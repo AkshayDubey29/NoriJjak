@@ -8,6 +8,8 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "test": "jest",
+    "build": "tsc --noEmit",
+    "e2e": "maestro test maestro/auth.yaml",
     "lint": "eslint ."
   },
   "dependencies": {

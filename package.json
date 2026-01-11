@@ -10,6 +10,7 @@
     "build": "pnpm -r build"
   },
   "devDependencies": {
+    "@playwright/test": "^1.57.0",
     "typescript": "^5.0.0"
   },
   "packageManager": "pnpm@10.15.0"
