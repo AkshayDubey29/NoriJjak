@@ -293,3 +293,16 @@ model Notification {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+model NotificationPreferences {
+  id              String   @id @default(uuid())
+  userId          String   @unique
+  user            User     @relation(fields: [userId], references: [id])
+  quietHoursStart String? // "HH:mm" 24h format
+  quietHoursEnd   String? // "HH:mm" 24h format
+  timezone        String   @default("Asia/Seoul")
+  typesEnabled    Json // { "chat": true, "game": true }
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+

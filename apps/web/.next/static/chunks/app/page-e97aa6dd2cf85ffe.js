@@ -1,5 +1,5 @@
-(self.webpackChunk_N_E=self.webpackChunk_N_E||[]).push([[931],{1409:function(e,t,a){Promise.resolve().then(a.bind(a,9443))},9443:function(e,t,a){"use strict";a.r(t),a.d(t,{default:function(){return d}});var l=a(5040),i=a(5731),n=a(7726),s={xmlns:"http://www.w3.org/2000/svg",width:24,height:24,viewBox:"0 0 24 24",fill:"none",stroke:"currentColor",strokeWidth:2,strokeLinecap:"round",strokeLinejoin:"round"};/**
- * @license lucide-react v0.321.0 - ISC
+(self.webpackChunk_N_E=self.webpackChunk_N_E||[]).push([[931],{1409:function(e,t,a){Promise.resolve().then(a.bind(a,172))},172:function(e,t,a){"use strict";a.r(t),a.d(t,{default:function(){return d}});var l=a(5040),i=a(5731),n=a(7726),s={xmlns:"http://www.w3.org/2000/svg",width:24,height:24,viewBox:"0 0 24 24",fill:"none",stroke:"currentColor",strokeWidth:2,strokeLinecap:"round",strokeLinejoin:"round"};/**
+ * @license lucide-react v0.344.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.

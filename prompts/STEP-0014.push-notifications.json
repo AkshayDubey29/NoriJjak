@@ -1,0 +1,363 @@
+{
+  "prompt_meta": {
+    "prompt_id": "STEP-0014",
+    "title": "GA Push Notifications: Device registration + notification preferences + deep-link actions (Mobile-first, Web optional) + GitHub push",
+    "created_by": "ChatGPT",
+    "executed_by": "__IDE_AGENT__",
+    "timezone": "Asia/Seoul",
+    "product_identity": {
+      "name_ko_one_word": "놀이짝",
+      "name_en": "NoriJjak",
+      "primary_locales": [
+        "ko-KR",
+        "en-US"
+      ],
+      "release_policy": "GA_ONLY_FIRST_PUBLIC_RELEASE"
+    },
+    "repo": {
+      "git_remote_name": "origin",
+      "git_remote_url": "https://github.com/AkshayDubey29/NoriJjak.git",
+      "default_branch": "main",
+      "push_required": true
+    },
+    "links": {
+      "manifest_path": "ops/manifest.json",
+      "report_path": "reports/STEP-0014.report.json"
+    }
+  },
+  "non_negotiable_rules": {
+    "implementation_autonomy": true,
+    "chatgpt_does_not_instruct_code": true,
+    "ide_chooses_stack_and_patterns": true,
+    "ide_must_document_major_choices": true,
+    "no_scope_creep": true,
+    "no_skipping_tests": true,
+    "all_user_visible_text_localized": true,
+    "always_update_manifest": true,
+    "always_write_report": true,
+    "report_must_have_no_placeholders": true,
+    "executor_must_not_delegate_actions_to_owner": true,
+    "must_support_mobile_push": true,
+    "must_support_deep_link_actions_from_push": true,
+    "must_have_user_notification_preferences": true,
+    "must_not_commit_secrets": true,
+    "must_keep_ci_green": true,
+    "must_push_to_github": true,
+    "prefer_non_blocking_dev_setup": true,
+    "push_provider_must_be_swappable": true
+  },
+  "owner_actions": [
+    {
+      "id": "OWNER-STEP-0014-INFO-1",
+      "when": "only if IDE chooses FCM/APNs directly (not Expo push) or if required for standalone builds",
+      "instruction": "Provide Firebase/APNs artifacts and identifiers as requested in ops/PUSH_SETUP.md (do not run commands). If not available, IDE must keep dev non-blocking and document what is needed later.",
+      "expected_output": "Provide files/values OR say 'NOT_AVAILABLE_YET'",
+      "must_not_require_execution": true
+    },
+    {
+      "id": "OWNER-STEP-0014-APPROVAL-1",
+      "when": "after STEP-0014 report is shared with ChatGPT",
+      "instruction": "Approve notification types, default preferences, and quiet-hours behavior described in ops/NOTIFICATION_PREFERENCES.md.",
+      "expected_output": "APPROVE or edits",
+      "must_not_require_execution": true
+    }
+  ],
+  "step_objectives": {
+    "goal": "Ship GA-grade push notifications: register devices, respect user preferences, send pushes for key events, and deep-link users into the right screen from push taps.",
+    "outcomes": [
+      "Mobile app can request permissions, register a device token, and keep token up to date",
+      "API stores device registrations per user and supports multiple devices",
+      "Users can configure notification preferences (types + quiet hours + enable/disable)",
+      "Server sends push for key events (at minimum: game join approved/denied/cancelled, new chat message, waitlist promoted)",
+      "Push payloads open the correct destination using deep links/navigation actions",
+      "No secrets in repo; configuration via env + GitHub Secrets (CI safe)",
+      "Code is pushed to GitHub and CI remains green"
+    ],
+    "constraints": [
+      "Mobile-first push is mandatory; web push is optional (only implement if straightforward and non-blocking).",
+      "No paid external services.",
+      "Owner does not execute commands locally."
+    ],
+    "definition_of_done": [
+      "Push provider implemented (prefer non-blocking dev path) and documented; provider swappable design",
+      "Device registration endpoints exist and are tested",
+      "Notification preferences endpoints exist and are tested",
+      "Event-driven push delivery wired for critical events (games + chat) with preference checks",
+      "Push tap opens correct screen (deep link / navigation) on mobile",
+      "All user-facing strings localized (KO/EN)",
+      "pnpm -r integrity, lint, test, build all pass",
+      "Changes committed and pushed to main on GitHub",
+      "Docs written: ops/PUSH_SETUP.md, ops/NOTIFICATION_PREFERENCES.md, ops/PUSH_PAYLOADS.md, ops/PUSH_PROVIDER_NOTES.md"
+    ]
+  },
+  "deliverables_outcomes": [
+    {
+      "area": "Mobile push registration",
+      "goal": "Device token lifecycle handled cleanly.",
+      "requirements": [
+        "Request permission with clear UX (localized).",
+        "Register token with API when authenticated; remove/disable on logout if appropriate.",
+        "Support multiple devices per user with platform/app version metadata.",
+        "Handle token refresh/update."
+      ],
+      "acceptance_criteria": [
+        "Mobile tests mock notification APIs and verify registration call flow",
+        "API tests verify register/unregister/update behavior"
+      ]
+    },
+    {
+      "area": "Notification preferences",
+      "goal": "User controls what they receive.",
+      "requirements": [
+        "Preferences model supports per-type enable/disable and quiet hours (timezone-aware).",
+        "Reasonable defaults documented and implemented.",
+        "Preferences enforced server-side before sending any push."
+      ],
+      "acceptance_criteria": [
+        "API tests cover preference enforcement",
+        "Web + Mobile settings UI exists (simple is fine) and localized"
+      ]
+    },
+    {
+      "area": "Push delivery for key events",
+      "goal": "Real-time coordination.",
+      "requirements": [
+        "Send push for: chat message (participant-only games), game approvals/denials, game cancelled, waitlist promoted (at minimum).",
+        "Use safe payload fields (no sensitive data), include deep-link target info.",
+        "Handle provider errors and invalid tokens (best-effort cleanup)."
+      ],
+      "acceptance_criteria": [
+        "API tests validate 'send attempted' logic and token filtering",
+        "Report includes delivery flow description and logs/tails"
+      ]
+    },
+    {
+      "area": "Deep-link actions from push taps",
+      "goal": "Push is actionable, not just informational.",
+      "requirements": [
+        "Tapping push opens correct destination: game detail, chat, or notifications list.",
+        "Unauth/onboarding states route correctly (login/onboarding then redirect)."
+      ],
+      "acceptance_criteria": [
+        "Mobile tests validate navigation mapping (mocked)",
+        "Docs define payload->route mapping"
+      ]
+    },
+    {
+      "area": "Security + guard rails",
+      "goal": "No leaks, CI safe.",
+      "requirements": [
+        "No secrets committed. Any keys via env vars + GitHub Secrets if needed.",
+        "Update integrity script rules if needed to ensure configs aren’t accidentally committed.",
+        "CI remains green and caches continue to work."
+      ],
+      "acceptance_criteria": [
+        "Report explicitly lists secret-handling approach",
+        "CI workflows pass and are still required checks"
+      ]
+    },
+    {
+      "area": "GitHub push",
+      "goal": "Everything lands in repo.",
+      "requirements": [
+        "Commit all changes with clear message.",
+        "Push to main (respecting branch protection)."
+      ],
+      "acceptance_criteria": [
+        "Report includes pushed commit hash and push evidence"
+      ]
+    }
+  ],
+  "execution_plan_for_ide": {
+    "workflow": "sequential",
+    "tasks": [
+      {
+        "id": "T1",
+        "name": "Choose push provider + implement swappable abstraction",
+        "objective": "Prefer a dev-non-blocking provider (e.g., Expo push) while keeping a clear path to FCM/APNs; document tradeoffs.",
+        "constraints": [
+          "No secrets committed",
+          "No owner execution"
+        ],
+        "acceptance": [
+          "Docs exist + implementation works in dev and is testable"
+        ]
+      },
+      {
+        "id": "T2",
+        "name": "Device registration API + storage",
+        "objective": "Create endpoints/models to store device tokens and metadata per user and manage lifecycle.",
+        "constraints": [
+          "Multiple devices",
+          "Revocation/disable supported"
+        ],
+        "acceptance": [
+          "API tests cover register/update/unregister"
+        ]
+      },
+      {
+        "id": "T3",
+        "name": "Preferences API + UI",
+        "objective": "Add per-type preferences + quiet hours and UI on Web + Mobile.",
+        "constraints": [
+          "Localized strings only"
+        ],
+        "acceptance": [
+          "API tests + basic UI tests/smoke"
+        ]
+      },
+      {
+        "id": "T4",
+        "name": "Wire push delivery to events",
+        "objective": "Trigger pushes for key events (chat + games) with preference checks and safe payloads.",
+        "constraints": [
+          "No sensitive payload",
+          "Best-effort retry/cleanup"
+        ],
+        "acceptance": [
+          "Verified via tests/mocks and report evidence"
+        ]
+      },
+      {
+        "id": "T5",
+        "name": "Deep-link actions from push taps",
+        "objective": "Map payloads to navigation routes; handle unauth/onboarding redirects.",
+        "constraints": [
+          "Use existing deeplink strategy"
+        ],
+        "acceptance": [
+          "Mobile tests cover mapping and redirect behavior (mocked)"
+        ]
+      },
+      {
+        "id": "T6",
+        "name": "Quality gates + push to GitHub",
+        "objective": "Run integrity/lint/test/build, then commit and push to main.",
+        "constraints": [
+          "CI must remain green"
+        ],
+        "acceptance": [
+          "Push evidence + commit hash in report"
+        ]
+      }
+    ],
+    "checks_to_run_before_finish": [
+      {
+        "name": "integrity",
+        "cmd": "pnpm -r integrity",
+        "must_pass": true
+      },
+      {
+        "name": "lint",
+        "cmd": "pnpm -r lint",
+        "must_pass": true
+      },
+      {
+        "name": "test",
+        "cmd": "pnpm -r test",
+        "must_pass": true
+      },
+      {
+        "name": "build",
+        "cmd": "pnpm -r build",
+        "must_pass": true
+      }
+    ]
+  },
+  "report_contract": {
+    "report_path": "reports/STEP-0014.report.json",
+    "report_schema": {
+      "step_id": "STEP-0014",
+      "status": "COMPLETED|COMPLETED_WITH_NOTES|BLOCKED|FAILED",
+      "summary": "string",
+      "major_decisions": [
+        {
+          "area": "string",
+          "decision": "string",
+          "reason": "string",
+          "tradeoffs": "string"
+        }
+      ],
+      "commands_run": [
+        {
+          "cmd": "string",
+          "cwd": "string",
+          "exit_code": 0,
+          "stdout_tail": "string",
+          "stderr_tail": "string"
+        }
+      ],
+      "tests": [
+        {
+          "name": "string",
+          "cmd": "string",
+          "passed": true,
+          "notes": "string"
+        }
+      ],
+      "push_provider": {
+        "chosen": "string",
+        "why": "string",
+        "how_to_switch_to_fcm_apns": "string"
+      },
+      "preference_model": {
+        "types": [
+          "string"
+        ],
+        "quiet_hours_supported": true,
+        "defaults": "string"
+      },
+      "payload_mapping": [
+        {
+          "event": "string",
+          "payload_fields": [
+            "string"
+          ],
+          "deeplink_or_route": "string"
+        }
+      ],
+      "git_push": {
+        "origin": "string",
+        "branch": "string",
+        "pushed_commit": "string",
+        "push_evidence": "string"
+      },
+      "files_changed": [
+        {
+          "path": "string",
+          "change_type": "created|modified|deleted"
+        }
+      ],
+      "errors": [
+        {
+          "where": "string",
+          "error": "string",
+          "how_fixed_or_next_steps": "string"
+        }
+      ],
+      "automation_limitations": [
+        {
+          "limitation": "string",
+          "evidence": "string",
+          "required_owner_permission_or_action": "string"
+        }
+      ],
+      "manifest_update": {
+        "path": "ops/manifest.json",
+        "final_status_written": "string",
+        "updated_at_written": "string"
+      },
+      "next_recommendations": [
+        "string"
+      ]
+    },
+    "must_be_filled": true
+  },
+  "docs_required": [
+    "ops/PUSH_SETUP.md",
+    "ops/NOTIFICATION_PREFERENCES.md",
+    "ops/PUSH_PAYLOADS.md",
+    "ops/PUSH_PROVIDER_NOTES.md"
+  ],
+  "final_instruction_to_ide": "Execute this prompt exactly. Do not delegate any execution to the owner. Choose implementation freely. Implement mobile push + preferences + deep-link actions, keep CI green, do not commit secrets, commit and push to GitHub main, update ops/manifest.json, and write a complete reports/STEP-0014.report.json with no placeholders."
+}

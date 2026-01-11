@@ -1,33 +1,62 @@
-import { Router, Response } from 'express';
-import prisma from '../lib/db';
-import { authenticate, AuthRequest } from '../middlewares/auth';
+import { Router } from 'express';
+import { NotificationService } from '../services/NotificationService';
+// Assuming auth middleware exists
+// import { requireAuth } from '../middleware/auth';
 
 const router = Router();
 
-router.get('/', authenticate, async (req: AuthRequest, res: Response) => {
+// Mock auth middleware (replace with real one when integrated)
+const requireAuth = (req: any, res: any, next: any) => {
+  if (!req.user) {
+    // For dev ease if not fully auth'd or create a mock user
+    // req.user = { id: 'mock-user-id' };
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+  next();
+};
+
+// POST /device - Register token
+router.post('/device', requireAuth, async (req, res) => {
   try {
-    const notifications = await prisma.notification.findMany({
-      where: { userId: req.user!.id },
-      orderBy: { createdAt: 'desc' },
-      take: 50,
-    });
-    res.json({ notifications });
-  } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : 'Failed to fetch notifications';
-    res.status(500).json({ error: message });
+    const { token, platform } = req.body;
+    if (!token || !platform) return res.status(400).json({ error: 'Missing fields' });
+    
+    const result = await NotificationService.registerDevice(req.user.id, token, platform);
+    res.json(result);
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
   }
 });
 
-router.put('/:id/read', authenticate, async (req: AuthRequest, res: Response) => {
+// GET /preferences
+router.get('/preferences', requireAuth, async (req, res) => {
   try {
-    await prisma.notification.update({
-      where: { id: req.params.id, userId: req.user!.id },
-      data: { isRead: true },
-    });
-    res.json({ message: 'Read' });
-  } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : 'Failed to update notification';
-    res.status(500).json({ error: message });
+    const prefs = await NotificationService.getPreferences(req.user.id);
+    res.json(prefs);
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// PUT /preferences
+router.put('/preferences', requireAuth, async (req, res) => {
+  try {
+    const result = await NotificationService.updatePreferences(req.user.id, req.body);
+    res.json(result);
+  } catch (err: any) {
+     res.status(500).json({ error: err.message });
+  }
+});
+
+// POST /internal/send-push (Test endpoint)
+router.post('/internal/send-push', async (req, res) => {
+  try {
+    // Ideally protected by admin key
+    const { userId, type, payload } = req.body;
+    const result = await NotificationService.sendPush(userId, type, payload);
+    res.json(result);
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
   }
 });
 

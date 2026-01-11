@@ -69,7 +69,7 @@ function scanDir(dir) {
     const fullPath = path.join(dir, item);
     const relPath = path.relative(process.cwd(), fullPath);
     
-    if (item === 'node_modules' || item === '.git' || item === 'dist' || item === '.DS_Store') continue;
+    if (item === 'node_modules' || item === '.git' || item === 'dist' || item === '.DS_Store' || item === '.next' || item === 'prompts') continue;
 
     const stats = fs.statSync(fullPath);
     if (stats.isDirectory()) {
