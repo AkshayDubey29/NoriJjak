@@ -10,7 +10,7 @@
   "version": "0.1.0",
   "agent": "Cursor AI",
   "started_at": "2026-01-08T00:00:00+09:00",
-  "updated_at": "2026-01-08T13:00:00+09:00",
+  "updated_at": "2026-01-11T21:40:00+09:00",
   "steps": [
     {
       "id": "STEP-0001",
@@ -116,6 +116,14 @@
       "agent": "Antigravity"
     },
     {
+      "id": "STEP-0014",
+      "title": "GA Push Notifications",
+      "status": "COMPLETED",
+      "started_at": "2026-01-11T16:42:04+09:00",
+      "updated_at": "2026-01-11T17:00:00+09:00",
+      "agent": "Antigravity"
+    },
+    {
       "id": "STEP-0015",
       "title": "E2E Simulators & QA",
       "status": "COMPLETED",
@@ -154,18 +162,21 @@
       "started_at": "2026-01-11T20:00:00+09:00",
       "updated_at": "2026-01-11T21:00:00+09:00",
       "agent": "Antigravity"
+    },
+    {
+      "id": "STEP-0020",
+      "title": "Remediate STEP-0019: Compliance & Proof",
+      "status": "COMPLETED",
+      "started_at": "2026-01-11T21:10:00+09:00",
+      "updated_at": "2026-01-11T21:40:00+09:00",
+      "agent": "Cursor AI"
     }
   ],
   "artifacts": [
-    "apps/api/prisma/schema.prisma",
-    "apps/api/src/routes/ratings.ts",
-    "apps/api/src/ratings.test.ts",
-    "apps/web/src/components/RatingForm.tsx",
-    "apps/web/src/app/profile/page.tsx",
-    "apps/mobile/src/components/RatingForm.tsx",
-    "ops/RATINGS_RULES.md",
-    "ops/REPUTATION_MODEL.md",
-    "ops/REVIEW_MODERATION_PLACEHOLDERS.md",
-    "ops/API_CONTRACTS.md"
+    "ops/scripts/scope-guard.js",
+    "ops/scripts/branch-guard.js",
+    "ops/PROTOCOL.md",
+    "reports/assets/STEP-0020/*.png",
+    "reports/STEP-0020.report.json"
   ]
 }
