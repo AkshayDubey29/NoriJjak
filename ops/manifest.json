@@ -10,7 +10,7 @@
   "version": "0.1.0",
   "agent": "Cursor AI",
   "started_at": "2026-01-08T00:00:00+09:00",
-  "updated_at": "2026-01-11T21:40:00+09:00",
+  "updated_at": "2026-01-11T22:00:00+09:00",
   "steps": [
     {
       "id": "STEP-0001",
@@ -18,6 +18,9 @@
       "status": "COMPLETED_WITH_NOTES",
       "started_at": "2026-01-08T00:00:00+09:00",
       "updated_at": "2026-01-08T04:20:00+09:00",
+      "owner_verified": false,
+      "owner_verified_at": null,
+      "proof_doc_path": null,
       "notes": "Infrastructure verification and mobile tests were partially blocked by Docker daemon and Jest config issues. Resolved in STEP-0002."
     },
     {
@@ -25,63 +28,90 @@
       "title": "Foundation Hardening",
       "status": "COMPLETED",
       "started_at": "2026-01-08T04:30:00+09:00",
-      "updated_at": "2026-01-08T07:45:00+09:00"
+      "updated_at": "2026-01-08T07:45:00+09:00",
+      "owner_verified": false,
+      "owner_verified_at": null,
+      "proof_doc_path": null
     },
     {
       "id": "STEP-0003",
       "title": "Auth + Session Foundation",
       "status": "COMPLETED",
       "started_at": "2026-01-08T07:50:00+09:00",
-      "updated_at": "2026-01-08T07:50:00+09:00"
+      "updated_at": "2026-01-08T07:50:00+09:00",
+      "owner_verified": false,
+      "owner_verified_at": null,
+      "proof_doc_path": null
     },
     {
       "id": "STEP-0004",
       "title": "Domain Foundation",
       "status": "COMPLETED",
       "started_at": "2026-01-08T08:00:00+09:00",
-      "updated_at": "2026-01-08T08:00:00+09:00"
+      "updated_at": "2026-01-08T08:00:00+09:00",
+      "owner_verified": false,
+      "owner_verified_at": null,
+      "proof_doc_path": null
     },
     {
       "id": "STEP-0005",
       "title": "Core Product: Games",
       "status": "COMPLETED",
       "started_at": "2026-01-08T08:15:00+09:00",
-      "updated_at": "2026-01-08T08:30:00+09:00"
+      "updated_at": "2026-01-08T08:30:00+09:00",
+      "owner_verified": false,
+      "owner_verified_at": null,
+      "proof_doc_path": null
     },
     {
       "id": "STEP-0006",
       "title": "Games GA Hardening",
       "status": "COMPLETED",
       "started_at": "2026-01-08T08:35:00+09:00",
-      "updated_at": "2026-01-08T08:45:00+09:00"
+      "updated_at": "2026-01-08T08:45:00+09:00",
+      "owner_verified": false,
+      "owner_verified_at": null,
+      "proof_doc_path": null
     },
     {
       "id": "STEP-0007",
       "title": "Growth Loop: Sharing & Deep Links",
       "status": "COMPLETED",
       "started_at": "2026-01-08T08:50:00+09:00",
-      "updated_at": "2026-01-08T08:55:00+09:00"
+      "updated_at": "2026-01-08T08:55:00+09:00",
+      "owner_verified": false,
+      "owner_verified_at": null,
+      "proof_doc_path": null
     },
     {
       "id": "STEP-0008",
       "title": "Venues Core",
       "status": "COMPLETED",
       "started_at": "2026-01-08T09:00:00+09:00",
-      "updated_at": "2026-01-08T09:45:00+09:00"
+      "updated_at": "2026-01-08T09:45:00+09:00",
+      "owner_verified": false,
+      "owner_verified_at": null,
+      "proof_doc_path": null
     },
     {
       "id": "STEP-0009",
       "title": "Clubs Core",
       "status": "COMPLETED",
       "started_at": "2026-01-08T10:00:00+09:00",
-      "updated_at": "2026-01-08T11:00:00+09:00"
+      "updated_at": "2026-01-08T11:00:00+09:00",
+      "owner_verified": false,
+      "owner_verified_at": null,
+      "proof_doc_path": null
     },
     {
       "id": "STEP-0010",
       "title": "GA Safety + Coordination: Chat & Moderation",
       "status": "COMPLETED",
       "started_at": "2026-01-08T12:00:00+09:00",
-      "updated_at": "2026-01-08T13:00:00+09:00"
+      "updated_at": "2026-01-08T13:00:00+09:00",
+      "owner_verified": false,
+      "owner_verified_at": null,
+      "proof_doc_path": null
     },
     {
       "id": "STEP-0011",
@@ -89,6 +119,9 @@
       "status": "COMPLETED",
       "started_at": "2026-01-09T08:30:00+09:00",
       "updated_at": "2026-01-09T09:45:00+09:00",
+      "owner_verified": false,
+      "owner_verified_at": null,
+      "proof_doc_path": null,
       "agent": "Cursor AI"
     },
     {
@@ -97,6 +130,9 @@
       "status": "COMPLETED",
       "started_at": "2026-01-10T20:51:20+09:00",
       "updated_at": "2026-01-10T20:51:20+09:00",
+      "owner_verified": false,
+      "owner_verified_at": null,
+      "proof_doc_path": null,
       "agent": "Antigravity"
     },
     {
@@ -105,6 +141,9 @@
       "status": "COMPLETED",
       "started_at": "2026-01-11T16:29:13+09:00",
       "updated_at": "2026-01-11T16:29:13+09:00",
+      "owner_verified": false,
+      "owner_verified_at": null,
+      "proof_doc_path": null,
       "agent": "Antigravity"
     },
     {
@@ -113,14 +152,9 @@
       "status": "COMPLETED",
       "started_at": "2026-01-11T16:42:04+09:00",
       "updated_at": "2026-01-11T17:00:00+09:00",
-      "agent": "Antigravity"
-    },
-    {
-      "id": "STEP-0014",
-      "title": "GA Push Notifications",
-      "status": "COMPLETED",
-      "started_at": "2026-01-11T16:42:04+09:00",
-      "updated_at": "2026-01-11T17:00:00+09:00",
+      "owner_verified": false,
+      "owner_verified_at": null,
+      "proof_doc_path": null,
       "agent": "Antigravity"
     },
     {
@@ -129,6 +163,9 @@
       "status": "COMPLETED",
       "started_at": "2026-01-11T16:51:58+09:00",
       "updated_at": "2026-01-11T17:15:00+09:00",
+      "owner_verified": false,
+      "owner_verified_at": null,
+      "proof_doc_path": null,
       "agent": "Antigravity"
     },
     {
@@ -137,6 +174,9 @@
       "status": "COMPLETED_WITH_NOTES",
       "started_at": "2026-01-11T17:01:26+09:00",
       "updated_at": "2026-01-11T17:50:00+09:00",
+      "owner_verified": false,
+      "owner_verified_at": null,
+      "proof_doc_path": null,
       "agent": "Antigravity"
     },
     {
@@ -145,6 +185,9 @@
       "status": "COMPLETED",
       "started_at": "2026-01-11T17:15:00+09:00",
       "updated_at": "2026-01-11T18:00:00+09:00",
+      "owner_verified": false,
+      "owner_verified_at": null,
+      "proof_doc_path": null,
       "agent": "Antigravity"
     },
     {
@@ -153,6 +196,9 @@
       "status": "COMPLETED",
       "started_at": "2026-01-11T18:00:00+09:00",
       "updated_at": "2026-01-11T19:30:00+09:00",
+      "owner_verified": false,
+      "owner_verified_at": null,
+      "proof_doc_path": null,
       "agent": "Antigravity"
     },
     {
@@ -161,6 +207,9 @@
       "status": "COMPLETED",
       "started_at": "2026-01-11T20:00:00+09:00",
       "updated_at": "2026-01-11T21:00:00+09:00",
+      "owner_verified": false,
+      "owner_verified_at": null,
+      "proof_doc_path": "ops/DEMO_MOBILE_AUTH_ONBOARDING.md",
       "agent": "Antigravity"
     },
     {
@@ -169,14 +218,30 @@
       "status": "COMPLETED",
       "started_at": "2026-01-11T21:10:00+09:00",
       "updated_at": "2026-01-11T21:40:00+09:00",
+      "owner_verified": false,
+      "owner_verified_at": null,
+      "proof_doc_path": "ops/DEMO_MOBILE_AUTH_ONBOARDING.md",
       "agent": "Cursor AI"
+    },
+    {
+      "id": "STEP-0021",
+      "title": "REAL Simulator Proof: NoriJjak UI End-to-End",
+      "status": "COMPLETED",
+      "started_at": "2026-01-11T22:00:00+09:00",
+      "updated_at": "2026-01-11T13:10:14.211Z",
+      "owner_verified": false,
+      "owner_verified_at": null,
+      "proof_doc_path": "ops/DEMO_MOBILE_AUTH_ONBOARDING.md",
+      "agent": "Antigravity"
     }
   ],
   "artifacts": [
     "ops/scripts/scope-guard.js",
     "ops/scripts/branch-guard.js",
     "ops/PROTOCOL.md",
-    "reports/assets/STEP-0020/*.png",
-    "reports/STEP-0020.report.json"
+    "reports/assets/STEP-0021/*.png",
+    "reports/assets/STEP-0021/*.mp4",
+    "ops/DEMO_MOBILE_AUTH_ONBOARDING.md",
+    "reports/STEP-0021.report.json"
   ]
 }

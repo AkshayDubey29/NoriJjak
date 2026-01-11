@@ -1,0 +1,45 @@
+appId: host.exp.exponent
+---
+- launchApp
+- tapOn: "Enter URL manually"
+- inputText: "exp://localhost:8081"
+- tapOn: "Connect"
+- assertVisible: "로그인"
+- takeScreenshot: Login_Initial
+- tapOn: "회원가입"
+- assertVisible: "회원가입 완료"
+- takeScreenshot: Signup_Initial
+- tapOn: "이메일"
+- inputText: "test_premium_21@example.com"
+- tapOn: "비밀번호"
+- inputText: "password123"
+- tapOn: "비밀번호 확인"
+- inputText: "password123"
+- takeScreenshot: Signup_Filled
+- tapOn: "회원가입 완료"
+- assertVisible: "환영합니다!"
+- takeScreenshot: Onboarding_Step1_Welcome
+- tapOn: "닉네임"
+- inputText: "PremiumUser"
+- takeScreenshot: Onboarding_Step1_Filled
+- tapOn: "다음 단계"
+- assertVisible: "관심 종목"
+- takeScreenshot: Onboarding_Step2_Sports
+- tapOn: "축구"
+- takeScreenshot: Onboarding_Step2_Selected
+- tapOn: "다음 단계"
+- assertVisible: "나의 실력"
+- takeScreenshot: Onboarding_Step3_Skill
+- tapOn: "중급"
+- takeScreenshot: Onboarding_Step3_Selected
+- tapOn: "다음 단계"
+- assertVisible: "활동 지역"
+- takeScreenshot: Onboarding_Step4_Area
+- tapOn: "활동 지역"
+- inputText: "서울 강남구"
+- takeScreenshot: Onboarding_Step4_Filled
+- tapOn: "다음 단계"
+- assertVisible: "준비 완료!"
+- takeScreenshot: Onboarding_Step5_Review
+- tapOn: "시작하기"
+- takeScreenshot: Home_After_Onboarding

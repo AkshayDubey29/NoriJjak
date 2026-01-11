@@ -1,0 +1,9 @@
+appId: host.exp.exponent
+---
+- launchApp
+- tapOn: "Enter URL manually"
+- inputText: "exp://localhost:8081"
+- tapOn: "Connect"
+- extendedWaitUntil: "로그인"
+  timeout: 120000
+- takeScreenshot: Login_Initial

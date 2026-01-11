@@ -28,3 +28,15 @@ Each step must produce a report in `reports/` following the schema defined in th
 - Every step must ensure `lint`, `test`, and `build` pass at the root level.
 - No hard-coded UI strings; all visible text must be localized in `packages/shared`.
 
+## Enforcement Guardrails
+
+To prevent scope creep and branch violations, the following guards are enforced:
+
+1. **Scope Guard**: Changes must be limited to the modules specified in the prompt.
+   - Run `node ops/scripts/scope-guard.js apps/module1,packages/shared` to verify.
+2. **Branch Guard**: All steps must conclude with code merged into the `main` branch.
+   - Run `node ops/scripts/branch-guard.js main` to verify.
+3. **Integrity Guard**: No null bytes or empty critical files.
+   - Run `pnpm integrity` to verify.
+
+Reports must include the main branch commit hash as evidence of successful delivery.

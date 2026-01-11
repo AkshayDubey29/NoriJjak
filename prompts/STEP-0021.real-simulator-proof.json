@@ -1,0 +1,218 @@
+{
+  "prompt_meta": {
+    "prompt_id": "STEP-0021",
+    "title": "REAL Simulator Proof: Show NoriJjak UI (NOT Expo screens) + Demo Pack + Manifest Cleanup",
+    "created_by": "ChatGPT",
+    "executed_by": "__IDE_AGENT__",
+    "timezone": "Asia/Seoul",
+    "product_identity": {
+      "name_ko_one_word": "놀이짝",
+      "name_en": "NoriJjak",
+      "primary_locales": ["ko-KR", "en-US"]
+    },
+    "links": {
+      "manifest_path": "ops/manifest.json",
+      "report_path": "reports/STEP-0021.report.json",
+      "evidence_dir": "reports/assets/STEP-0021/",
+      "demo_doc_path": "ops/DEMO_MOBILE_AUTH_ONBOARDING.md"
+    },
+    "repo": {
+      "git_remote_url": "https://github.com/AkshayDubey29/NoriJjak.git",
+      "default_branch": "main",
+      "push_required": true
+    }
+  },
+
+  "non_negotiable_rules": {
+    "implementation_autonomy": true,
+    "chatgpt_does_not_instruct_code": true,
+    "no_scope_creep": true,
+    "no_new_modules": true,
+    "no_redesign_outside_auth_onboarding": true,
+    "no_backend_feature_work": true,
+    "no_asking_owner_to_run_commands": true,
+
+    "proof_must_be_actual_app_ui": true,
+    "expo_go_screens_are_invalid_proof": true,
+    "must_capture_video_or_gif": true,
+
+    "always_update_manifest": true,
+    "always_write_report": true,
+    "report_must_have_no_placeholders": true,
+    "must_push_to_main": true
+  },
+
+  "disallowed_proof_screens": {
+    "explicit_examples": [
+      "Expo Go Account screen",
+      "Expo Go Home/Projects screen",
+      "Expo Developer Tools UI",
+      "Any screen that does not show NoriJjak branding or in-app UI"
+    ],
+    "rule": "If any captured screenshot is not the NoriJjak app UI, delete it, recapture, and mark previous proof as INVALID in the report."
+  },
+
+  "step_objectives": {
+    "goal": "Produce Owner-verifiable simulator proof that the NoriJjak app UI is running (not Expo screens), and package it in a single GitHub-viewable demo doc.",
+    "outcomes": [
+      "Android emulator boots and shows NoriJjak UI",
+      "Auth + Onboarding flow is visually proven via screenshots AND a short recording",
+      "A single demo markdown doc renders in GitHub with embedded images and a link to the recording",
+      "ops/manifest.json is cleaned (duplicate STEP-0014 removed) and gains owner verification fields"
+    ],
+    "definition_of_done": [
+      "At least 14 VALID screenshots exist (all are NoriJjak UI) under reports/assets/STEP-0021/",
+      "At least 1 short recording exists (mp4 OR gif) showing NoriJjak UI end-to-end",
+      "ops/DEMO_MOBILE_AUTH_ONBOARDING.md exists and is GitHub-clickable with embedded images",
+      "manifest has unique step IDs (remove duplicate STEP-0014) and adds owner_verified fields",
+      "All changes pushed to origin/main"
+    ]
+  },
+
+  "proof_requirements": {
+    "android_emulator": {
+      "must_boot": true,
+      "must_show": [
+        "A screen where the visible UI contains NoriJjak branding (놀이짝 or NoriJjak)",
+        "At least one in-app page that is clearly NOT an Expo UI"
+      ]
+    },
+    "mandatory_assets": {
+      "min_screenshots": 14,
+      "required_screenshots": [
+        "Login (empty)",
+        "Login (loading state)",
+        "Login (error state)",
+        "Signup (empty)",
+        "Signup (validation error)",
+        "Onboarding step 1",
+        "Onboarding step 2",
+        "Onboarding step 3",
+        "Onboarding step 4",
+        "Onboarding step 5",
+        "Onboarding resume after restart (proof)",
+        "Success/completion",
+        "Locale switch KO->EN or EN->KO proof",
+        "One extra screen proving app navigation (not Expo)"
+      ],
+      "recording": {
+        "required": true,
+        "target_length_seconds": 15,
+        "must_show_flow": "Open app -> Login/Signup -> Onboarding -> Success (all inside NoriJjak UI)"
+      }
+    },
+    "storage_rule": "All assets must be stored under reports/assets/STEP-0021/ and referenced by repo-relative paths in the demo doc."
+  },
+
+  "manifest_cleanup_rules": {
+    "must_fix": [
+      "Remove duplicate STEP-0014 entry (keep only one)",
+      "Ensure each step id is unique",
+      "Add fields to each step: owner_verified (boolean), owner_verified_at (nullable), proof_doc_path (nullable)"
+    ],
+    "owner_verified_policy": "Set owner_verified=false for all steps by default. Set proof_doc_path for STEP-0019/0020/0021 after demo doc is created."
+  },
+
+  "execution_plan_for_ide": {
+    "workflow": "sequential",
+    "tasks": [
+      {
+        "id": "T1",
+        "name": "Invalidate incorrect proof",
+        "objective": "Audit any prior proof assets (STEP-0019/0020) and explicitly mark Expo-screen evidence as INVALID in the STEP-0021 report.",
+        "acceptance": [
+          "Report contains a clear statement: prior screenshot was Expo Account screen and is invalid proof."
+        ]
+      },
+      {
+        "id": "T2",
+        "name": "Bring up emulator and launch NoriJjak UI",
+        "objective": "Ensure Android emulator runs and the NoriJjak app UI is opened (not Expo account/project pages).",
+        "acceptance": [
+          "At least 1 screenshot clearly shows NoriJjak UI with branding."
+        ]
+      },
+      {
+        "id": "T3",
+        "name": "Capture VALID screenshots + recording",
+        "objective": "Capture 14+ screenshots + 1 short recording. All must be NoriJjak app screens. Delete and recapture any Expo screens.",
+        "acceptance": [
+          "All required screenshots exist and are valid.",
+          "Recording exists and shows the flow inside NoriJjak UI."
+        ]
+      },
+      {
+        "id": "T4",
+        "name": "Create GitHub-clickable demo doc",
+        "objective": "Write ops/DEMO_MOBILE_AUTH_ONBOARDING.md with embedded images and a link to the recording.",
+        "acceptance": [
+          "Doc renders on GitHub and references repo-relative image paths."
+        ]
+      },
+      {
+        "id": "T5",
+        "name": "Fix ops/manifest.json duplication + owner verification fields",
+        "objective": "Remove duplicate STEP-0014 entry and add owner verification fields across steps.",
+        "acceptance": [
+          "Manifest JSON is valid and step IDs are unique."
+        ]
+      },
+      {
+        "id": "T6",
+        "name": "Push to main + report",
+        "objective": "Commit and push all changes to origin/main and write reports/STEP-0021.report.json.",
+        "acceptance": [
+          "Report includes main commit hash and exact GitHub paths the Owner should open."
+        ]
+      }
+    ]
+  },
+
+  "report_contract": {
+    "report_path": "reports/STEP-0021.report.json",
+    "report_schema": {
+      "step_id": "STEP-0021",
+      "status": "COMPLETED|COMPLETED_WITH_NOTES|BLOCKED|FAILED",
+      "summary": "string",
+      "invalid_proof_found": {
+        "found": true,
+        "what_it_was": "string",
+        "why_invalid": "string"
+      },
+      "commands_run": [
+        { "cmd": "string", "cwd": "string", "exit_code": 0, "stdout_tail": "string", "stderr_tail": "string" }
+      ],
+      "proof_assets": {
+        "android_emulator": { "ran": true, "avd_name": "string", "notes": "string" },
+        "screenshots": ["string"],
+        "recording": "string",
+        "validation_notes": "string"
+      },
+      "demo_doc": {
+        "path": "ops/DEMO_MOBILE_AUTH_ONBOARDING.md",
+        "owner_click_paths": ["string"]
+      },
+      "manifest_cleanup": {
+        "duplicate_steps_removed": ["string"],
+        "owner_verification_fields_added": true
+      },
+      "files_changed": [
+        { "path": "string", "change_type": "created|modified|deleted" }
+      ],
+      "git_push": {
+        "branch": "main",
+        "pushed_commit": "string",
+        "push_evidence": "string"
+      },
+      "manifest_update": {
+        "path": "ops/manifest.json",
+        "final_status_written": "string",
+        "updated_at_written": "string"
+      },
+      "next_recommendations": ["string"]
+    }
+  },
+
+  "final_instruction_to_ide": "Execute exactly. The attached screenshot is Expo Go Account UI and is INVALID proof. Produce VALID proof that shows NoriJjak app UI on Android emulator (not Expo screens), capture 14+ screenshots + 1 short recording, generate a GitHub-viewable demo doc with embedded images, fix manifest duplication and add owner verification fields, push to origin/main, and write a complete STEP-0021 report with no placeholders."
+}
+

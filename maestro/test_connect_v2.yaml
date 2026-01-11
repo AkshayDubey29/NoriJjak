@@ -1,0 +1,10 @@
+appId: host.exp.exponent
+---
+- launchApp
+- tapOn: "Enter URL manually"
+- inputText: "exp://10.0.2.2:8081"
+- tapOn: "Connect"
+- stopApp
+- launchApp
+- tapOn: "Development servers"
+- takeScreenshot: Dev_Servers_List

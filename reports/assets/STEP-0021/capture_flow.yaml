@@ -1,0 +1,37 @@
+appId: com.anonymous.norijjakmobile
+---
+- launchApp
+- takeScreenshot: 01_login_empty
+- tapOn: "Login"
+- takeScreenshot: 03_login_error
+- tapOn: "Signup"
+- takeScreenshot: 04_signup_empty
+- tapOn: "Email"
+- inputText: "test_step21@example.com"
+- tapOn: "Password"
+- inputText: "password123"
+- tapOn: "Confirm Password"
+- inputText: "password123"
+- tapOn: "Complete Signup"
+- takeScreenshot: 06_onboarding_step1
+- inputText: "MaestroTester"
+- tapOn: "Next"
+- takeScreenshot: 07_onboarding_step2
+- tapOn: "Soccer"
+- tapOn: "Next"
+- takeScreenshot: 08_onboarding_step3
+- tapOn: "Beginner"
+- tapOn: "Next"
+- takeScreenshot: 09_onboarding_step4
+- inputText: "Seoul"
+- tapOn: "Next"
+- takeScreenshot: 10_onboarding_step5
+- tapOn: "Start App"
+- takeScreenshot: 12_success
+- stopApp
+- launchApp
+- takeScreenshot: 11_onboarding_resume
+- tapOn: "Settings"
+- takeScreenshot: 13_locale_proof
+- tapOn: "Home"
+- takeScreenshot: 14_app_nav
