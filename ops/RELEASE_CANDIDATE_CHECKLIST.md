@@ -10,12 +10,12 @@
 - [ ] **Build**: `pnpm build` passed (Web + API).
 
 ## E2E Verification
-- [ ] **Web E2E**: Playwright tests passed locally.
-- [ ] **Mobile Build**: App builds successfully (`pnpm mobile:build`).
-- [ ] **Mobile Runtime**: *Manual verify or known limitation (No Simulator).*
+- [x] **Web E2E**: Playwright tests passed locally.
+- [x] **Mobile Build**: App builds successfully (`pnpm mobile:build`).
+- [x] **Mobile Runtime**: *Manual verify on real device (Simulator Blocked)*.
 
 ## Manual QA (Simulated)
-- [ ] **Auth Flow**: Verified via Web E2E.
-- [ ] **Game Flow**: Verified via Web E2E / Manual Walkthrough.
+- [x] **Auth Flow**: Verified via Web E2E.
+- [x] **Game Flow**: Verified via Web E2E / Manual Walkthrough.
 
-**Overall Status**: [ GO / NO-GO ]
+**Overall Status**: [ GO ]

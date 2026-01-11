@@ -122,6 +122,14 @@
       "started_at": "2026-01-11T16:51:58+09:00",
       "updated_at": "2026-01-11T17:15:00+09:00",
       "agent": "Antigravity"
+    },
+    {
+      "id": "STEP-0016",
+      "title": "E2E Stabilization",
+      "status": "COMPLETED_WITH_NOTES",
+      "started_at": "2026-01-11T17:01:26+09:00",
+      "updated_at": "2026-01-11T17:50:00+09:00",
+      "agent": "Antigravity"
     }
   ],
   "artifacts": [

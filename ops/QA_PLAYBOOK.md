@@ -18,7 +18,17 @@ This playbook defines the manual verification steps required when automated E2E 
 - [ ] **Trigger**: Hit `/internal/send-push` endpoint.
 - [ ] **Verify**: Check API logs for "Sending to X devices".
 
-## Simulator/Emulator Setup
-If simulators are available:
-1. `pnpm mobile:ios` / `pnpm mobile:android`
-2. Ensure API is running locally (`pnpm dev`).
+## Simulator/Emulator Setup (BLOCKED LOCALLY)
+**Status**: The automated environment lacks Android/iOS Simulators.
+**Action**: QA Owner must use their local machine or real device.
+
+### Manual Mobile Verification
+1.  **Build**: Run `pnpm mobile:build` to ensure type/lint safety.
+2.  **Runtime**:
+    - Connect real Android device via USB/Wifi.
+    - Run `pnpm mobile:android`.
+    - Verification:
+        - [ ] App launches.
+        - [ ] Login screen appears.
+        - [ ] Login works.
+

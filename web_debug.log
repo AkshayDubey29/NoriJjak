@@ -1,0 +1,53 @@
+
+> @norijjak/web@0.1.0 dev /Users/tapasyadubey/Documents/GitHub/NoriJjak/apps/web
+> next dev
+
+   ▲ Next.js 14.1.0
+   - Local:        http://localhost:3000
+
+npm warn Unknown env config "recursive". This will stop working in the next major version of npm.
+npm warn Unknown env config "verify-deps-before-run". This will stop working in the next major version of npm.
+npm warn Unknown env config "_jsr-registry". This will stop working in the next major version of npm.
+ ✓ Ready in 1642ms
+ ○ Compiling / ...
+ ⨯ ./src/app/page.tsx:5:0
+Module not found: Can't resolve 'lucide-react'
+[0m [90m 3 |[39m [36mimport[39m { useState } [36mfrom[39m [32m'react'[39m[33m;[39m[0m
+[0m [90m 4 |[39m [36mimport[39m { [33mTRANSLATIONS[39m[33m,[39m [33mLocale[39m } [36mfrom[39m [32m'@norijjak/shared'[39m[33m;[39m[0m
+[0m[31m[1m>[22m[39m[90m 5 |[39m [36mimport[39m { [33mShare2[39m[33m,[39m [33mGlobe[39m } [36mfrom[39m [32m'lucide-react'[39m[33m;[39m[0m
+[0m [90m 6 |[39m[0m
+[0m [90m 7 |[39m [36mexport[39m [36mdefault[39m [36mfunction[39m [33mHome[39m() {[0m
+[0m [90m 8 |[39m   [36mconst[39m [locale[33m,[39m setLocale] [33m=[39m useState[33m<[39m[33mLocale[39m[33m>[39m([32m'ko-KR'[39m)[33m;[39m[0m
+
+https://nextjs.org/docs/messages/module-not-found
+ ⨯ ./src/app/page.tsx:5:0
+Module not found: Can't resolve 'lucide-react'
+[0m [90m 3 |[39m [36mimport[39m { useState } [36mfrom[39m [32m'react'[39m[33m;[39m[0m
+[0m [90m 4 |[39m [36mimport[39m { [33mTRANSLATIONS[39m[33m,[39m [33mLocale[39m } [36mfrom[39m [32m'@norijjak/shared'[39m[33m;[39m[0m
+[0m[31m[1m>[22m[39m[90m 5 |[39m [36mimport[39m { [33mShare2[39m[33m,[39m [33mGlobe[39m } [36mfrom[39m [32m'lucide-react'[39m[33m;[39m[0m
+[0m [90m 6 |[39m[0m
+[0m [90m 7 |[39m [36mexport[39m [36mdefault[39m [36mfunction[39m [33mHome[39m() {[0m
+[0m [90m 8 |[39m   [36mconst[39m [locale[33m,[39m setLocale] [33m=[39m useState[33m<[39m[33mLocale[39m[33m>[39m([32m'ko-KR'[39m)[33m;[39m[0m
+
+https://nextjs.org/docs/messages/module-not-found
+ ⨯ ./src/app/page.tsx:5:0
+Module not found: Can't resolve 'lucide-react'
+[0m [90m 3 |[39m [36mimport[39m { useState } [36mfrom[39m [32m'react'[39m[33m;[39m[0m
+[0m [90m 4 |[39m [36mimport[39m { [33mTRANSLATIONS[39m[33m,[39m [33mLocale[39m } [36mfrom[39m [32m'@norijjak/shared'[39m[33m;[39m[0m
+[0m[31m[1m>[22m[39m[90m 5 |[39m [36mimport[39m { [33mShare2[39m[33m,[39m [33mGlobe[39m } [36mfrom[39m [32m'lucide-react'[39m[33m;[39m[0m
+[0m [90m 6 |[39m[0m
+[0m [90m 7 |[39m [36mexport[39m [36mdefault[39m [36mfunction[39m [33mHome[39m() {[0m
+[0m [90m 8 |[39m   [36mconst[39m [locale[33m,[39m setLocale] [33m=[39m useState[33m<[39m[33mLocale[39m[33m>[39m([32m'ko-KR'[39m)[33m;[39m[0m
+
+https://nextjs.org/docs/messages/module-not-found
+ ⨯ ./src/app/page.tsx:5:0
+Module not found: Can't resolve 'lucide-react'
+[0m [90m 3 |[39m [36mimport[39m { useState } [36mfrom[39m [32m'react'[39m[33m;[39m[0m
+[0m [90m 4 |[39m [36mimport[39m { [33mTRANSLATIONS[39m[33m,[39m [33mLocale[39m } [36mfrom[39m [32m'@norijjak/shared'[39m[33m;[39m[0m
+[0m[31m[1m>[22m[39m[90m 5 |[39m [36mimport[39m { [33mShare2[39m[33m,[39m [33mGlobe[39m } [36mfrom[39m [32m'lucide-react'[39m[33m;[39m[0m
+[0m [90m 6 |[39m[0m
+[0m [90m 7 |[39m [36mexport[39m [36mdefault[39m [36mfunction[39m [33mHome[39m() {[0m
+[0m [90m 8 |[39m   [36mconst[39m [locale[33m,[39m setLocale] [33m=[39m useState[33m<[39m[33mLocale[39m[33m>[39m([32m'ko-KR'[39m)[33m;[39m[0m
+
+https://nextjs.org/docs/messages/module-not-found
+[?25h
