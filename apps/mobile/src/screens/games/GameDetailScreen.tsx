@@ -19,7 +19,7 @@ export default function GameDetailScreen() {
   const [inputToken, setInputToken] = useState('');
 
   const fetchGame = async () => {
-    fetch(`http://localhost:4000/games/${id}`)
+    fetch(`http://10.0.2.2:4000/games/${id}`)
       .then(res => res.json())
       .then(data => {
         setGame(data.game);
@@ -34,7 +34,7 @@ export default function GameDetailScreen() {
   const handleJoin = async () => {
     try {
       const token = await AsyncStorage.getItem('@token');
-      const res = await fetch(`http://localhost:4000/games/${id}/join`, {
+      const res = await fetch(`http://10.0.2.2:4000/games/${id}/join`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
         body: JSON.stringify({ inviteToken: inputToken })
@@ -51,7 +51,7 @@ export default function GameDetailScreen() {
   const handleAction = async (participantId: string, action: 'approve' | 'deny') => {
     try {
       const token = await AsyncStorage.getItem('@token');
-      const res = await fetch(`http://localhost:4000/games/${id}/participants/${participantId}/${action}`, {
+      const res = await fetch(`http://10.0.2.2:4000/games/${id}/participants/${participantId}/${action}`, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${token}` }
       });
@@ -67,7 +67,7 @@ export default function GameDetailScreen() {
   const generateInvite = async () => {
     try {
       const token = await AsyncStorage.getItem('@token');
-      const res = await fetch(`http://localhost:4000/games/${id}/invites`, {
+      const res = await fetch(`http://10.0.2.2:4000/games/${id}/invites`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
         body: JSON.stringify({ maxUses: 5 })

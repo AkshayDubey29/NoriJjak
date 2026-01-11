@@ -1,16 +1,47 @@
 export const Theme = {
   colors: {
-    primary: '#4f46e5', // Indigo 600
-    primaryForeground: '#ffffff',
-    secondary: '#0f172a', // Slate 900
-    background: '#f8fafc', // Slate 50
-    surface: '#ffffff',
-    border: '#e2e8f0', // Slate 200
-    muted: '#94a3b8', // Slate 400
-    destructive: '#ef4444', // Red 500
-    success: '#10b981', // Emerald 500
+    // Brand Colors
+    brand: {
+      primary: '#4f46e5', // Indigo 600
+      secondary: '#0f172a', // Slate 900
+      accent: '#10b981', // Emerald 500
+    },
     
+    // Semantic Colors
+    primary: '#4f46e5',
+    primaryForeground: '#ffffff',
+    secondary: '#0f172a',
+    secondaryForeground: '#ffffff',
+    background: '#f8fafc',
+    surface: '#ffffff',
+    surfaceSecondary: '#f1f5f9',
+    border: '#e2e8f0',
+    input: '#e2e8f0',
+    ring: '#4f46e5',
+    muted: '#94a3b8',
+    mutedForeground: '#64748b',
+    destructive: '#ef4444',
+    destructiveForeground: '#ffffff',
+    success: '#10b981',
+    successForeground: '#ffffff',
+    warning: '#f59e0b',
+    warningForeground: '#ffffff',
+    info: '#3b82f6',
+    infoForeground: '#ffffff',
+
     // Extended Palette
+    blue: {
+      50: '#eff6ff',
+      100: '#dbeafe',
+      200: '#bfdbfe',
+      300: '#93c5fd',
+      400: '#60a5fa',
+      500: '#3b82f6',
+      600: '#2563eb',
+      700: '#1d4ed8',
+      800: '#1e40af',
+      900: '#1e3a8a',
+    },
     slate: {
       50: '#f8fafc',
       100: '#f1f5f9',
@@ -23,15 +54,17 @@ export const Theme = {
       800: '#1e293b',
       900: '#0f172a',
     },
-    blue: {
-      50: '#eff6ff',
-      500: '#3b82f6',
-      600: '#2563eb',
-    },
     indigo: {
       50: '#eef2ff',
+      100: '#e0e7ff',
+      200: '#c7d2fe',
+      300: '#a5b4fc',
+      400: '#818cf8',
       500: '#6366f1',
       600: '#4f46e5',
+      700: '#4338ca',
+      800: '#3730a3',
+      900: '#312e81',
     },
     emerald: {
       50: '#ecfdf5',
@@ -50,14 +83,20 @@ export const Theme = {
     },
   },
   spacing: {
+    '3xs': 1,
+    '2xs': 2,
     xs: 4,
     sm: 8,
     md: 16,
     lg: 24,
     xl: 32,
     xxl: 48,
+    '3xl': 64,
+    '4xl': 80,
   },
   radius: {
+    none: 0,
+    xs: 2,
     sm: 4,
     md: 8,
     lg: 12,
@@ -67,27 +106,64 @@ export const Theme = {
     full: 9999,
   },
   typography: {
-    h1: { fontSize: 32, fontWeight: '700' as const, letterSpacing: -0.5 },
-    h2: { fontSize: 24, fontWeight: '700' as const, letterSpacing: -0.4 },
-    subtitle: { fontSize: 18, fontWeight: '600' as const },
-    body: { fontSize: 16, fontWeight: '400' as const },
-    caption: { fontSize: 13, fontWeight: '400' as const },
-    label: { fontSize: 14, fontWeight: '600' as const },
+    h1: { fontSize: 34, fontWeight: '800' as const, letterSpacing: -1, lineHeight: 42 },
+    h2: { fontSize: 26, fontWeight: '700' as const, letterSpacing: -0.5, lineHeight: 34 },
+    h3: { fontSize: 22, fontWeight: '700' as const, letterSpacing: -0.3, lineHeight: 30 },
+    subtitle: { fontSize: 18, fontWeight: '600' as const, lineHeight: 26 },
+    body: { fontSize: 16, fontWeight: '400' as const, lineHeight: 24 },
+    bodyMedium: { fontSize: 16, fontWeight: '500' as const, lineHeight: 24 },
+    bodyBold: { fontSize: 16, fontWeight: '600' as const, lineHeight: 24 },
+    bodySmall: { fontSize: 14, fontWeight: '400' as const, lineHeight: 20 },
+    bodySmallMedium: { fontSize: 14, fontWeight: '500' as const, lineHeight: 20 },
+    bodySmallBold: { fontSize: 14, fontWeight: '700' as const, lineHeight: 20 },
+    caption: { fontSize: 12, fontWeight: '500' as const, lineHeight: 16 },
+    label: { fontSize: 12, fontWeight: '600' as const, lineHeight: 16, textTransform: 'uppercase' as const, letterSpacing: 0.8 },
   },
   shadows: {
+    none: { elevation: 0, shadowOpacity: 0 },
+    xs: {
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 1 },
+      shadowOpacity: 0.04,
+      shadowRadius: 1.5,
+      elevation: 1,
+    },
     sm: {
       shadowColor: '#000',
       shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.05,
-      shadowRadius: 4,
+      shadowOpacity: 0.06,
+      shadowRadius: 3,
       elevation: 2,
     },
     md: {
       shadowColor: '#000',
-      shadowOffset: { width: 0, height: 8 },
+      shadowOffset: { width: 0, height: 4 },
       shadowOpacity: 0.1,
-      shadowRadius: 12,
+      shadowRadius: 6,
       elevation: 4,
     },
+    lg: {
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 8 },
+      shadowOpacity: 0.12,
+      shadowRadius: 12,
+      elevation: 8,
+    },
+    xl: {
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 12 },
+      shadowOpacity: 0.16,
+      shadowRadius: 16,
+      elevation: 12,
+    },
+  },
+  timing: {
+    fast: 150,
+    normal: 250,
+    slow: 400,
+    spring: {
+      damping: 20,
+      stiffness: 90,
+    }
   }
 };

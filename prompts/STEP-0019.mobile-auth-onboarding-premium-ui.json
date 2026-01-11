@@ -1,0 +1,294 @@
+{
+  "prompt_meta": {
+    "prompt_id": "STEP-0019",
+    "title": "Mobile Premium UI Module 1: Design System + Auth + Onboarding (ONLY) with Evidence",
+    "created_by": "ChatGPT",
+    "executed_by": "__IDE_AGENT__",
+    "timezone": "Asia/Seoul",
+    "product_identity": {
+      "name_ko_one_word": "놀이짝",
+      "name_en": "NoriJjak",
+      "primary_locales": ["ko-KR", "en-US"],
+      "quality_bar": "Best-in-class Korean consumer app UI (premium, intuitive, comfortable)"
+    },
+    "links": {
+      "manifest_path": "ops/manifest.json",
+      "report_path": "reports/STEP-0019.report.json",
+      "evidence_dir": "reports/assets/STEP-0019/"
+    },
+    "repo": {
+      "git_remote_name": "origin",
+      "default_branch": "main",
+      "push_required": true
+    }
+  },
+
+  "non_negotiable_rules": {
+    "implementation_autonomy": true,
+    "chatgpt_does_not_instruct_code": true,
+    "no_scope_creep": true,
+    "module_by_module_only": true,
+    "this_step_modules_allowed": ["MOBILE_AUTH", "MOBILE_ONBOARDING", "MOBILE_UI_FOUNDATION"],
+    "do_not_touch_other_modules": true,
+
+    "no_skipping_tests": true,
+    "all_user_visible_text_localized": true,
+    "must_not_commit_secrets": true,
+    "always_update_manifest": true,
+    "always_write_report": true,
+    "report_must_have_no_placeholders": true,
+
+    "executor_must_not_delegate_actions_to_owner": true,
+    "owner_must_not_be_asked_to_run_commands": true,
+
+    "must_capture_visual_evidence": true,
+    "must_push_to_github": true,
+
+    "ui_must_feel_premium": true,
+    "must_have_loading_error_empty_states": true,
+    "must_have_accessibility_basics": true,
+    "must_have_microinteractions": true,
+    "must_have_consistent_design_tokens": true
+  },
+
+  "owner_actions": [
+    {
+      "id": "OWNER-STEP-0019-UI-REVIEW",
+      "when": "after report is ready",
+      "instruction": "Review screenshots only and respond with: APPROVE_UI or UI_CHANGES_REQUESTED (bullets). No command execution.",
+      "expected_output": "APPROVE_UI or UI_CHANGES_REQUESTED"
+    }
+  ],
+
+  "step_objectives": {
+    "goal": "Make Mobile Auth + Onboarding look and feel premium, modern, and intuitive using a real design system. Do NOT redesign Games/Clubs/Venues yet.",
+    "outcomes": [
+      "A mobile design system foundation (tokens + reusable components) that can be reused by future modules",
+      "Premium Auth screens (Login/Signup/Forgot/Logout states as applicable) with polished UX",
+      "Premium Onboarding flow with progress, clear steps, and friendly guidance",
+      "Loading, error, and empty states for Auth/Onboarding API interactions",
+      "Evidence screenshots from Android emulator showing the UI quality",
+      "All gates pass and changes pushed to GitHub main"
+    ],
+    "constraints": [
+      "No new backend features. Minor API/UI fixes allowed only if required for Auth/Onboarding UX correctness.",
+      "Do not change Games/Clubs/Venues/Chat/Notifications/Profile UI in this step except minimal compile fixes."
+    ],
+    "definition_of_done": [
+      "Mobile design tokens exist and are applied across Auth + Onboarding",
+      "Auth + Onboarding screens look premium (not scaffolding) and are comfortable to use",
+      "Android emulator screenshots prove the new UI",
+      "pnpm -r lint/test/build pass",
+      "Git push to main completed"
+    ]
+  },
+
+  "module_scope_definition": {
+    "allowed_to_modify": [
+      "apps/mobile (theme, UI components, auth screens, onboarding screens, navigation only as needed for auth/onboarding)",
+      "packages/shared (translation keys only, no unrelated edits)",
+      "ops docs (design system notes and UI module docs)"
+    ],
+    "must_not_modify": [
+      "apps/web (no changes in this step)",
+      "apps/api (unless absolutely required for auth/onboarding correctness; if changed, must be minimal and documented)",
+      "games/clubs/venues/chat/notifications/profile mobile screens (except minimal compile fixes)"
+    ]
+  },
+
+  "premium_ui_requirements": {
+    "design_system_foundation": {
+      "must_have_tokens": [
+        "colors (semantic + brand)",
+        "typography scale",
+        "spacing scale",
+        "radii",
+        "elevation/shadows",
+        "borders/dividers",
+        "motion timings"
+      ],
+      "must_have_reusable_components": [
+        "ScreenContainer",
+        "PrimaryButton / SecondaryButton / GhostButton",
+        "TextInput (with label, helper, error)",
+        "Card",
+        "Chip/Tag (for sport selection)",
+        "Avatar",
+        "Badge",
+        "Toast/Snackbar",
+        "Modal/BottomSheet (IDE choice)",
+        "Skeleton loader",
+        "EmptyState",
+        "ErrorState (with retry)"
+      ],
+      "ux_basics": [
+        "large tap targets",
+        "keyboard handling",
+        "safe area handling",
+        "disabled states for buttons",
+        "inline validation",
+        "friendly error copy",
+        "consistent spacing and typography across screens"
+      ]
+    },
+
+    "auth_module_requirements": {
+      "screens": [
+        "Login",
+        "Signup",
+        "Forgot Password (if exists) OR a premium placeholder with clear copy if not supported",
+        "Logged-in state (profile shortcut or redirect behavior) must feel smooth"
+      ],
+      "must_have": [
+        "progress indicators during network calls",
+        "error banner/toast on failure",
+        "password visibility toggle",
+        "email/password validation",
+        "clear CTA hierarchy",
+        "localized text only"
+      ]
+    },
+
+    "onboarding_module_requirements": {
+      "ux_pattern": "multi-step onboarding with progress indicator (stepper or progress bar)",
+      "steps_minimum": [
+        "Welcome/intro",
+        "Choose sports (chips + search)",
+        "Skill level per sport (simple, clean UI)",
+        "Home area selection",
+        "Confirmation screen"
+      ],
+      "must_have": [
+        "save progress robustly (resume after restart)",
+        "clear back/next behavior",
+        "validation + disable next until valid",
+        "loading state when saving",
+        "success completion animation or premium transition (lightweight)"
+      ]
+    },
+
+    "accessibility_basics": [
+      "readable contrast",
+      "consistent font sizes",
+      "screen reader labels on primary interactive elements",
+      "focus/active feedback on press"
+    ],
+
+    "microinteractions": [
+      "subtle press animations",
+      "smooth screen transitions",
+      "skeletons for loading instead of blank screens",
+      "toasts for success actions"
+    ]
+  },
+
+  "proof_and_evidence_requirements": {
+    "android_emulator_required": true,
+    "evidence_assets_required": [
+      "At least 14 Android screenshots showing: Login, Signup, Loading, Error, Onboarding step 1-5, Success completion, Resume onboarding after restart",
+      "At least 1 screenshot showing emulator running (AVD name visible in some form or documented)",
+      "Short logs proving commands executed (stdout_tail in report)"
+    ],
+    "evidence_storage_rule": "All screenshots/logs must be stored under reports/assets/STEP-0019/ and referenced in report."
+  },
+
+  "execution_plan_for_ide": {
+    "workflow": "sequential",
+    "tasks": [
+      {
+        "id": "T1",
+        "name": "Create mobile design system foundation",
+        "objective": "Implement tokens + reusable components required for premium UI and apply them to Auth/Onboarding only.",
+        "constraints": ["No redesign of other modules"],
+        "acceptance": ["Tokens + components exist and are used in Auth/Onboarding screens"]
+      },
+      {
+        "id": "T2",
+        "name": "Upgrade Auth screens to premium UI",
+        "objective": "Rewrite Auth screens using the design system with validation, loading/error states, and premium layout.",
+        "constraints": ["All strings localized"],
+        "acceptance": ["Screens look premium; auth flow still works"]
+      },
+      {
+        "id": "T3",
+        "name": "Upgrade Onboarding screens to premium UI",
+        "objective": "Make onboarding a multi-step guided flow with progress indicator, validation, resume support, and premium transitions.",
+        "constraints": ["No new backend features; minimal fixes only if needed"],
+        "acceptance": ["Onboarding feels guided and polished; gating still works"]
+      },
+      {
+        "id": "T4",
+        "name": "Run Android emulator + capture screenshots evidence",
+        "objective": "Boot emulator, run the app, navigate through Auth + Onboarding, capture required screenshots.",
+        "constraints": ["Owner does nothing"],
+        "acceptance": ["Evidence assets saved and referenced in report"]
+      },
+      {
+        "id": "T5",
+        "name": "Quality gates + push to GitHub",
+        "objective": "Run integrity/lint/test/build, fix issues, commit and push to main.",
+        "constraints": ["No skipping gates"],
+        "acceptance": ["All gates pass; push evidence included"]
+      }
+    ],
+    "checks_to_run_before_finish": [
+      { "name": "integrity", "cmd": "pnpm -r integrity", "must_pass": true },
+      { "name": "lint", "cmd": "pnpm -r lint", "must_pass": true },
+      { "name": "test", "cmd": "pnpm -r test", "must_pass": true },
+      { "name": "build", "cmd": "pnpm -r build", "must_pass": true }
+    ]
+  },
+
+  "report_contract": {
+    "report_path": "reports/STEP-0019.report.json",
+    "report_schema": {
+      "step_id": "STEP-0019",
+      "status": "COMPLETED|COMPLETED_WITH_NOTES|BLOCKED|FAILED",
+      "summary": "string",
+      "major_decisions": [
+        { "area": "string", "decision": "string", "reason": "string", "tradeoffs": "string" }
+      ],
+      "commands_run": [
+        { "cmd": "string", "cwd": "string", "exit_code": 0, "stdout_tail": "string", "stderr_tail": "string" }
+      ],
+      "ui_module_scope_confirmation": {
+        "touched_modules": ["string"],
+        "confirmed_no_other_module_redesign": true,
+        "notes": "string"
+      },
+      "ui_evidence": {
+        "android_emulator": { "ran": true, "avd_name": "string", "evidence_notes": "string" },
+        "screenshots": ["string"],
+        "notes": "string"
+      },
+      "acceptance_checklist": [
+        { "requirement": "Design tokens + reusable components exist", "met": true, "evidence": "string" },
+        { "requirement": "Auth UI premium with validation/loading/error/toasts", "met": true, "evidence": "string" },
+        { "requirement": "Onboarding premium multi-step with progress + resume", "met": true, "evidence": "string" },
+        { "requirement": "All strings localized", "met": true, "evidence": "string" },
+        { "requirement": "Gates pass", "met": true, "evidence": "string" }
+      ],
+      "files_changed": [
+        { "path": "string", "change_type": "created|modified|deleted" }
+      ],
+      "git_push": {
+        "origin": "string",
+        "branch": "string",
+        "pushed_commit": "string",
+        "push_evidence": "string"
+      },
+      "errors": [
+        { "where": "string", "error": "string", "how_fixed_or_next_steps": "string" }
+      ],
+      "manifest_update": {
+        "path": "ops/manifest.json",
+        "final_status_written": "string",
+        "updated_at_written": "string"
+      },
+      "next_recommendations": ["string"]
+    }
+  },
+
+  "final_instruction_to_ide": "Execute this prompt exactly. Do NOT redesign multiple modules. Only create a premium mobile design system foundation and rebuild Auth + Onboarding UI to best-in-class quality. Capture Android emulator screenshots as proof. Keep localization correct, run all gates, push to GitHub main, update ops/manifest.json, and write reports/STEP-0019.report.json with no placeholders."
+}
+

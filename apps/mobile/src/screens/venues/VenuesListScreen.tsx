@@ -15,7 +15,7 @@ export default function VenuesListScreen() {
 
   const fetchVenues = (search: string = '', showLoading = true) => {
     if (showLoading) setLoading(true);
-    const url = new URL('http://localhost:4000/venues');
+    const url = new URL('http://10.0.2.2:4000/venues');
     if (search) url.searchParams.append('query', search);
     
     fetch(url.toString())

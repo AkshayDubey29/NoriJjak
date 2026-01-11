@@ -80,7 +80,8 @@ function scanDir(dir) {
       if (buffer.includes(0)) {
         // Allow images/binary extensions
         const ext = path.extname(fullPath).toLowerCase();
-        if (!['.png', '.jpg', '.jpeg', '.gif', '.ico', '.woff', '.woff2', '.ttf'].includes(ext)) {
+        const binaryExtensions = ['.png', '.jpg', '.jpeg', '.gif', '.ico', '.woff', '.woff2', '.ttf', '.webp', '.keystore', '.jar', '.zip', '.exe', '.dll', '.so'];
+        if (!binaryExtensions.includes(ext)) {
            error(`Null byte detected in text file: ${relPath}`);
         }
       }

@@ -41,7 +41,7 @@ export class NotificationService {
     // For simplicity, we assume client sends full object or we merge here.
     // Let's use upsert.
     
-    return prisma.notificationPreferences.upsert({
+    return prisma.notificationPreference.upsert({
       where: { userId },
       update: {
         ...data,
@@ -61,7 +61,7 @@ export class NotificationService {
    * Get preferences
    */
   static async getPreferences(userId: string) {
-    const prefs = await prisma.notificationPreferences.findUnique({
+    const prefs = await prisma.notificationPreference.findUnique({
       where: { userId },
     });
     
@@ -80,7 +80,7 @@ export class NotificationService {
   /**
    * Send a push notification (Mock/Stub).
    */
-  static async sendPush(userId: string, type: string, payload: any) {
+  static async sendPush(userId: string, type: string, payload: Record<string, unknown>) {
     // 1. Check preferences
     const prefs = await this.getPreferences(userId);
     const types = prefs.typesEnabled as Record<string, boolean>;

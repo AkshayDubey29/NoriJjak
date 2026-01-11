@@ -22,7 +22,7 @@ export default function RatingForm({ gameId, targetUserId, targetVenueId, target
     setLoading(true);
     try {
       const token = await AsyncStorage.getItem('accessToken');
-      const res = await fetch('http://localhost:4000/ratings', {
+      const res = await fetch('http://10.0.2.2:4000/ratings', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

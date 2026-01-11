@@ -14,12 +14,13 @@ interface AuthContextType {
   loading: boolean;
   login: (token: string, user: User) => Promise<void>;
   logout: () => Promise<void>;
+  setUser: (user: User | null) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setInternalUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -36,17 +37,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const login = async (token: string, user: User) => {
     await AsyncStorage.setItem('@token', token);
     await AsyncStorage.setItem('@user', JSON.stringify(user));
-    setUser(user);
+    setInternalUser(user);
   };
 
   const logout = async () => {
     await AsyncStorage.removeItem('@token');
     await AsyncStorage.removeItem('@user');
-    setUser(null);
+    setInternalUser(null);
+  };
+
+  const setUser = async (user: User | null) => {
+    if (user) {
+      await AsyncStorage.setItem('@user', JSON.stringify(user));
+    } else {
+      await AsyncStorage.removeItem('@user');
+    }
+    setInternalUser(user);
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout }}>
+    <AuthContext.Provider value={{ user, loading, login, logout, setUser }}>
       {children}
     </AuthContext.Provider>
   );

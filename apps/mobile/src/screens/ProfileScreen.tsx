@@ -16,7 +16,7 @@ export default function ProfileScreen({ locale, setLocale }: { locale: Locale, s
   
   useEffect(() => {
     if (user) {
-      fetch(`http://localhost:4000/ratings/summary/user/${user.id}`)
+      fetch(`http://10.0.2.2:4000/ratings/summary/user/${user.id}`)
         .then(res => res.json())
         .then(data => setReputation(data))
         .catch(() => {});

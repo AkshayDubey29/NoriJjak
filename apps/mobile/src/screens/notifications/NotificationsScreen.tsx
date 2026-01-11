@@ -16,7 +16,7 @@ export default function NotificationsScreen() {
   const fetchNotifications = async (showLoading = true) => {
     if (showLoading) setLoading(true);
     const token = await AsyncStorage.getItem('@token');
-    fetch('http://localhost:4000/notifications', {
+    fetch('http://10.0.2.2:4000/notifications', {
       headers: { 'Authorization': `Bearer ${token}` }
     })
       .then(res => res.json())
@@ -42,7 +42,7 @@ export default function NotificationsScreen() {
 
   const markRead = async (id: string) => {
     const token = await AsyncStorage.getItem('@token');
-    await fetch(`http://localhost:4000/notifications/${id}/read`, {
+    await fetch(`http://10.0.2.2:4000/notifications/${id}/read`, {
       method: 'PUT',
       headers: { 'Authorization': `Bearer ${token}` }
     });

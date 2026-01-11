@@ -16,7 +16,7 @@ export default function GameChat({ gameId }: { gameId: string }) {
   const fetchMessages = async () => {
     try {
       const token = await AsyncStorage.getItem('accessToken');
-      const res = await fetch(`http://localhost:4000/games/${gameId}/chat`, {
+      const res = await fetch(`http://10.0.2.2:4000/games/${gameId}/chat`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (!res.ok) throw new Error('Not eligible');
@@ -39,7 +39,7 @@ export default function GameChat({ gameId }: { gameId: string }) {
     if (!input.trim()) return;
     try {
       const token = await AsyncStorage.getItem('accessToken');
-      const res = await fetch(`http://localhost:4000/games/${gameId}/chat`, {
+      const res = await fetch(`http://10.0.2.2:4000/games/${gameId}/chat`, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
@@ -61,7 +61,7 @@ export default function GameChat({ gameId }: { gameId: string }) {
       { text: 'Cancel', style: 'cancel' },
       { text: t.chat.block_user, style: 'destructive', onPress: async () => {
         const token = await AsyncStorage.getItem('accessToken');
-        await fetch(`http://localhost:4000/safety/block/${senderId}`, {
+        await fetch(`http://10.0.2.2:4000/safety/block/${senderId}`, {
           method: 'POST',
           headers: { 'Authorization': `Bearer ${token}` }
         });

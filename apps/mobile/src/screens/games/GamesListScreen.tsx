@@ -17,7 +17,7 @@ export default function GamesListScreen() {
 
   const fetchGames = (currentCursor: string | null = null, isInitial = false) => {
     if (isInitial) setLoading(true);
-    const url = new URL('http://localhost:4000/games');
+    const url = new URL('http://10.0.2.2:4000/games');
     if (currentCursor) url.searchParams.append('cursor', currentCursor);
     url.searchParams.append('limit', '10');
 

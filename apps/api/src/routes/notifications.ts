@@ -12,8 +12,8 @@ router.post('/device', authenticate, async (req: AuthRequest, res: Response) => 
     
     const result = await NotificationService.registerDevice(req.user!.id, token, platform);
     res.json(result);
-  } catch (err: any) {
-    res.status(500).json({ error: err.message });
+  } catch (err: unknown) {
+    res.status(500).json({ error: err instanceof Error ? err.message : 'Unknown error' });
   }
 });
 
@@ -22,8 +22,8 @@ router.get('/preferences', authenticate, async (req: AuthRequest, res: Response)
   try {
     const prefs = await NotificationService.getPreferences(req.user!.id);
     res.json(prefs);
-  } catch (err: any) {
-    res.status(500).json({ error: err.message });
+  } catch (err: unknown) {
+    res.status(500).json({ error: err instanceof Error ? err.message : 'Unknown error' });
   }
 });
 
@@ -32,8 +32,8 @@ router.put('/preferences', authenticate, async (req: AuthRequest, res: Response)
   try {
     const result = await NotificationService.updatePreferences(req.user!.id, req.body);
     res.json(result);
-  } catch (err: any) {
-     res.status(500).json({ error: err.message });
+  } catch (err: unknown) {
+     res.status(500).json({ error: err instanceof Error ? err.message : 'Unknown error' });
   }
 });
 
@@ -44,8 +44,8 @@ router.post('/internal/send-push', async (req, res) => {
     const { userId, type, payload } = req.body;
     const result = await NotificationService.sendPush(userId, type, payload);
     res.json(result);
-  } catch (err: any) {
-    res.status(500).json({ error: err.message });
+  } catch (err: unknown) {
+    res.status(500).json({ error: err instanceof Error ? err.message : 'Unknown error' });
   }
 });
 

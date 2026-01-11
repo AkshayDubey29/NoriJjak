@@ -11,7 +11,7 @@ export default function VenueDetailScreen() {
   const t = TRANSLATIONS['ko-KR'];
 
   useEffect(() => {
-    fetch(`http://localhost:4000/venues/${id}`)
+    fetch(`http://10.0.2.2:4000/venues/${id}`)
       .then(res => res.json())
       .then(data => {
         setVenue(data.venue);

@@ -10,7 +10,7 @@ export async function sendNotification(
       data: {
         userId,
         type,
-        payload: payload as any,
+        payload: payload as Record<string, unknown>,
       },
     });
   } catch (error) {

@@ -14,7 +14,7 @@ export default function ClubDetailScreen() {
   const t = TRANSLATIONS['ko-KR'];
 
   const fetchClub = () => {
-    fetch(`http://localhost:4000/clubs/${id}`)
+    fetch(`http://10.0.2.2:4000/clubs/${id}`)
       .then(res => res.json())
       .then(data => {
         setClub(data.club);
@@ -29,7 +29,7 @@ export default function ClubDetailScreen() {
   const handleJoin = async () => {
     try {
       const token = await AsyncStorage.getItem('accessToken');
-      const res = await fetch(`http://localhost:4000/clubs/${id}/join`, {
+      const res = await fetch(`http://10.0.2.2:4000/clubs/${id}/join`, {
         method: 'POST',
         headers: { 
           'Authorization': `Bearer ${token}`

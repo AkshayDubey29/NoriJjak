@@ -4,6 +4,10 @@ import App from './App';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Mock expo-linking
+jest.mock('@expo/vector-icons', () => ({
+  Ionicons: 'Ionicons',
+}));
+
 jest.mock('expo-linking', () => ({
   createURL: jest.fn(() => 'mock://'),
 }));
@@ -18,11 +22,11 @@ jest.mock('@react-native-async-storage/async-storage', () => ({
 describe('Mobile Auth Flow', () => {
   it('renders login screen when not authenticated', async () => {
     (AsyncStorage.getItem as jest.Mock).mockResolvedValue(null);
-    const { getByText, getByPlaceholderText } = render(<App />);
+    const { getAllByText, getByPlaceholderText } = render(<App />);
     
     await waitFor(() => {
-      expect(getByText(/Login/i)).toBeTruthy();
-      expect(getByPlaceholderText(/Email/i)).toBeTruthy();
+      expect(getAllByText(/로그인/i)[0]).toBeTruthy();
+      expect(getByPlaceholderText(/example@email.com/i)).toBeTruthy();
     });
   });
 });

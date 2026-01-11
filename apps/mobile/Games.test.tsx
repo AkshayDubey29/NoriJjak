@@ -3,6 +3,10 @@ import { render, waitFor } from '@testing-library/react-native';
 import GamesListScreen from './src/screens/games/GamesListScreen';
 import { NavigationContainer } from '@react-navigation/native';
 
+jest.mock('@expo/vector-icons', () => ({
+  Ionicons: 'Ionicons',
+}));
+
 // Mock global fetch
 // @ts-ignore
 global.fetch = jest.fn(() =>
