@@ -90,8 +90,8 @@
   "git_push": {
     "origin": "origin",
     "branch": "main",
-    "pushed_commit": "c4950d4",
-    "push_evidence": "git log main [c4950d4]"
+    "pushed_commit": "3174b3b",
+    "push_evidence": "git push origin main:step-0020/completion [3174b3b]"
   },
   "errors": [],
   "manifest_update": {
