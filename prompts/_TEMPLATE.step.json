@@ -1,0 +1,236 @@
+{
+  "prompt_meta": {
+    "prompt_id": "STEP-000X",
+    "title": "__ONE_LINE_TITLE__",
+    "created_by": "ChatGPT",
+    "executed_by": "__IDE_AGENT__",
+    "timezone": "Asia/Seoul",
+    "product_identity": {
+      "name_ko_one_word": "놀이짝",
+      "name_en": "NoriJjak",
+      "primary_locales": ["ko-KR", "en-US"],
+      "release_policy": "GA_ONLY_FIRST_PUBLIC_RELEASE"
+    },
+    "links": {
+      "manifest_path": "ops/manifest.json",
+      "report_path": "reports/STEP-000X.report.json"
+    }
+  },
+
+  "non_negotiable_rules": {
+    "implementation_autonomy": true,
+    "chatgpt_does_not_instruct_code": true,
+    "ide_chooses_stack_and_patterns": true,
+    "ide_must_document_major_choices": true,
+    "no_scope_creep": true,
+    "no_skipping_tests": true,
+    "all_user_visible_text_localized": true,
+    "always_update_manifest": true,
+    "always_write_report": true,
+    "report_must_have_no_placeholders": true,
+    "executor_must_not_delegate_actions_to_owner": true,
+    "no_public_release_unless_explicitly_allowed": true
+  },
+
+  "owner_actions": [
+    {
+      "id": "OWNER-XXX",
+      "when": "__WHEN__",
+      "instruction": "__APPROVAL_ONLY_ACTION__",
+      "expected_output": "__WHAT_OWNER_WILL_REPLY_WITH__",
+      "must_not_require_execution": true
+    }
+  ],
+
+  "required_repo_contract": {
+    "must_exist_folders": [
+      "prompts",
+      "reports",
+      "ops",
+      "infra",
+      "apps/api",
+      "apps/web",
+      "apps/mobile",
+      "packages/shared"
+    ],
+    "must_exist_files": [
+      "ops/manifest.json",
+      "ops/PROTOCOL.md",
+      "ops/ARCHITECTURE.md",
+      "README.md"
+    ],
+    "source_of_truth_manifest": "ops/manifest.json"
+  },
+
+  "step_objectives": {
+    "goal": "__HIGH_LEVEL_GOAL__",
+    "outcomes": ["__OUTCOME_1__", "__OUTCOME_2__", "__OUTCOME_3__"],
+    "constraints": ["__CONSTRAINT_1__", "__CONSTRAINT_2__"],
+    "definition_of_done": ["__DOD_1__", "__DOD_2__", "__DOD_3__"]
+  },
+
+  "deliverables_outcomes": [
+    {
+      "area": "__AREA_NAME__",
+      "goal": "__AREA_GOAL__",
+      "requirements": ["__REQ_1__", "__REQ_2__"],
+      "acceptance_criteria": ["__VERIFY_1__", "__VERIFY_2__"]
+    }
+  ],
+
+  "execution_plan_for_ide": {
+    "workflow": "sequential",
+
+    "manifest_updates": {
+      "on_start": {
+        "step_id": "STEP-000X",
+        "status": "IN_PROGRESS",
+        "fields_to_update": ["updated_at", "started_at", "agent"]
+      },
+      "on_success": {
+        "status": "COMPLETED",
+        "fields_to_update": ["updated_at", "completed_at", "artifacts", "notes"]
+      },
+      "on_blocked": {
+        "status": "BLOCKED",
+        "fields_to_update": ["updated_at", "notes"]
+      },
+      "on_failed": {
+        "status": "FAILED",
+        "fields_to_update": ["updated_at", "notes"]
+      }
+    },
+
+    "environment_readiness": {
+      "required": false,
+      "checks": [
+        {
+          "name": "tooling_presence",
+          "commands": ["node -v", "pnpm -v", "git --version"],
+          "on_fail": "BLOCKED"
+        }
+      ],
+      "auto_remediation_allowed": true,
+      "rule": "If an environment dependency is missing (e.g., Docker), IDE must attempt to install/start it. If blocked by OS permissions/UI prompts, capture exact details in report and set status=BLOCKED."
+    },
+
+    "required_evidence_to_capture": [
+      "commands_run_with_exit_codes",
+      "tests_run_and_results",
+      "file_changes_list",
+      "key_logs_tail",
+      "major_decisions_and_tradeoffs",
+      "any_environment_actions_taken"
+    ],
+
+    "allowed_behavior": [
+      "IDE chooses frameworks, libraries, patterns, file layout",
+      "IDE may refactor as needed within scope to keep quality",
+      "IDE must document decisions",
+      "IDE may install/start required system dependencies if feasible"
+    ],
+
+    "disallowed_behavior": [
+      "Changing product scope",
+      "Skipping tests",
+      "Returning incomplete report",
+      "Leaving broken build",
+      "Asking owner to run commands"
+    ],
+
+    "tasks": [
+      {
+        "id": "T1",
+        "name": "__TASK_NAME_1__",
+        "objective": "__TASK_OBJECTIVE_1__",
+        "constraints": ["__TASK_CONSTRAINT_1__"],
+        "acceptance": ["__TASK_ACCEPTANCE_1__"]
+      },
+      {
+        "id": "T2",
+        "name": "__TASK_NAME_2__",
+        "objective": "__TASK_OBJECTIVE_2__",
+        "constraints": ["__TASK_CONSTRAINT_2__"],
+        "acceptance": ["__TASK_ACCEPTANCE_2__"]
+      }
+    ],
+
+    "checks_to_run_before_finish": [
+      { "name": "lint", "cmd": "__ROOT_LINT_COMMAND__", "must_pass": true },
+      { "name": "test", "cmd": "__ROOT_TEST_COMMAND__", "must_pass": true },
+      { "name": "build", "cmd": "__ROOT_BUILD_COMMAND__", "must_pass": true }
+    ]
+  },
+
+  "report_contract": {
+    "report_path": "reports/STEP-000X.report.json",
+    "report_schema": {
+      "step_id": "STEP-000X",
+      "status": "COMPLETED|COMPLETED_WITH_NOTES|BLOCKED|FAILED",
+      "summary": "string",
+
+      "environment_readiness": {
+        "os_detected": "string",
+        "dependencies_checked": ["string"],
+        "actions_taken": ["string"],
+        "blocked_reason": "string"
+      },
+
+      "tech_stack_chosen": {
+        "api": "string",
+        "web": "string",
+        "mobile": "string",
+        "db": "string",
+        "cache": "string",
+        "testing": "string",
+        "ci": "string"
+      },
+
+      "major_decisions": [
+        { "area": "string", "decision": "string", "reason": "string", "tradeoffs": "string" }
+      ],
+
+      "commands_run": [
+        { "cmd": "string", "cwd": "string", "exit_code": 0, "stdout_tail": "string", "stderr_tail": "string" }
+      ],
+
+      "tests": [
+        { "name": "string", "cmd": "string", "passed": true, "notes": "string" }
+      ],
+
+      "files_changed": [
+        { "path": "string", "change_type": "created|modified|deleted" }
+      ],
+
+      "artifacts": ["string"],
+
+      "acceptance_checklist": [
+        { "requirement": "string", "met": true, "evidence": "string" }
+      ],
+
+      "errors": [
+        { "where": "string", "error": "string", "how_fixed_or_next_steps": "string" }
+      ],
+
+      "automation_limitations": [
+        {
+          "limitation": "string",
+          "evidence": "string",
+          "required_owner_permission_or_action": "string"
+        }
+      ],
+
+      "manifest_update": {
+        "path": "ops/manifest.json",
+        "final_status_written": "string",
+        "updated_at_written": "string"
+      },
+
+      "next_recommendations": ["string"]
+    },
+    "must_be_filled": true
+  },
+
+  "final_instruction_to_ide": "Execute this prompt exactly. You choose the implementation. Do not delegate any execution to the owner. Update ops/manifest.json and write a complete reports/STEP-000X.report.json that matches report_schema with no placeholders."
+}
+

@@ -1,0 +1,288 @@
+{
+  "prompt_meta": {
+    "prompt_id": "STEP-0003",
+    "title": "Auth + Session Foundation (GA-grade) with FULL executor responsibility (incl. Docker/infra startup)",
+    "created_by": "ChatGPT",
+    "executed_by": "__IDE_AGENT__",
+    "timezone": "Asia/Seoul",
+    "product_identity": {
+      "name_ko_one_word": "놀이짝",
+      "name_en": "NoriJjak",
+      "primary_locales": ["ko-KR", "en-US"],
+      "release_policy": "GA_ONLY_FIRST_PUBLIC_RELEASE"
+    },
+    "links": {
+      "manifest_path": "ops/manifest.json",
+      "report_path": "reports/STEP-0003.report.json"
+    }
+  },
+
+  "non_negotiable_rules": {
+    "implementation_autonomy": true,
+    "chatgpt_does_not_instruct_code": true,
+    "ide_chooses_stack_and_patterns": true,
+    "ide_must_document_major_choices": true,
+    "no_scope_creep": true,
+    "no_skipping_tests": true,
+    "all_user_visible_text_localized": true,
+    "always_update_manifest": true,
+    "always_write_report": true,
+    "report_must_have_no_placeholders": true,
+    "no_payments_no_booking_no_chat_in_this_step": true,
+    "executor_must_not_delegate_actions_to_owner": true
+  },
+
+  "required_repo_contract": {
+    "must_exist_folders": [
+      "prompts",
+      "reports",
+      "ops",
+      "infra",
+      "apps/api",
+      "apps/web",
+      "apps/mobile",
+      "packages/shared"
+    ],
+    "source_of_truth_manifest": "ops/manifest.json"
+  },
+
+  "step_objectives": {
+    "goal": "Build GA-grade authentication and session foundation across API/Web/Mobile with consent tracking and account deletion flows. Executor is responsible for all system actions required (Docker/infra/tools).",
+    "outcomes": [
+      "Executor ensures Docker + infra actually runs (or reports exact automation blocker)",
+      "Secure account creation and login supported end-to-end",
+      "Session model is production-ready (revocation, refresh strategy, expiry, multi-device support)",
+      "User profile stores locale + basic identity fields",
+      "Consent records stored (privacy/terms; location consent placeholder supported)",
+      "Account deletion request flow exists (auditable)"
+    ],
+    "constraints": [
+      "IDE chooses auth approach and must document tradeoffs.",
+      "No social login in this step; only foundation for it later.",
+      "No booking/payments/partner portal/matchmaking/chat."
+    ],
+    "definition_of_done": [
+      "Docker daemon is started by IDE and infra is up OR step is BLOCKED with an un-automatable OS/permission reason captured in report",
+      "API auth endpoints exist and pass automated tests",
+      "Web can login and reach a protected page; tests pass",
+      "Mobile can login and reach a protected screen; tests pass",
+      "Docs exist: ops/AUTH_MODEL.md and ops/SECURITY_NOTES.md",
+      "Manifest updated and report produced"
+    ]
+  },
+
+  "deliverables_outcomes": [
+    {
+      "area": "Environment readiness (executor-owned)",
+      "goal": "IDE must attempt to automatically make the environment runnable.",
+      "requirements": [
+        "Detect OS and attempt to start Docker daemon automatically.",
+        "If Docker is not installed, attempt installation if feasible from command-line/package manager; if installation requires interactive UI/admin approval that cannot be automated, capture it precisely and mark BLOCKED.",
+        "After Docker is running, bring up infra via docker compose."
+      ],
+      "acceptance_criteria": [
+        "Report contains: OS detected, Docker start/install attempts, command outputs, and final status",
+        "If BLOCKED: includes exact blocker (e.g., admin prompt) and what prevented automation"
+      ]
+    },
+    {
+      "area": "API: Authentication & Sessions",
+      "goal": "Production-grade auth core with tests.",
+      "requirements": [
+        "Account creation and login (IDE chooses method).",
+        "Session lifecycle: issue, refresh/renew, logout, revoke (multi-device safe).",
+        "Protected endpoint (/me or equivalent) returning user profile with locale.",
+        "Persist users/sessions/consents in DB.",
+        "Brute-force mitigation for auth endpoints (IDE chooses; document)."
+      ],
+      "acceptance_criteria": [
+        "Automated tests cover signup/login/invalid/refresh/logout/protected access",
+        "Protected endpoints cannot be accessed without valid auth"
+      ]
+    },
+    {
+      "area": "Consent foundation",
+      "goal": "Versioned consent tracking (ready for KR compliance work later).",
+      "requirements": [
+        "Record acceptance of Terms + Privacy Policy during onboarding (timestamped, versioned).",
+        "Placeholder support for location consent tracking (even if device permission not requested yet).",
+        "User can view consent state."
+      ],
+      "acceptance_criteria": [
+        "Consent is enforced before full access",
+        "Consent records are retrievable for authenticated user",
+        "Tests validate consent enforcement"
+      ]
+    },
+    {
+      "area": "Account deletion request",
+      "goal": "Auditable deletion request flow.",
+      "requirements": [
+        "User can request deletion from web + mobile.",
+        "Persist request (timestamp, status).",
+        "Define behavior after request (login/session/access)."
+      ],
+      "acceptance_criteria": [
+        "Tests cover deletion request and post-request behavior",
+        "Behavior documented"
+      ]
+    },
+    {
+      "area": "Web + Mobile Auth UX (localized)",
+      "goal": "KO/EN auth screens wired to API with persistence.",
+      "requirements": [
+        "Localized login flow in web + mobile",
+        "Protected screen/page shows user identity (localized labels)",
+        "Auth persistence across refresh/restart (method chosen by IDE)"
+      ],
+      "acceptance_criteria": [
+        "Web automated test: protected route requires auth",
+        "Mobile automated test: auth persistence logic works headlessly"
+      ]
+    },
+    {
+      "area": "Docs",
+      "goal": "GA-safe documentation of security posture.",
+      "requirements": [
+        "ops/AUTH_MODEL.md: flow, session strategy, expiry, revocation, multi-device, storage approach",
+        "ops/SECURITY_NOTES.md: threat considerations, rate limiting, secrets handling (dev vs prod), future social login plan"
+      ],
+      "acceptance_criteria": [
+        "Docs complete and match implementation choices"
+      ]
+    }
+  ],
+
+  "execution_plan_for_ide": {
+    "workflow": "sequential",
+    "manifest_updates": {
+      "on_start": {
+        "step_id": "STEP-0003",
+        "status": "IN_PROGRESS",
+        "fields_to_update": ["updated_at", "started_at", "agent"]
+      },
+      "on_success": {
+        "status": "COMPLETED",
+        "fields_to_update": ["updated_at", "completed_at", "artifacts", "notes"]
+      },
+      "on_blocked": {
+        "status": "BLOCKED",
+        "fields_to_update": ["updated_at", "notes"]
+      },
+      "on_failed": {
+        "status": "FAILED",
+        "fields_to_update": ["updated_at", "notes"]
+      }
+    },
+    "required_evidence_to_capture": [
+      "os_detected",
+      "docker_install_or_start_attempts_with_outputs",
+      "docker_compose_up_outputs",
+      "api_web_mobile_test_results",
+      "file_changes_list",
+      "major_decisions_and_tradeoffs"
+    ],
+    "prechecks_and_auto_remediations": [
+      {
+        "name": "detect_os",
+        "objective": "Detect OS and shell environment for automation",
+        "acceptance": ["OS recorded in report"]
+      },
+      {
+        "name": "docker_ready",
+        "objective": "Ensure Docker daemon is running without owner involvement",
+        "acceptance": ["docker info succeeds OR report explains un-automatable blocker"]
+      },
+      {
+        "name": "infra_up",
+        "objective": "Start infra via docker compose",
+        "acceptance": ["infra services running OR report explains why not"]
+      }
+    ],
+    "tasks": [
+      {
+        "id": "T1",
+        "name": "Environment readiness automation",
+        "objective": "Start/install Docker if needed and bring infra up",
+        "constraints": ["No delegating to owner"],
+        "acceptance": ["infra is running or BLOCKED with exact reason"]
+      },
+      {
+        "id": "T2",
+        "name": "API auth/session + consent + deletion (with tests)",
+        "objective": "Implement and validate via automated tests",
+        "constraints": ["GA-grade security baseline", "no new product features"],
+        "acceptance": ["API tests pass"]
+      },
+      {
+        "id": "T3",
+        "name": "Web auth UX + tests",
+        "objective": "Localized auth and protected route wired to API",
+        "constraints": ["No hard-coded visible text"],
+        "acceptance": ["Web tests pass"]
+      },
+      {
+        "id": "T4",
+        "name": "Mobile auth UX + tests",
+        "objective": "Localized auth and protected screen wired to API",
+        "constraints": ["Headless tests must pass"],
+        "acceptance": ["Mobile tests pass"]
+      },
+      {
+        "id": "T5",
+        "name": "Docs + manifest",
+        "objective": "Write docs and update manifest",
+        "constraints": ["No placeholders in docs/report"],
+        "acceptance": ["Docs complete", "Manifest updated"]
+      }
+    ],
+    "checks_to_run_before_finish": [
+      { "name": "root_lint", "cmd": "pnpm -r lint", "must_pass": true },
+      { "name": "root_test", "cmd": "pnpm -r test", "must_pass": true }
+    ]
+  },
+
+  "report_contract": {
+    "report_path": "reports/STEP-0003.report.json",
+    "report_schema": {
+      "step_id": "STEP-0003",
+      "status": "COMPLETED|COMPLETED_WITH_NOTES|BLOCKED|FAILED",
+      "summary": "string",
+      "environment_readiness": {
+        "os_detected": "string",
+        "docker_status": "running|not_installed|blocked|failed",
+        "docker_actions_taken": ["string"],
+        "infra_status": "running|blocked|failed",
+        "infra_evidence": "string"
+      },
+      "major_decisions": [
+        { "area": "string", "decision": "string", "reason": "string", "tradeoffs": "string" }
+      ],
+      "commands_run": [
+        { "cmd": "string", "cwd": "string", "exit_code": 0, "stdout_tail": "string", "stderr_tail": "string" }
+      ],
+      "tests": [
+        { "name": "string", "cmd": "string", "passed": true, "notes": "string" }
+      ],
+      "files_changed": [
+        { "path": "string", "change_type": "created|modified|deleted" }
+      ],
+      "acceptance_checklist": [
+        { "requirement": "string", "met": true, "evidence": "string" }
+      ],
+      "errors": [
+        { "where": "string", "error": "string", "how_fixed_or_next_steps": "string" }
+      ],
+      "manifest_update": {
+        "path": "ops/manifest.json",
+        "final_status_written": "string",
+        "updated_at_written": "string"
+      },
+      "next_recommendations": ["string"]
+    },
+    "must_be_filled": true
+  },
+
+  "final_instruction_to_ide": "Execute this prompt exactly. Do not delegate anything to the owner. Attempt to start/install Docker and bring infra up. Choose implementation freely. Update ops/manifest.json and write a complete reports/STEP-0003.report.json with no placeholders."
+}
+

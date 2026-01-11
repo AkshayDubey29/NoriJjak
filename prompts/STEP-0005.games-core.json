@@ -1,0 +1,301 @@
+{
+  "prompt_meta": {
+    "prompt_id": "STEP-0005",
+    "title": "Core Product (GA-grade): Games/Matches — create, discover, join/leave, capacity, approvals, lifecycle states (API + Web + Mobile)",
+    "created_by": "ChatGPT",
+    "executed_by": "__IDE_AGENT__",
+    "timezone": "Asia/Seoul",
+    "product_identity": {
+      "name_ko_one_word": "놀이짝",
+      "name_en": "NoriJjak",
+      "primary_locales": ["ko-KR", "en-US"],
+      "release_policy": "GA_ONLY_FIRST_PUBLIC_RELEASE"
+    },
+    "links": {
+      "manifest_path": "ops/manifest.json",
+      "report_path": "reports/STEP-0005.report.json"
+    }
+  },
+
+  "non_negotiable_rules": {
+    "implementation_autonomy": true,
+    "chatgpt_does_not_instruct_code": true,
+    "ide_chooses_stack_and_patterns": true,
+    "ide_must_document_major_choices": true,
+    "no_scope_creep": true,
+    "no_skipping_tests": true,
+    "all_user_visible_text_localized": true,
+    "always_update_manifest": true,
+    "always_write_report": true,
+    "report_must_have_no_placeholders": true,
+    "executor_must_not_delegate_actions_to_owner": true,
+    "no_public_release_unless_explicitly_allowed": true,
+    "no_payments_no_venue_booking_no_chat_in_this_step": true
+  },
+
+  "owner_actions": [
+    {
+      "id": "OWNER-STEP-0005-APPROVAL-1",
+      "when": "after STEP-0005 report is shared with ChatGPT",
+      "instruction": "Approve the initial game lifecycle + rules (public/private, approval policy, cancellation rules) proposed by IDE docs.",
+      "expected_output": "APPROVE or provide edits",
+      "must_not_require_execution": true
+    }
+  ],
+
+  "required_repo_contract": {
+    "must_exist_folders": [
+      "prompts",
+      "reports",
+      "ops",
+      "infra",
+      "apps/api",
+      "apps/web",
+      "apps/mobile",
+      "packages/shared"
+    ],
+    "source_of_truth_manifest": "ops/manifest.json"
+  },
+
+  "step_objectives": {
+    "goal": "Implement the 핵심 Playo-like feature: Games/Matches end-to-end, with GA-grade validation, permissions, and tests across API/Web/Mobile.",
+    "outcomes": [
+      "Users can create a game (match) for a sport with time/place/capacity and rules",
+      "Users can discover games using filters (sport, time window, homeArea/radius, status)",
+      "Users can request to join / leave games; host can approve/deny if required",
+      "Capacity enforcement (including optional waitlist) and state transitions work correctly",
+      "Web + Mobile flows exist and are localized KO/EN",
+      "API contract is documented and stable for future steps (venues, chat, payments)"
+    ],
+    "constraints": [
+      "IDE chooses exact data model and API shapes but must document in ops/GAME_MODEL.md and ops/API_CONTRACTS.md.",
+      "Use existing auth/session and onboarding gating. Users must be onboarded before creating/joining games.",
+      "No payments, no venue booking integrations, no chat/messaging in this step.",
+      "Location handling should remain privacy-safe and coarse (use homeArea/radius foundation; no precise GPS required)."
+    ],
+    "definition_of_done": [
+      "IDE ensures Docker/infra is running and migrations/seeds are applied",
+      "API endpoints for games exist with full tests (create/update/cancel/list/detail/join/leave/approve/deny)",
+      "Web UI supports create + list + detail + join/leave and host manage actions; tests cover key gating",
+      "Mobile UI supports list + detail + join/leave (create can be included if feasible; if not, document why and ensure parity later)",
+      "All lint/tests pass from repo root",
+      "Docs created: ops/GAME_MODEL.md + ops/API_CONTRACTS.md + ops/GAME_RULES.md",
+      "ops/manifest.json updated and reports/STEP-0005.report.json produced"
+    ]
+  },
+
+  "deliverables_outcomes": [
+    {
+      "area": "Environment readiness (executor-owned)",
+      "goal": "Keep infra fully automated and consistent.",
+      "requirements": [
+        "Detect OS and ensure Docker daemon is running (auto-start/install attempts as needed).",
+        "Ensure infra containers are up; start them if needed.",
+        "Apply DB migrations required for game models."
+      ],
+      "acceptance_criteria": [
+        "Report includes evidence of docker info + compose status + migration execution",
+        "API tests use real DB successfully"
+      ]
+    },
+    {
+      "area": "Game domain model + rules",
+      "goal": "A robust but simple model that can evolve into full GA scope later.",
+      "requirements": [
+        "Game must include at minimum: sportId, title/name, description (optional), startTime, endTime or duration, capacity, visibility (public/private), joinPolicy (open/approval), status lifecycle.",
+        "Participants must include roles (host vs participant) and join states (requested/approved/denied/cancelled/left/waitlisted as needed).",
+        "Host-only modifications rules must be enforced server-side."
+      ],
+      "acceptance_criteria": [
+        "Docs define lifecycle states and transitions clearly",
+        "Tests validate role-based permissions and state transitions"
+      ]
+    },
+    {
+      "area": "API: Games endpoints + filtering",
+      "goal": "Stable API contract for Web/Mobile and future integrations.",
+      "requirements": [
+        "Endpoints to: create game, update editable fields, cancel game, list games with filters, get game detail, join/leave game, approve/deny join requests (if approval mode).",
+        "Filtering should support at minimum: sport, time window, status, and coarse location (homeArea/radius or equivalent).",
+        "Enforce onboarding completion for create/join.",
+        "Add brute-force/abuse mitigation appropriate for high-traffic list/join endpoints (approach chosen by IDE; document)."
+      ],
+      "acceptance_criteria": [
+        "API test suite covers all critical paths and rejects invalid/unauthorized actions",
+        "Capacity enforcement is correct under concurrency assumptions (best-effort in tests)"
+      ]
+    },
+    {
+      "area": "Web: Games UX (localized)",
+      "goal": "Full core loop on Web.",
+      "requirements": [
+        "Screens/pages for: Games list, Game detail, Create game, Host manage (join requests/cancel).",
+        "Join/leave UI reflects joinPolicy and current user state.",
+        "Localization: all visible text KO/EN using shared keys/dictionaries."
+      ],
+      "acceptance_criteria": [
+        "Web tests verify: onboarding gating -> cannot access create/join until onboarded",
+        "Web tests verify: can create and join a game end-to-end with mocked or real API (IDE chooses approach)"
+      ]
+    },
+    {
+      "area": "Mobile: Games UX (localized)",
+      "goal": "Core discovery + join loop on Mobile.",
+      "requirements": [
+        "Screens for: Games list + detail + join/leave.",
+        "If Create game is not implemented on Mobile in this step, IDE must document why and ensure the API supports it; create will be mandated later.",
+        "Localization: all visible text KO/EN using shared keys/dictionaries."
+      ],
+      "acceptance_criteria": [
+        "Mobile tests at least cover: rendering list/detail states and join/leave state management (headless, CI-friendly)",
+        "Manual run evidence (documented) shows mobile can load list from local API"
+      ]
+    },
+    {
+      "area": "Docs",
+      "goal": "Make the GA roadmap predictable.",
+      "requirements": [
+        "Create ops/GAME_MODEL.md describing schema, states, transitions, permissions.",
+        "Create ops/API_CONTRACTS.md documenting request/response shapes and error conventions for games endpoints.",
+        "Create ops/GAME_RULES.md documenting product rules: visibility, approval policy, cancellation, capacity, waitlist decision."
+      ],
+      "acceptance_criteria": [
+        "Docs match implementation behavior and tests",
+        "Tradeoffs clearly recorded"
+      ]
+    }
+  ],
+
+  "execution_plan_for_ide": {
+    "workflow": "sequential",
+    "manifest_updates": {
+      "on_start": {
+        "step_id": "STEP-0005",
+        "status": "IN_PROGRESS",
+        "fields_to_update": ["updated_at", "started_at", "agent"]
+      },
+      "on_success": {
+        "status": "COMPLETED",
+        "fields_to_update": ["updated_at", "completed_at", "artifacts", "notes"]
+      },
+      "on_blocked": {
+        "status": "BLOCKED",
+        "fields_to_update": ["updated_at", "notes"]
+      },
+      "on_failed": {
+        "status": "FAILED",
+        "fields_to_update": ["updated_at", "notes"]
+      }
+    },
+    "required_evidence_to_capture": [
+      "environment_readiness_actions",
+      "migration_evidence",
+      "api_tests_results",
+      "web_tests_results",
+      "mobile_tests_results",
+      "file_changes_list",
+      "major_decisions_and_tradeoffs"
+    ],
+    "tasks": [
+      {
+        "id": "T1",
+        "name": "Ensure infra is running (executor-owned)",
+        "objective": "Start Docker/infra automatically and confirm DB connectivity.",
+        "constraints": ["No delegation to owner"],
+        "acceptance": ["docker + infra running OR BLOCKED with exact OS/permission limitation"]
+      },
+      {
+        "id": "T2",
+        "name": "Implement game domain model + migrations",
+        "objective": "Add models, migrations, and seed adjustments if needed.",
+        "constraints": ["Keep model extensible", "document lifecycle rules"],
+        "acceptance": ["migrations applied", "model works in tests"]
+      },
+      {
+        "id": "T3",
+        "name": "API games endpoints + tests",
+        "objective": "Create endpoints and comprehensive tests.",
+        "constraints": ["Enforce auth + onboarding + permissions", "validate inputs"],
+        "acceptance": ["API tests pass and cover critical paths"]
+      },
+      {
+        "id": "T4",
+        "name": "Web games UX + tests",
+        "objective": "Implement list/detail/create/manage flows with localization and gating.",
+        "constraints": ["No hard-coded visible text"],
+        "acceptance": ["Web tests pass for gating and core flows"]
+      },
+      {
+        "id": "T5",
+        "name": "Mobile games UX + tests",
+        "objective": "Implement list/detail/join flows with localization and headless tests.",
+        "constraints": ["CI-friendly tests"],
+        "acceptance": ["Mobile tests pass"]
+      },
+      {
+        "id": "T6",
+        "name": "Docs + manifest + report",
+        "objective": "Write docs, update manifest, produce complete report.",
+        "constraints": ["No placeholders"],
+        "acceptance": ["Docs complete", "Manifest updated", "Report complete"]
+      }
+    ],
+    "checks_to_run_before_finish": [
+      { "name": "root_lint", "cmd": "pnpm -r lint", "must_pass": true },
+      { "name": "root_test", "cmd": "pnpm -r test", "must_pass": true }
+    ]
+  },
+
+  "report_contract": {
+    "report_path": "reports/STEP-0005.report.json",
+    "report_schema": {
+      "step_id": "STEP-0005",
+      "status": "COMPLETED|COMPLETED_WITH_NOTES|BLOCKED|FAILED",
+      "summary": "string",
+      "environment_readiness": {
+        "os_detected": "string",
+        "docker_status": "running|not_installed|blocked|failed",
+        "docker_actions_taken": ["string"],
+        "infra_status": "running|blocked|failed",
+        "infra_evidence": "string"
+      },
+      "major_decisions": [
+        { "area": "string", "decision": "string", "reason": "string", "tradeoffs": "string" }
+      ],
+      "commands_run": [
+        { "cmd": "string", "cwd": "string", "exit_code": 0, "stdout_tail": "string", "stderr_tail": "string" }
+      ],
+      "tests": [
+        { "name": "string", "cmd": "string", "passed": true, "notes": "string" }
+      ],
+      "files_changed": [
+        { "path": "string", "change_type": "created|modified|deleted" }
+      ],
+      "acceptance_checklist": [
+        { "requirement": "string", "met": true, "evidence": "string" }
+      ],
+      "errors": [
+        { "where": "string", "error": "string", "how_fixed_or_next_steps": "string" }
+      ],
+      "automation_limitations": [
+        { "limitation": "string", "evidence": "string", "required_owner_permission_or_action": "string" }
+      ],
+      "manifest_update": {
+        "path": "ops/manifest.json",
+        "final_status_written": "string",
+        "updated_at_written": "string"
+      },
+      "next_recommendations": ["string"],
+      "game_rules_summary": {
+        "visibility_modes": ["string"],
+        "join_policies": ["string"],
+        "capacity_and_waitlist": "string",
+        "cancellation_policy": "string"
+      }
+    },
+    "must_be_filled": true
+  },
+
+  "final_instruction_to_ide": "Execute this prompt exactly. Do not delegate any execution to the owner. Choose implementation freely. Update ops/manifest.json and write a complete reports/STEP-0005.report.json with no placeholders."
+}
+

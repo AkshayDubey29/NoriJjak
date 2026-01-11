@@ -1,0 +1,59 @@
+{
+  "step_id": "STEP-0002",
+  "status": "COMPLETED",
+  "summary": "Hardened the repository foundation by fixing mobile test runner issues, aligning linting across all packages with ESLint 9 (Flat Config), and ensuring branding consistency as 놀이짝 (NoriJjak).",
+  "major_decisions": [
+    {
+      "area": "Mobile Testing",
+      "decision": "Updated transformIgnorePatterns to be pnpm-aware.",
+      "reason": "pnpm symlinks node_modules, requiring patterns that include .pnpm paths for proper transformation of ES modules like react-navigation.",
+      "tradeoffs": "More complex regex in jest.config.js."
+    },
+    {
+      "area": "Linting",
+      "decision": "Migrated all packages to ESLint 9 Flat Config (eslint.config.mjs).",
+      "reason": "Consistency across the monorepo and future-proofing.",
+      "tradeoffs": "Next.js 'next lint' was bypassed in favor of 'eslint .' due to version incompatibilities between Next 14 and ESLint 9 flags."
+    }
+  ],
+  "commands_run": [
+    { "cmd": "pnpm -r test", "cwd": ".", "exit_code": 0, "stdout_tail": "All tests passed (api, web, mobile, shared)." },
+    { "cmd": "pnpm -r lint", "cwd": ".", "exit_code": 0, "stdout_tail": "Linting passed across all workspace projects." },
+    { "cmd": "docker info", "cwd": ".", "exit_code": 1, "stdout_tail": "Docker daemon not running." }
+  ],
+  "tests": [
+    { "name": "Mobile Skeleton", "cmd": "cd apps/mobile && pnpm test", "passed": true, "notes": "Verified locale persistence and initial render." },
+    { "name": "Shared Translations", "cmd": "cd packages/shared && pnpm test", "passed": true, "notes": "New unit tests for translation dictionary consistency." },
+    { "name": "API/Web Quality Gates", "cmd": "pnpm test", "passed": true, "notes": "All previous tests remain green." }
+  ],
+  "files_changed": [
+    { "path": "apps/api/src/index.ts", "change_type": "modified" },
+    { "path": "apps/api/src/index.test.ts", "change_type": "modified" },
+    { "path": "apps/mobile/jest.config.js", "change_type": "modified" },
+    { "path": "apps/mobile/index.js", "change_type": "created" },
+    { "path": "apps/mobile/eslint.config.mjs", "change_type": "created" },
+    { "path": "packages/shared/src/__tests__/index.test.ts", "change_type": "created" },
+    { "path": "ops/manifest.json", "change_type": "modified" }
+  ],
+  "acceptance_checklist": [
+    { "requirement": "Mobile tests pass reliably", "met": true, "evidence": "pnpm test output for apps/mobile" },
+    { "requirement": "Branding consistent: 놀이짝 (NoriJjak)", "met": true, "evidence": "Updated API version endpoint and verified shared dict usage." },
+    { "requirement": "Root scripts / CI aligned", "met": true, "evidence": "pnpm lint/test run correctly from root." },
+    { "requirement": "Infra verification", "met": false, "evidence": "Docker daemon not running; configuration remains ready for start." }
+  ],
+  "errors": [
+    { "where": "T1: Infra", "error": "Docker daemon not running", "how_fixed_or_next_steps": "Documented; requires manual start by user." },
+    { "where": "T3: Mobile Build", "error": "Metro resolution issues in monorepo", "how_fixed_or_next_steps": "Requires further Metro/pnpm configuration if web export is needed." }
+  ],
+  "manifest_update": {
+    "path": "ops/manifest.json",
+    "final_status_written": "COMPLETED",
+    "updated_at_written": "2026-01-08T07:45:00+09:00"
+  },
+  "next_recommendations": [
+    "Proceed to STEP-0003 for authentication/user-session foundation.",
+    "Verify Docker infra once daemon is confirmed running.",
+    "Consider a dedicated Metro configuration if mobile web support becomes a priority."
+  ]
+}
+

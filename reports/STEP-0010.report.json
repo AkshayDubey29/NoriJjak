@@ -1,0 +1,83 @@
+{
+  "step_id": "STEP-0010",
+  "status": "COMPLETED",
+  "summary": "Implemented GA-grade coordination and safety features, including a participant-only Game Chat with abuse controls (block/report) and moderation audit trails. Chat uses a robust polling mechanism for near-realtime updates on both Web and Mobile.",
+  "environment_readiness": {
+    "os_detected": "darwin (macOS)",
+    "docker_status": "running",
+    "docker_actions_taken": ["Verified docker info", "Verified docker compose status"],
+    "infra_status": "running",
+    "infra_evidence": "PostgreSQL and Redis containers are healthy."
+  },
+  "major_decisions": [
+    {
+      "area": "Chat Realtime",
+      "decision": "Implemented HTTP Polling every 5 seconds.",
+      "reason": "Simplest reliable implementation across platforms without requiring WebSocket state management or extra infrastructure for the initial GA release.",
+      "tradeoffs": "Latency of up to 5s and increased server load compared to WebSockets."
+    },
+    {
+      "area": "Safety Enforcement",
+      "decision": "Server-side hiding of messages from blocked users and soft-deletion of messages.",
+      "reason": "Prioritizes user safety while maintaining audit trails for future moderation.",
+      "tradeoffs": "Messages remain in DB but are excluded from API responses."
+    },
+    {
+      "area": "Eligibility",
+      "decision": "Enforced approved-participants-only chat access.",
+      "reason": "Ensures privacy and prevents harassment from outside the immediate game context.",
+      "tradeoffs": "Users must wait for approval before coordinating."
+    }
+  ],
+  "commands_run": [
+    { "cmd": "npx prisma migrate dev --name chat_safety", "cwd": "apps/api", "exit_code": 0 },
+    { "cmd": "pnpm -r lint && pnpm -r test", "cwd": ".", "exit_code": 0 }
+  ],
+  "tests": [
+    { "name": "Chat & Safety API tests", "cmd": "vitest run src/chat_safety.test.ts", "passed": true, "notes": "Verified list, send, block effects, and report creation." },
+    { "name": "All quality gates", "cmd": "pnpm -r lint && pnpm -r test", "passed": true, "notes": "31 API tests and all frontend smoke tests pass." }
+  ],
+  "files_changed": [
+    { "path": "apps/api/prisma/schema.prisma", "change_type": "modified" },
+    { "path": "apps/api/src/routes/chat.ts", "change_type": "created" },
+    { "path": "apps/api/src/routes/safety.ts", "change_type": "created" },
+    { "path": "apps/web/src/components/GameChat.tsx", "change_type": "created" },
+    { "path": "apps/mobile/src/components/GameChat.tsx", "change_type": "created" },
+    { "path": "ops/CHAT_MODEL.md", "change_type": "created" },
+    { "path": "ops/SAFETY_RULES.md", "change_type": "created" },
+    { "path": "ops/MODERATION_PLACEHOLDERS.md", "change_type": "created" }
+  ],
+  "acceptance_checklist": [
+    { "requirement": "Participant-only Game Chat", "met": true, "evidence": "Implemented in chat route with canChat helper." },
+    { "requirement": "Block system (hide messages)", "met": true, "evidence": "Server-side filtering based on Block model implemented." },
+    { "requirement": "Report system (persist violations)", "met": true, "evidence": "Report model and POST /safety/reports implemented." },
+    { "requirement": "Polling mechanism (Web + Mobile)", "met": true, "evidence": "5s polling implemented in both GameChat components." },
+    { "requirement": "Pagination support", "met": true, "evidence": "Cursor-based pagination implemented in API." }
+  ],
+  "errors": [
+    { "where": "Chat Tests", "error": "Foreign key constraint violation during cleanup.", "how_fixed_or_next_steps": "Standardized cleanup order in chat_safety.test.ts." },
+    { "where": "API Linting", "error": "Unexpected any in chat test.", "how_fixed_or_next_steps": "Used specific types to remove any." }
+  ],
+  "automation_limitations": [],
+  "manifest_update": {
+    "path": "ops/manifest.json",
+    "final_status_written": "COMPLETED",
+    "updated_at_written": "2026-01-08T13:00:00+09:00"
+  },
+  "next_recommendations": [
+    "Upgrade to WebSockets/SSE for true realtime chat.",
+    "Implement push notifications for new chat messages.",
+    "Build basic Admin Moderation UI to review reports."
+  ],
+  "rules_summary": {
+    "who_can_chat": "Approved participants and the game host only.",
+    "blocked_behavior": "Blocker cannot see blocked user's messages; messages are filtered server-side.",
+    "report_reasons": ["SPAM", "ABUSE", "INAPPROPRIATE", "HARASSMENT", "OTHER"],
+    "realtime_strategy": "HTTP Polling (5s interval)"
+  },
+  "api_contract_changes": [
+    "Added /games/:id/chat endpoints",
+    "Added /safety/block and /safety/reports endpoints"
+  ]
+}
+

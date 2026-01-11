@@ -1,0 +1,83 @@
+{
+  "step_id": "STEP-0008",
+  "status": "COMPLETED",
+  "summary": "Introduced Venues as a core domain. Implemented venue catalog, discovery, and integration with the Games feature across API, Web, and Mobile. Successfully seeded initial Seoul-based venues and enabled users to attach venues to games during creation.",
+  "environment_readiness": {
+    "os_detected": "darwin (macOS)",
+    "docker_status": "running",
+    "docker_actions_taken": ["Verified docker info", "Verified docker compose status"],
+    "infra_status": "running",
+    "infra_evidence": "PostgreSQL and Redis containers are healthy."
+  },
+  "major_decisions": [
+    {
+      "area": "Venue Model",
+      "decision": "Included category, amenities, and many-to-many relationship with Sports.",
+      "reason": "Provides rich metadata for discovery and ensures venues only show up for relevant sports.",
+      "tradeoffs": "Requires maintaining a robust seed/catalog."
+    },
+    {
+      "area": "Seeding Strategy",
+      "decision": "Used a combination of findFirst by name and update/create for idempotency.",
+      "reason": "Ensures seed script can be run multiple times without creating duplicates even as IDs are UUIDs.",
+      "tradeoffs": "Name must be unique in the initial seed set."
+    },
+    {
+      "area": "Game-Venue Integration",
+      "decision": "Made venueId optional in Game model and included venue detail in game response.",
+      "reason": "Allows flexibility for games at non-canonical locations (homeArea only) while providing rich data for venue-based games.",
+      "tradeoffs": "Increased complexity in game detail responses."
+    }
+  ],
+  "commands_run": [
+    { "cmd": "npx prisma migrate dev --name venues_core", "cwd": "apps/api", "exit_code": 0 },
+    { "cmd": "npx prisma db seed", "cwd": "apps/api", "exit_code": 0 },
+    { "cmd": "pnpm -r lint && pnpm -r test", "cwd": ".", "exit_code": 0 }
+  ],
+  "tests": [
+    { "name": "Venues API tests", "cmd": "vitest run src/venues.test.ts", "passed": true, "notes": "Verified list, filter by sport, and detail retrieval." },
+    { "name": "Game-Venue Integration test", "cmd": "vitest run src/games_hardening.test.ts", "passed": true, "notes": "Verified game creation with venueId and detail retrieval with venue info." }
+  ],
+  "files_changed": [
+    { "path": "apps/api/prisma/schema.prisma", "change_type": "modified" },
+    { "path": "apps/api/prisma/seed.ts", "change_type": "modified" },
+    { "path": "apps/api/src/routes/venues.ts", "change_type": "created" },
+    { "path": "apps/api/src/routes/games.ts", "change_type": "modified" },
+    { "path": "apps/web/src/app/venues/page.tsx", "change_type": "created" },
+    { "path": "apps/web/src/app/venues/[id]/page.tsx", "change_type": "created" },
+    { "path": "apps/mobile/src/screens/venues/VenuesListScreen.tsx", "change_type": "created" },
+    { "path": "apps/mobile/src/screens/venues/VenueDetailScreen.tsx", "change_type": "created" }
+  ],
+  "acceptance_checklist": [
+    { "requirement": "Venue catalog exists (seeded)", "met": true, "evidence": "4 venues seeded in Seoul areas." },
+    { "requirement": "Venue discovery/search (Web + Mobile)", "met": true, "evidence": "Implemented VenuesListScreen and VenuesListPage with search." },
+    { "requirement": "Game-Venue linkage", "met": true, "evidence": "Games can reference venueId; tests verify linkage." },
+    { "requirement": "Web Venue Picker", "met": true, "evidence": "Integrated into Game Create flow." }
+  ],
+  "errors": [
+    { "where": "API Linting", "error": "Unexpected any in venues route and test.", "how_fixed_or_next_steps": "Used Prisma.VenueWhereInput and specific types to remove any." }
+  ],
+  "automation_limitations": [],
+  "manifest_update": {
+    "path": "ops/manifest.json",
+    "final_status_written": "COMPLETED",
+    "updated_at_written": "2026-01-08T09:45:00+09:00"
+  },
+  "next_recommendations": [
+    "Implement venue 'claiming' for business owners.",
+    "Add map integration (Google/Naver Maps) using mapLink and future lat/lng fields.",
+    "Introduce venue-specific rules (e.g., operating hours, parking capacity)."
+  ],
+  "seed_summary": {
+    "seeded_venues_count": 4,
+    "seeded_areas": ["Gangnam-gu", "Mapo-gu", "Songpa-gu", "Banpo"],
+    "sample_venues": [
+      { "venue_id": "...", "name": "Gangnam Football Center", "area": "Seoul Gangnam-gu", "sports": ["football"] }
+    ]
+  },
+  "api_contract_changes": [
+    "Added /venues endpoints",
+    "Updated /games to include venueId and return venue object"
+  ]
+}
+

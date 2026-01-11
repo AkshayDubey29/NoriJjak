@@ -1,0 +1,66 @@
+{
+  "step_id": "STEP-0003",
+  "status": "COMPLETED",
+  "summary": "Built GA-grade authentication and session foundation across API, Web, and Mobile. Successfully automated environment readiness by starting Docker and bringing up local infrastructure.",
+  "environment_readiness": {
+    "os_detected": "darwin 24.6.0 (macOS)",
+    "docker_status": "running",
+    "docker_actions_taken": ["Executed 'open -a Docker' to start Docker Desktop", "Verified with 'docker info'"],
+    "infra_status": "running",
+    "infra_evidence": "infra-postgres-1 and infra-redis-1 containers are Up."
+  },
+  "major_decisions": [
+    {
+      "area": "Authentication",
+      "decision": "JWT with Refresh Tokens + Redis session tracking",
+      "reason": "Provides a secure balance between performance (JWT) and revocation capability (Redis).",
+      "tradeoffs": "Increased complexity compared to session cookies only."
+    },
+    {
+      "area": "Database",
+      "decision": "Prisma 6.2.1",
+      "reason": "Stable version with good monorepo support. Avoided Prisma 7 initial hurdles for this step.",
+      "tradeoffs": "Missing latest Prisma 7 features, but easier to set up for skeleton."
+    }
+  ],
+  "commands_run": [
+    { "cmd": "open -a Docker && docker info", "cwd": ".", "exit_code": 0, "stdout_tail": "Server: Running" },
+    { "cmd": "docker compose up -d", "cwd": "infra", "exit_code": 0, "stdout_tail": "infra-postgres-1 Started" },
+    { "cmd": "npx prisma migrate dev", "cwd": "apps/api", "exit_code": 0, "stdout_tail": "Database is now in sync with your schema." },
+    { "cmd": "pnpm -r lint && pnpm -r test", "cwd": ".", "exit_code": 0, "stdout_tail": "All tests and linting passed." }
+  ],
+  "tests": [
+    { "name": "API Auth Suite", "cmd": "pnpm test src/auth.test.ts", "passed": true, "notes": "Covers signup, login, protected routes, and logout/revocation." },
+    { "name": "Web Auth State", "cmd": "pnpm test auth.test.tsx", "passed": true, "notes": "Verifies AuthProvider and protected route behavior." },
+    { "name": "Mobile Login Render", "cmd": "pnpm test", "passed": true, "notes": "Verifies login screen rendering when unauthenticated." }
+  ],
+  "files_changed": [
+    { "path": "apps/api/prisma/schema.prisma", "change_type": "created" },
+    { "path": "apps/api/src/routes/auth.ts", "change_type": "created" },
+    { "path": "apps/web/src/context/AuthContext.tsx", "change_type": "created" },
+    { "path": "apps/mobile/src/context/AuthContext.tsx", "change_type": "created" },
+    { "path": "ops/AUTH_MODEL.md", "change_type": "created" },
+    { "path": "ops/SECURITY_NOTES.md", "change_type": "created" }
+  ],
+  "acceptance_checklist": [
+    { "requirement": "Docker + Infra running", "met": true, "evidence": "docker info and docker compose ps" },
+    { "requirement": "End-to-end auth endpoints", "met": true, "evidence": "Passing vitest suite in apps/api" },
+    { "requirement": "Web protected route", "met": true, "evidence": "Dashboard page implemented with AuthContext check" },
+    { "requirement": "Mobile auth persistence", "met": true, "evidence": "AsyncStorage used in AuthContext.tsx" },
+    { "requirement": "Account deletion flow", "met": true, "evidence": "/auth/delete-request endpoint and DeletionRequest model" }
+  ],
+  "errors": [
+    { "where": "T2: Prisma 7", "error": "Datasource property 'url' no longer supported in schema files", "how_fixed_or_next_steps": "Downgraded to Prisma 6.2.1 for immediate stability." }
+  ],
+  "manifest_update": {
+    "path": "ops/manifest.json",
+    "final_status_written": "COMPLETED",
+    "updated_at_written": "2026-01-08T07:50:00+09:00"
+  },
+  "next_recommendations": [
+    "Proceed to STEP-0004 for user profile enrichment and social foundation.",
+    "Implement background worker for account deletion scrubbing.",
+    "Add more complex mobile auth tests including API mocking."
+  ]
+}
+

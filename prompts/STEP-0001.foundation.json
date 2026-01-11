@@ -1,0 +1,324 @@
+{
+  "prompt_meta": {
+    "prompt_id": "STEP-0001",
+    "title": "Foundation: repo contract + infra + API/Web/Mobile skeleton + KO/EN localization + CI + manifest/report protocol (GA program)",
+    "created_by": "ChatGPT",
+    "executed_by": "__IDE_AGENT__",
+    "timezone": "Asia/Seoul",
+    "product_identity": {
+      "name_ko_one_word": "놀이짝",
+      "name_en": "NoriJjak",
+      "primary_locales": ["ko-KR", "en-US"],
+      "release_policy": "GA_ONLY_FIRST_PUBLIC_RELEASE"
+    }
+    },
+    "links": {
+      "manifest_path": "ops/manifest.json",
+      "report_path": "reports/STEP-0001.report.json"
+    }
+  },
+
+  "non_negotiable_rules": {
+    "implementation_autonomy": true,
+    "chatgpt_does_not_instruct_code": true,
+    "ide_chooses_stack_and_patterns": true,
+    "ide_must_document_major_choices": true,
+    "no_scope_creep": true,
+    "no_skipping_tests": true,
+    "all_user_visible_text_localized": true,
+    "always_update_manifest": true,
+    "always_write_report": true,
+    "report_must_have_no_placeholders": true,
+    "public_release_not_allowed_in_step_0001": true
+  },
+
+  "owner_actions": [
+    {
+      "id": "OWNER-0001-A",
+      "when": "after STEP-0001 report is shared with ChatGPT",
+      "instruction": "Confirm the final Korean one-word brand name (default: 플레이온) OR pick a different one-word Korean name.",
+      "expected_output": "One Korean word"
+    },
+    {
+      "id": "OWNER-0001-B",
+      "when": "after STEP-0001 report is shared with ChatGPT",
+      "instruction": "Pick UI direction: (A) Sporty bold (B) Minimal premium (C) Friendly playful.",
+      "expected_output": "A|B|C"
+    },
+    {
+      "id": "OWNER-0001-C",
+      "when": "after STEP-0001 report is shared with ChatGPT",
+      "instruction": "Confirm GA-only policy: first public release is GA after full production readiness gates. (Internal testing/staging is allowed.)",
+      "expected_output": "CONFIRM"
+    }
+  ],
+
+  "required_repo_contract": {
+    "must_exist_folders": [
+      "prompts",
+      "reports",
+      "ops",
+      "infra",
+      "apps/api",
+      "apps/web",
+      "apps/mobile",
+      "packages/shared"
+    ],
+    "source_of_truth_manifest": "ops/manifest.json",
+    "must_exist_files_by_end_of_step": [
+      "README.md",
+      "ops/PROTOCOL.md",
+      "ops/ARCHITECTURE.md"
+    ]
+  },
+
+  "step_objectives": {
+    "goal": "Create a reliable development foundation for a GA-grade product, without implementing the full feature set yet.",
+    "outcomes": [
+      "A repo structure that can scale to a full production product",
+      "Local infra runnable by developers",
+      "API/Web/Mobile skeletons that run locally",
+      "KO/EN localization plumbing in Web + Mobile (and shared keys/dictionaries)",
+      "Automated quality gates (lint/test/build) runnable from repo root",
+      "Manifest + report protocol enforced for seamless IDE/agent switching"
+    ],
+    "constraints": [
+      "Do not build advanced product features yet (booking, payments, chat, partner portal, etc.). Only skeleton + plumbing.",
+      "Do not mandate specific frameworks/tools; choose them and document the reasons."
+    ],
+    "definition_of_done": [
+      "ops/manifest.json exists and STEP-0001 is marked COMPLETED with Asia/Seoul timestamps",
+      "infra can start successfully",
+      "API has health + version endpoints with passing tests",
+      "Web has landing page + KO/EN toggle with a passing smoke test",
+      "Mobile has 3 tabs + KO/EN toggle persistence + share demo working + at least one automated test",
+      "Root scripts exist: dev, lint, test, build and run successfully (with documented limitations if any)"
+    ]
+  },
+
+  "deliverables_outcomes": [
+    {
+      "area": "Manifest & Protocol",
+      "goal": "Seamless switching between IDEs/agents using a single source of truth manifest + step reports.",
+      "requirements": [
+        "Create ops/manifest.json with: project identity, version, steps array including STEP-0001, timestamps, artifacts list",
+        "Create ops/PROTOCOL.md describing: how prompts are executed, how reports are produced, how manifest is updated",
+        "Ensure STEP-0001 transitions IN_PROGRESS -> COMPLETED/BLOCKED/FAILED appropriately"
+      ],
+      "acceptance_criteria": [
+        "Manifest exists before major work begins",
+        "Manifest updated at end with correct status and artifact list",
+        "Protocol doc is clear enough for a new agent to follow without asking questions"
+      ]
+    },
+    {
+      "area": "Repo Foundation",
+      "goal": "A clean repo layout and root-level developer experience.",
+      "requirements": [
+        "Folders per required_repo_contract",
+        "Root scripts: dev, lint, test, build",
+        "Basic CI workflow file exists (install -> lint -> test -> build)"
+      ],
+      "acceptance_criteria": [
+        "All root scripts run successfully OR are clearly documented if a platform requires separate steps (e.g., mobile simulator)"
+      ]
+    },
+    {
+      "area": "Local Infrastructure",
+      "goal": "Local services needed for development.",
+      "requirements": [
+        "infra/docker-compose.yml includes at minimum: postgres and redis (or equivalents IDE chooses, documented)",
+        "infra/README.md explains start/stop and key env vars"
+      ],
+      "acceptance_criteria": [
+        "docker compose up succeeds and services are reachable on documented ports"
+      ]
+    },
+    {
+      "area": "Shared Package",
+      "goal": "Shared types + shared i18n dictionaries/keys.",
+      "requirements": [
+        "Locale type supporting ko-KR and en-US",
+        "User type: id, email, displayName, locale, createdAt",
+        "Shared translations include at least: app name, nav labels, landing sections, language label, share label"
+      ],
+      "acceptance_criteria": [
+        "Web and Mobile use the same i18n keys (imported or synchronized; approach documented)"
+      ]
+    },
+    {
+      "area": "API Skeleton",
+      "goal": "A minimal API surface that proves the stack works.",
+      "requirements": [
+        "GET /health returns {\"status\":\"ok\"}",
+        "GET /version returns {\"name\":\"PLAYON\",\"version\":\"<app version>\",\"env\":\"<runtime env>\"}",
+        "Automated tests exist and pass for both endpoints"
+      ],
+      "acceptance_criteria": [
+        "API runs locally with a documented command and tests pass"
+      ]
+    },
+    {
+      "area": "Web Skeleton",
+      "goal": "A simple web landing that proves KO/EN localization works.",
+      "requirements": [
+        "Landing page with 3 sections (localized): Find games, Book venues, Achievements",
+        "Top-right KO/EN toggle that switches all visible text",
+        "At least one automated smoke test verifying render + toggle"
+      ],
+      "acceptance_criteria": [
+        "Web runs locally and tests pass"
+      ]
+    },
+    {
+      "area": "Mobile Skeleton",
+      "goal": "A minimal mobile app proving navigation + localization + share plumbing.",
+      "requirements": [
+        "3 tabs: Home, Explore, Profile (localized labels)",
+        "Profile has KO/EN toggle and persists across restart",
+        "Home has a share action that opens the native share dialog",
+        "At least one automated test for locale persistence / i18n switch logic"
+      ],
+      "acceptance_criteria": [
+        "Mobile runs in dev runtime/simulator and key flows work"
+      ]
+    },
+    {
+      "area": "Architecture Doc",
+      "goal": "Explain chosen stack at a high level and why (no code).",
+      "requirements": [
+        "Create ops/ARCHITECTURE.md summarizing: chosen stack for API/Web/Mobile/DB/cache/testing/CI and reasons",
+        "Include a short section: how we will productionize (environments, CI/CD, staging, GA gate concept)"
+      ],
+      "acceptance_criteria": [
+        "Doc is understandable and contains the major decisions and tradeoffs"
+      ]
+    }
+  ],
+
+  "execution_plan_for_ide": {
+    "workflow": "sequential",
+    "manifest_updates": {
+      "on_start": {
+        "step_id": "STEP-0001",
+        "status": "IN_PROGRESS",
+        "fields_to_update": ["updated_at", "started_at", "agent"]
+      },
+      "on_success": {
+        "status": "COMPLETED",
+        "fields_to_update": ["updated_at", "completed_at", "artifacts", "notes"]
+      },
+      "on_blocked": {
+        "status": "BLOCKED",
+        "fields_to_update": ["updated_at", "notes"]
+      },
+      "on_failed": {
+        "status": "FAILED",
+        "fields_to_update": ["updated_at", "notes"]
+      }
+    },
+    "required_evidence_to_capture": [
+      "commands_run_with_exit_codes",
+      "tests_run_and_results",
+      "file_changes_list",
+      "major_decisions_and_tradeoffs",
+      "how_to_run_each_app_locally"
+    ],
+    "prechecks": [
+      {
+        "name": "tooling_presence",
+        "commands": ["node -v", "pnpm -v", "git --version", "docker --version"],
+        "on_fail": "BLOCKED"
+      }
+    ],
+    "tasks": [
+      {
+        "id": "T1",
+        "name": "Initialize repo contract",
+        "objective": "Create required folders/files and root scripts/CI skeleton",
+        "constraints": ["No code-level instructions from ChatGPT; IDE chooses approach"],
+        "acceptance": ["Repo contract met", "Root scripts exist"]
+      },
+      {
+        "id": "T2",
+        "name": "Local infra",
+        "objective": "Create docker-compose and infra docs",
+        "constraints": ["Minimum: postgres + redis (or equivalents; justify if different)"],
+        "acceptance": ["docker compose up succeeds"]
+      },
+      {
+        "id": "T3",
+        "name": "Skeleton apps",
+        "objective": "Create runnable API/Web/Mobile skeletons meeting deliverables",
+        "constraints": ["Localization-first: no hard-coded visible UI text"],
+        "acceptance": ["All apps run locally"]
+      },
+      {
+        "id": "T4",
+        "name": "Tests + quality gates",
+        "objective": "Ensure lint/test/build are present and passing",
+        "constraints": ["Do not skip tests"],
+        "acceptance": ["All defined gates pass"]
+      },
+      {
+        "id": "T5",
+        "name": "Docs + manifest completion",
+        "objective": "Write README/PROTOCOL/ARCHITECTURE, update manifest to COMPLETED",
+        "constraints": ["No placeholders in report"],
+        "acceptance": ["Docs complete", "Manifest updated"]
+      }
+    ],
+    "checks_to_run_before_finish": [
+      { "name": "lint", "cmd": "__ROOT_LINT_COMMAND__", "must_pass": true },
+      { "name": "test", "cmd": "__ROOT_TEST_COMMAND__", "must_pass": true },
+      { "name": "build", "cmd": "__ROOT_BUILD_COMMAND__", "must_pass": true }
+    ]
+  },
+
+  "report_contract": {
+    "report_path": "reports/STEP-0001.report.json",
+    "report_schema": {
+      "step_id": "STEP-0001",
+      "status": "COMPLETED|COMPLETED_WITH_NOTES|BLOCKED|FAILED",
+      "summary": "string",
+      "tech_stack_chosen": {
+        "api": "string",
+        "web": "string",
+        "mobile": "string",
+        "db": "string",
+        "cache": "string",
+        "testing": "string",
+        "ci": "string"
+      },
+      "major_decisions": [
+        { "area": "string", "decision": "string", "reason": "string", "tradeoffs": "string" }
+      ],
+      "commands_run": [
+        { "cmd": "string", "cwd": "string", "exit_code": 0, "stdout_tail": "string", "stderr_tail": "string" }
+      ],
+      "tests": [
+        { "name": "string", "cmd": "string", "passed": true, "notes": "string" }
+      ],
+      "files_changed": [
+        { "path": "string", "change_type": "created|modified|deleted" }
+      ],
+      "artifacts": ["string"],
+      "acceptance_checklist": [
+        { "requirement": "string", "met": true, "evidence": "string" }
+      ],
+      "errors": [
+        { "where": "string", "error": "string", "how_fixed_or_next_steps": "string" }
+      ],
+      "manifest_update": {
+        "path": "ops/manifest.json",
+        "final_status_written": "string",
+        "updated_at_written": "string"
+      },
+      "next_recommendations": ["string"]
+    },
+    "must_be_filled": true
+  },
+
+  "final_instruction_to_ide": "Execute this prompt exactly. Choose the implementation freely. Update ops/manifest.json and write a complete reports/STEP-0001.report.json with no placeholders."
+}
+

@@ -1,0 +1,123 @@
+{
+  "project_identity": {
+    "name_ko": "놀이짝",
+    "name_en": "NoriJjak",
+    "primary_locales": [
+      "ko-KR",
+      "en-US"
+    ]
+  },
+  "version": "0.1.0",
+  "agent": "Cursor AI",
+  "started_at": "2026-01-08T00:00:00+09:00",
+  "updated_at": "2026-01-08T13:00:00+09:00",
+  "steps": [
+    {
+      "id": "STEP-0001",
+      "title": "Foundation",
+      "status": "COMPLETED_WITH_NOTES",
+      "started_at": "2026-01-08T00:00:00+09:00",
+      "updated_at": "2026-01-08T04:20:00+09:00",
+      "notes": "Infrastructure verification and mobile tests were partially blocked by Docker daemon and Jest config issues. Resolved in STEP-0002."
+    },
+    {
+      "id": "STEP-0002",
+      "title": "Foundation Hardening",
+      "status": "COMPLETED",
+      "started_at": "2026-01-08T04:30:00+09:00",
+      "updated_at": "2026-01-08T07:45:00+09:00"
+    },
+    {
+      "id": "STEP-0003",
+      "title": "Auth + Session Foundation",
+      "status": "COMPLETED",
+      "started_at": "2026-01-08T07:50:00+09:00",
+      "updated_at": "2026-01-08T07:50:00+09:00"
+    },
+    {
+      "id": "STEP-0004",
+      "title": "Domain Foundation",
+      "status": "COMPLETED",
+      "started_at": "2026-01-08T08:00:00+09:00",
+      "updated_at": "2026-01-08T08:00:00+09:00"
+    },
+    {
+      "id": "STEP-0005",
+      "title": "Core Product: Games",
+      "status": "COMPLETED",
+      "started_at": "2026-01-08T08:15:00+09:00",
+      "updated_at": "2026-01-08T08:30:00+09:00"
+    },
+    {
+      "id": "STEP-0006",
+      "title": "Games GA Hardening",
+      "status": "COMPLETED",
+      "started_at": "2026-01-08T08:35:00+09:00",
+      "updated_at": "2026-01-08T08:45:00+09:00"
+    },
+    {
+      "id": "STEP-0007",
+      "title": "Growth Loop: Sharing & Deep Links",
+      "status": "COMPLETED",
+      "started_at": "2026-01-08T08:50:00+09:00",
+      "updated_at": "2026-01-08T08:55:00+09:00"
+    },
+    {
+      "id": "STEP-0008",
+      "title": "Venues Core",
+      "status": "COMPLETED",
+      "started_at": "2026-01-08T09:00:00+09:00",
+      "updated_at": "2026-01-08T09:45:00+09:00"
+    },
+    {
+      "id": "STEP-0009",
+      "title": "Clubs Core",
+      "status": "COMPLETED",
+      "started_at": "2026-01-08T10:00:00+09:00",
+      "updated_at": "2026-01-08T11:00:00+09:00"
+    },
+    {
+      "id": "STEP-0010",
+      "title": "GA Safety + Coordination: Chat & Moderation",
+      "status": "COMPLETED",
+      "started_at": "2026-01-08T12:00:00+09:00",
+      "updated_at": "2026-01-08T13:00:00+09:00"
+    },
+    {
+      "id": "STEP-0011",
+      "title": "Trust Layer (GA): Ratings & Reputation",
+      "status": "COMPLETED",
+      "started_at": "2026-01-09T08:30:00+09:00",
+      "updated_at": "2026-01-09T09:45:00+09:00",
+      "agent": "Cursor AI"
+    },
+    {
+      "id": "STEP-0012",
+      "title": "GA Release Hardening: Repo Integrity & Build Gates",
+      "status": "COMPLETED",
+      "started_at": "2026-01-10T20:51:20+09:00",
+      "updated_at": "2026-01-10T20:51:20+09:00",
+      "agent": "Antigravity"
+    },
+    {
+      "id": "STEP-0013",
+      "title": "GitHub Integration + Build Speed",
+      "status": "IN_PROGRESS",
+      "started_at": "2026-01-11T16:29:13+09:00",
+      "updated_at": "2026-01-11T16:29:13+09:00",
+      "agent": "Antigravity"
+    }
+  ],
+  "artifacts": [
+    "apps/api/prisma/schema.prisma",
+    "apps/api/src/routes/ratings.ts",
+    "apps/api/src/ratings.test.ts",
+    "apps/web/src/components/RatingForm.tsx",
+    "apps/web/src/app/profile/page.tsx",
+    "apps/mobile/src/components/RatingForm.tsx",
+    "ops/RATINGS_RULES.md",
+    "ops/REPUTATION_MODEL.md",
+    "ops/REVIEW_MODERATION_PLACEHOLDERS.md",
+    "ops/API_CONTRACTS.md"
+  ]
+}

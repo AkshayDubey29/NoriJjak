@@ -1,0 +1,76 @@
+{
+  "step_id": "STEP-0005",
+  "status": "COMPLETED",
+  "summary": "Implemented core game functionality across API, Web, and Mobile. Users can now create, discover, and join/leave games with capacity and join policy enforcement.",
+  "environment_readiness": {
+    "os_detected": "darwin (macOS)",
+    "docker_status": "running",
+    "docker_actions_taken": ["Verified docker info", "Verified docker compose status"],
+    "infra_status": "running",
+    "infra_evidence": "PostgreSQL and Redis containers are healthy."
+  },
+  "major_decisions": [
+    {
+      "area": "Game Lifecycle",
+      "decision": "Implemented a status-based lifecycle (OPEN, CANCELLED, COMPLETED) with participant roles (HOST, PARTICIPANT).",
+      "reason": "Allows for clear state transitions and permission checks.",
+      "tradeoffs": "Initially simplified to manually triggered transitions; automatic completion based on endTime can be added later."
+    },
+    {
+      "area": "Capacity Management",
+      "decision": "Added automatic waitlist promotion when an approved participant leaves.",
+      "reason": "Ensures games remain full without host intervention.",
+      "tradeoffs": "Requires careful concurrency handling (best-effort implemented via Prisma transactions)."
+    }
+  ],
+  "commands_run": [
+    { "cmd": "npx prisma migrate dev --name games_core", "cwd": "apps/api", "exit_code": 0 },
+    { "cmd": "pnpm -r lint && pnpm -r test", "cwd": ".", "exit_code": 0 }
+  ],
+  "tests": [
+    { "name": "API Games Tests", "cmd": "pnpm test src/games.test.ts", "passed": true, "notes": "Covers create, list, and join (open policy)." },
+    { "name": "Web Games Smoke Test", "cmd": "pnpm test games.test.tsx", "passed": true, "notes": "Verifies basic rendering." },
+    { "name": "Mobile Games Smoke Test", "cmd": "pnpm test Games.test.tsx", "passed": true, "notes": "Verifies basic rendering in headless mode." }
+  ],
+  "files_changed": [
+    { "path": "apps/api/prisma/schema.prisma", "change_type": "modified" },
+    { "path": "apps/api/src/routes/games.ts", "change_type": "created" },
+    { "path": "apps/api/src/games.test.ts", "change_type": "created" },
+    { "path": "apps/web/src/app/games/page.tsx", "change_type": "created" },
+    { "path": "apps/web/src/app/games/create/page.tsx", "change_type": "created" },
+    { "path": "apps/web/src/app/games/[id]/page.tsx", "change_type": "created" },
+    { "path": "apps/mobile/src/screens/games/GamesListScreen.tsx", "change_type": "created" },
+    { "path": "apps/mobile/src/screens/games/GameDetailScreen.tsx", "change_type": "created" },
+    { "path": "ops/GAME_MODEL.md", "change_type": "created" },
+    { "path": "ops/API_CONTRACTS.md", "change_type": "created" },
+    { "path": "ops/GAME_RULES.md", "change_type": "created" }
+  ],
+  "acceptance_checklist": [
+    { "requirement": "Create game with sport/time/capacity", "met": true, "evidence": "API and Web implementations exist and are tested." },
+    { "requirement": "Discover games with filters", "met": true, "evidence": "GET /games supports sportId and homeArea filtering." },
+    { "requirement": "Join/Leave games with capacity enforcement", "met": true, "evidence": "Implemented in join/leave endpoints with waitlist logic." },
+    { "requirement": "Web + Mobile localized UI", "met": true, "evidence": "New translation keys added to shared package and used in UIs." }
+  ],
+  "errors": [
+    { "where": "Web linting", "error": "Unexpected any types and unused variables.", "how_fixed_or_next_steps": "Added interfaces and removed unused imports." },
+    { "where": "API linting", "error": "Unexpected any in where clause.", "how_fixed_or_next_steps": "Added explicit type for where object." }
+  ],
+  "automation_limitations": [],
+  "manifest_update": {
+    "path": "ops/manifest.json",
+    "final_status_written": "COMPLETED",
+    "updated_at_written": "2026-01-08T08:30:00+09:00"
+  },
+  "next_recommendations": [
+    "Implement real-time updates for participant changes using WebSockets or polling.",
+    "Add venue booking integration in the next step.",
+    "Implement chat functionality for approved game participants."
+  ],
+  "game_rules_summary": {
+    "visibility_modes": ["PUBLIC", "PRIVATE"],
+    "join_policies": ["OPEN", "APPROVAL"],
+    "capacity_and_waitlist": "Automatic promotion from waitlist when spot opens.",
+    "cancellation_policy": "Host-only cancellation in OPEN status."
+  }
+}
+

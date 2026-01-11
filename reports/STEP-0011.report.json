@@ -1,0 +1,81 @@
+{
+  "step_id": "STEP-0011",
+  "status": "COMPLETED",
+  "summary": "Implemented a GA-grade Trust Layer with structured ratings and reviews for players, venues, and clubs. Added deterministic reputation aggregation and badges to profiles, driving safer matches and social proof.",
+  "environment_readiness": {
+    "os_detected": "darwin (macOS)",
+    "docker_status": "running",
+    "docker_actions_taken": ["Restored corrupted docker-compose.yml", "Verified infra running"],
+    "infra_status": "running",
+    "infra_evidence": "PostgreSQL and Redis are healthy."
+  },
+  "major_decisions": [
+    {
+      "area": "Rating Target",
+      "decision": "Unified Rating model for users, venues, and clubs.",
+      "reason": "Simplifies aggregation logic and reporting while maintaining uniqueness per game context.",
+      "tradeoffs": "Requires nullability for target fields."
+    },
+    {
+      "area": "Reputation Aggregation",
+      "decision": "Deterministic averages with minimum count thresholds (3 ratings).",
+      "reason": "Prevents high variance from single outlier ratings while being easy to understand.",
+      "tradeoffs": "Less sophisticated than Bayesian smoothing initially."
+    },
+    {
+      "area": "Edit Window",
+      "decision": "24-hour window for rating updates.",
+      "reason": "Allows fixing mistakes while preventing long-term manipulation or retaliation.",
+      "tradeoffs": "Users cannot update older reviews."
+    }
+  ],
+  "commands_run": [
+    { "cmd": "npx prisma db push", "cwd": "apps/api", "exit_code": 0 },
+    { "cmd": "pnpm -r lint && pnpm -r test", "cwd": ".", "exit_code": 0 }
+  ],
+  "tests": [
+    { "name": "Ratings API tests", "cmd": "vitest run src/ratings.test.ts", "passed": true, "notes": "Verified rating creation, self-rate prevention, and summary aggregation." }
+  ],
+  "files_changed": [
+    { "path": "apps/api/prisma/schema.prisma", "change_type": "modified" },
+    { "path": "apps/api/src/routes/ratings.ts", "change_type": "created" },
+    { "path": "apps/web/src/components/RatingForm.tsx", "change_type": "created" },
+    { "path": "apps/web/src/app/profile/page.tsx", "change_type": "created" },
+    { "path": "ops/RATINGS_RULES.md", "change_type": "created" },
+    { "path": "ops/REPUTATION_MODEL.md", "change_type": "created" }
+  ],
+  "acceptance_checklist": [
+    { "requirement": "Player ratings after completed games", "met": true, "evidence": "Implemented eligibility check in POST /ratings." },
+    { "requirement": "Venue and Club ratings", "met": true, "evidence": "Implemented with specific eligibility rules (venue-in-game, club-membership)." },
+    { "requirement": "Badge system", "met": true, "evidence": "SUPER_PLAYER and GOLDEN_MANNER badges implemented in summary logic." },
+    { "requirement": "Review reporting", "met": true, "evidence": "Integrated ratingId into the safety report flow." }
+  ],
+  "errors": [
+    { "where": "Project State", "error": "Widespread file corruption (empty files and null bytes).", "how_fixed_or_next_steps": "Manually restored critical package.json, configs, and route files." }
+  ],
+  "automation_limitations": [],
+  "manifest_update": {
+    "path": "ops/manifest.json",
+    "final_status_written": "COMPLETED",
+    "updated_at_written": "2026-01-09T09:45:00+09:00"
+  },
+  "next_recommendations": [
+    "Implement Bayesian smoothing for more robust rankings.",
+    "Add photo uploads to venue/club reviews.",
+    "Build a 'Verified' status for high-reputation players."
+  ],
+  "rules_summary": {
+    "player_rating_eligibility": "Approved participants only, after game completion.",
+    "venue_rating_eligibility": "Approved participants of a game at that venue.",
+    "club_rating_eligibility": "Approved club members.",
+    "edit_window_policy": "24 hours",
+    "comment_policy": "Max 300 characters",
+    "aggregation_strategy": "Simple average with min 3 ratings for display",
+    "badge_list": ["SUPER_PLAYER", "GOLDEN_MANNER", "PUNCTUAL", "TOP_VENUE"]
+  },
+  "api_contract_changes": [
+    "Added /ratings endpoints",
+    "Updated /safety/reports to support ratingId"
+  ]
+}
+

@@ -1,0 +1,16 @@
+{
+  "name": "norijjak-monorepo",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "pnpm -r dev",
+    "lint": "pnpm -r lint",
+    "test": "pnpm -r test",
+    "integrity": "node ops/scripts/check-integrity.js",
+    "build": "pnpm -r build"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "packageManager": "pnpm@10.15.0"
+}

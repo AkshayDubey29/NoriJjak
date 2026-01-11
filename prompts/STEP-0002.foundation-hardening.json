@@ -1,0 +1,300 @@
+{
+  "prompt_meta": {
+    "prompt_id": "STEP-0002",
+    "title": "Foundation Hardening: close STEP-0001 notes (Docker infra verification + Mobile test runner fix) + naming consistency + CI alignment",
+    "created_by": "ChatGPT",
+    "executed_by": "__IDE_AGENT__",
+    "timezone": "Asia/Seoul",
+    "product_identity": {
+      "name_ko_one_word": "놀이짝",
+      "name_en": "NoriJjak",
+      "primary_locales": ["ko-KR", "en-US"],
+      "release_policy": "GA_ONLY_FIRST_PUBLIC_RELEASE"
+    },
+    "links": {
+      "manifest_path": "ops/manifest.json",
+      "report_path": "reports/STEP-0002.report.json"
+    }
+  },
+
+  "non_negotiable_rules": {
+    "implementation_autonomy": true,
+    "chatgpt_does_not_instruct_code": true,
+    "ide_chooses_stack_and_patterns": true,
+    "ide_must_document_major_choices": true,
+    "no_scope_creep": true,
+    "no_skipping_tests": true,
+    "always_update_manifest": true,
+    "always_write_report": true,
+    "report_must_have_no_placeholders": true,
+    "no_new_product_features": true
+  },
+
+  "owner_actions": [
+    {
+      "id": "OWNER-STEP-0002-1",
+      "when": "before executing this step",
+      "instruction": "Start Docker Desktop / Docker daemon on your machine (required to validate infra).",
+      "expected_output": "Docker is running locally"
+    }
+  ],
+
+  "required_repo_contract": {
+    "must_exist_folders": [
+      "prompts",
+      "reports",
+      "ops",
+      "infra",
+      "apps/api",
+      "apps/web",
+      "apps/mobile",
+      "packages/shared"
+    ],
+    "source_of_truth_manifest": "ops/manifest.json"
+  },
+
+  "step_objectives": {
+    "goal": "Make foundation truly green: infra verified, mobile tests pass in monorepo, CI aligned, and branding consistent as 놀이짝 (NoriJjak).",
+    "outcomes": [
+      "Local infra (docker compose) verified running",
+      "Mobile unit tests pass reliably in monorepo + CI",
+      "Root scripts / CI can run api+web+mobile tests without manual tweaks",
+      "Branding consistency: user-facing name is 놀이짝 (NoriJjak) everywhere it appears"
+    ],
+    "constraints": [
+      "Do not implement new app features beyond what already exists (no auth, booking, payments, chat).",
+      "IDE is free to choose the best mobile test approach (Jest/Vitest/etc.) as long as it runs in CI and passes.",
+      "If any renaming affects internals (package names), IDE may choose whether to change them; user-facing branding must be correct regardless."
+    ],
+    "definition_of_done": [
+      "Docker compose for infra starts successfully OR a clear documented reason why it cannot on this machine (with fix steps).",
+      "Mobile test suite passes (at least 1 meaningful test for locale persistence/i18n switching) and runs from repo root.",
+      "CI workflow updated (if needed) so it reflects the new green test commands.",
+      "ops/manifest.json updated: STEP-0002 COMPLETED and STEP-0001 notes/status clarified (see tasks).",
+      "reports/STEP-0002.report.json created and complete."
+    ]
+  },
+
+  "deliverables_outcomes": [
+    {
+      "area": "Infra verification",
+      "goal": "Prove infra config is correct and runnable locally.",
+      "requirements": [
+        "Run docker compose for infra successfully.",
+        "Add or update infra/README.md with exact start/stop/verify steps and known pitfalls.",
+        "Add a simple verification instruction (e.g., how to confirm postgres/redis are reachable) in docs."
+      ],
+      "acceptance_criteria": [
+        "docker compose -f infra/docker-compose.yml up -d succeeds with Docker running",
+        "Evidence of verification is captured in report (command output/log tail)"
+      ]
+    },
+    {
+      "area": "Mobile tests in monorepo",
+      "goal": "Remove the RN 0.76 test runner blockage and make tests reliable.",
+      "requirements": [
+        "Choose and configure a mobile test strategy that works in a pnpm workspace monorepo.",
+        "Ensure at least one automated test validates language toggle persistence and/or i18n switching logic.",
+        "Ensure tests run headlessly (CI-friendly) without requiring a simulator."
+      ],
+      "acceptance_criteria": [
+        "apps/mobile tests pass locally",
+        "Repo-root test command includes mobile tests and passes",
+        "CI job runs the same commands (or clearly documented equivalent) and would pass"
+      ]
+    },
+    {
+      "area": "Root scripts + CI alignment",
+      "goal": "One obvious way to run quality gates across apps.",
+      "requirements": [
+        "Ensure root scripts exist and are correct: lint, test, build (dev unchanged unless needed).",
+        "Ensure CI workflow runs the same gates that we expect developers to run."
+      ],
+      "acceptance_criteria": [
+        "Root lint/test/build commands succeed (or are clearly split but runnable from root)",
+        "CI workflow uses those commands (or documents why it cannot)"
+      ]
+    },
+    {
+      "area": "Branding consistency (user-facing)",
+      "goal": "Make the product name correct wherever it is shown to users/readers.",
+      "requirements": [
+        "Update any user-facing strings in web/mobile/README/docs that still reference the old name (e.g., PlayOn/플레이온) to 놀이짝 / NoriJjak.",
+        "Do not over-rotate on internal package naming unless necessary; prioritize user-facing correctness."
+      ],
+      "acceptance_criteria": [
+        "Web and Mobile display app name as 놀이짝 (KO) / NoriJjak (EN) via localization",
+        "Docs show 놀이짝 / NoriJjak as the project name"
+      ]
+    },
+    {
+      "area": "Manifest accuracy",
+      "goal": "Make ops/manifest.json truthfully reflect reality and track completed notes.",
+      "requirements": [
+        "Add STEP-0002 entry as IN_PROGRESS at start and COMPLETED at end.",
+        "Clarify STEP-0001 status to match reality: either keep COMPLETED with explicit notes of what was missing, OR change to COMPLETED_WITH_NOTES (preferred) and record the notes.",
+        "Record artifacts for STEP-0002 (docs/scripts/configs changed)."
+      ],
+      "acceptance_criteria": [
+        "Manifest shows STEP-0001 notes resolved by STEP-0002",
+        "Manifest shows STEP-0002 completed with timestamps in Asia/Seoul"
+      ]
+    }
+  ],
+
+  "execution_plan_for_ide": {
+    "workflow": "sequential",
+    "manifest_updates": {
+      "on_start": {
+        "step_id": "STEP-0002",
+        "status": "IN_PROGRESS",
+        "fields_to_update": ["updated_at", "started_at", "agent"]
+      },
+      "on_success": {
+        "status": "COMPLETED",
+        "fields_to_update": ["updated_at", "completed_at", "artifacts", "notes"]
+      },
+      "on_blocked": {
+        "status": "BLOCKED",
+        "fields_to_update": ["updated_at", "notes"]
+      },
+      "on_failed": {
+        "status": "FAILED",
+        "fields_to_update": ["updated_at", "notes"]
+      }
+    },
+    "required_evidence_to_capture": [
+      "commands_run_with_exit_codes",
+      "docker_compose_logs_tail",
+      "test_results_api_web_mobile",
+      "file_changes_list",
+      "major_decisions_and_tradeoffs",
+      "final_root_commands_for_lint_test_build"
+    ],
+    "prechecks": [
+      {
+        "name": "docker_running_check",
+        "commands": ["docker info"],
+        "on_fail": "BLOCKED"
+      }
+    ],
+    "tasks": [
+      {
+        "id": "T1",
+        "name": "Verify infra with Docker running",
+        "objective": "Bring up infra services and capture evidence.",
+        "constraints": ["Do not change infra scope beyond what’s needed for reliability"],
+        "acceptance": ["docker compose up succeeds", "evidence captured"]
+      },
+      {
+        "id": "T2",
+        "name": "Make mobile tests pass in monorepo",
+        "objective": "Fix the RN test runner issue and ensure stable CI-friendly execution.",
+        "constraints": ["IDE chooses approach; must document decisions"],
+        "acceptance": ["apps/mobile tests pass", "runs headlessly"]
+      },
+      {
+        "id": "T3",
+        "name": "Align root scripts + CI",
+        "objective": "Ensure root lint/test/build cover api+web+mobile and CI runs them.",
+        "constraints": ["No new feature development"],
+        "acceptance": ["root lint/test/build pass", "CI updated if needed"]
+      },
+      {
+        "id": "T4",
+        "name": "Update user-facing branding to 놀이짝 (NoriJjak)",
+        "objective": "Ensure user-facing name is consistent in UI and docs.",
+        "constraints": ["Internal naming can remain if not user-facing"],
+        "acceptance": ["no user-facing old name remains (best effort)"]
+      },
+      {
+        "id": "T5",
+        "name": "Fix manifest accuracy",
+        "objective": "Reflect STEP-0001 truth and close notes via STEP-0002 completion.",
+        "constraints": ["Manifest is the source of truth"],
+        "acceptance": ["manifest updated correctly"]
+      }
+    ],
+    "checks_to_run_before_finish": [
+      {
+        "name": "root_lint",
+        "cmd": "__ROOT_LINT_COMMAND__",
+        "must_pass": true
+      },
+      {
+        "name": "root_test",
+        "cmd": "__ROOT_TEST_COMMAND__",
+        "must_pass": true
+      },
+      {
+        "name": "root_build",
+        "cmd": "__ROOT_BUILD_COMMAND__",
+        "must_pass": true
+      }
+    ]
+  },
+
+  "report_contract": {
+    "report_path": "reports/STEP-0002.report.json",
+    "report_schema": {
+      "step_id": "STEP-0002",
+      "status": "COMPLETED|COMPLETED_WITH_NOTES|BLOCKED|FAILED",
+      "summary": "string",
+      "major_decisions": [
+        {
+          "area": "string",
+          "decision": "string",
+          "reason": "string",
+          "tradeoffs": "string"
+        }
+      ],
+      "commands_run": [
+        {
+          "cmd": "string",
+          "cwd": "string",
+          "exit_code": 0,
+          "stdout_tail": "string",
+          "stderr_tail": "string"
+        }
+      ],
+      "tests": [
+        {
+          "name": "string",
+          "cmd": "string",
+          "passed": true,
+          "notes": "string"
+        }
+      ],
+      "files_changed": [
+        {
+          "path": "string",
+          "change_type": "created|modified|deleted"
+        }
+      ],
+      "acceptance_checklist": [
+        {
+          "requirement": "string",
+          "met": true,
+          "evidence": "string"
+        }
+      ],
+      "errors": [
+        {
+          "where": "string",
+          "error": "string",
+          "how_fixed_or_next_steps": "string"
+        }
+      ],
+      "manifest_update": {
+        "path": "ops/manifest.json",
+        "final_status_written": "string",
+        "updated_at_written": "string"
+      },
+      "next_recommendations": ["string"]
+    },
+    "must_be_filled": true
+  },
+
+  "final_instruction_to_ide": "Execute this prompt exactly. Choose the implementation freely. Update ops/manifest.json and write a complete reports/STEP-0002.report.json with no placeholders."
+}
+

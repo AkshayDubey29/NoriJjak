@@ -1,0 +1,285 @@
+{
+  "prompt_meta": {
+    "prompt_id": "STEP-0007",
+    "title": "GA Growth Loop: Deep Links + Sharing + Notification Navigation (Web + Mobile) for Games & Invites",
+    "created_by": "ChatGPT",
+    "executed_by": "__IDE_AGENT__",
+    "timezone": "Asia/Seoul",
+    "product_identity": {
+      "name_ko_one_word": "놀이짝",
+      "name_en": "NoriJjak",
+      "primary_locales": ["ko-KR", "en-US"],
+      "release_policy": "GA_ONLY_FIRST_PUBLIC_RELEASE"
+    },
+    "links": {
+      "manifest_path": "ops/manifest.json",
+      "report_path": "reports/STEP-0007.report.json"
+    }
+  },
+
+  "non_negotiable_rules": {
+    "implementation_autonomy": true,
+    "chatgpt_does_not_instruct_code": true,
+    "ide_chooses_stack_and_patterns": true,
+    "ide_must_document_major_choices": true,
+    "no_scope_creep": true,
+    "no_skipping_tests": true,
+    "all_user_visible_text_localized": true,
+    "always_update_manifest": true,
+    "always_write_report": true,
+    "report_must_have_no_placeholders": true,
+    "executor_must_not_delegate_actions_to_owner": true,
+    "no_public_release_unless_explicitly_allowed": true,
+    "no_payments_no_venue_booking_no_chat_in_this_step": true,
+    "no_firebase_no_push_credentials_in_this_step": true
+  },
+
+  "owner_actions": [
+    {
+      "id": "OWNER-STEP-0007-APPROVAL-1",
+      "when": "after STEP-0007 report is shared with ChatGPT",
+      "instruction": "Approve the public share link format (domain/path) proposed in ops/DEEPLINKS.md. (This is approval only; no execution.)",
+      "expected_output": "APPROVE or provide edits",
+      "must_not_require_execution": true
+    }
+  ],
+
+  "required_repo_contract": {
+    "must_exist_folders": [
+      "prompts",
+      "reports",
+      "ops",
+      "infra",
+      "apps/api",
+      "apps/web",
+      "apps/mobile",
+      "packages/shared"
+    ],
+    "source_of_truth_manifest": "ops/manifest.json"
+  },
+
+  "step_objectives": {
+    "goal": "Enable a smooth GA growth loop: share game/invite links, open them on web/mobile, land on the right screen, and make notifications actionable.",
+    "outcomes": [
+      "Shareable links for game detail and private invite redemption exist (web links + mobile deep links)",
+      "Mobile deep link handling routes users correctly (logged out → login → return; onboard gating respected)",
+      "Web routes handle shared links and show the right state (login/onboarding required flows)",
+      "Invite code sharing is one-tap on mobile and web (native share sheet / web share / copy fallback)",
+      "Notifications list items navigate to the relevant game/invite and reflect read/unread correctly"
+    ],
+    "constraints": [
+      "No external credentials required (no Firebase, no Kakao SDK keys, no Apple/Google console).",
+      "No new core product domains (no venues, no chat, no payments).",
+      "Must reuse existing invite tokens and notifications; only extend as needed to support routing and share."
+    ],
+    "definition_of_done": [
+      "IDE ensures Docker/infra is running as needed (auto-start) and tests run green",
+      "API supports generating/formatting share links (or server-side canonical link logic) and mapping notifications → target routes",
+      "Web: share controls exist for games/private invites + routes resolve correctly",
+      "Mobile: deep links resolve correctly and share sheet works for game + invite",
+      "Notifications tap-through works on both Web and Mobile",
+      "Root lint/test passes",
+      "Docs added: ops/DEEPLINKS.md and ops/SHARING_MODEL.md (and API contracts updated)",
+      "Manifest updated + report produced"
+    ]
+  },
+
+  "deliverables_outcomes": [
+    {
+      "area": "Environment readiness (executor-owned)",
+      "goal": "No owner execution; IDE auto-starts what it needs.",
+      "requirements": [
+        "Ensure Docker daemon and infra are running if needed for tests.",
+        "Run migrations only if required; keep minimal."
+      ],
+      "acceptance_criteria": [
+        "Report includes docker/compose evidence if touched",
+        "All tests pass from repo root"
+      ]
+    },
+    {
+      "area": "Deep links & routing (Web + Mobile)",
+      "goal": "Shared links open the correct page/screen reliably.",
+      "requirements": [
+        "Define canonical web routes for: game detail, invite redemption.",
+        "Define mobile deep link scheme/routes for the same targets.",
+        "Support login/onboarding gating while preserving return-to destination after auth/onboarding."
+      ],
+      "acceptance_criteria": [
+        "Automated tests verify routing decisions for key states (unauthenticated/onboarding-complete)",
+        "Docs clearly explain link formats and routing behavior"
+      ]
+    },
+    {
+      "area": "Sharing UX (Web + Mobile)",
+      "goal": "One-tap sharing of game and invite.",
+      "requirements": [
+        "Game detail: share button produces a shareable link.",
+        "Private game host: share invite link/code via share controls.",
+        "Web fallback: copy-to-clipboard if Web Share API unavailable."
+      ],
+      "acceptance_criteria": [
+        "Share produces correct link format",
+        "Localized share text templates exist (KO/EN)"
+      ]
+    },
+    {
+      "area": "Notifications navigation",
+      "goal": "Notifications are actionable and route users to the right target.",
+      "requirements": [
+        "Notification payload (or mapping) supports navigation targets (e.g., gameId / inviteToken).",
+        "Web + Mobile notifications list supports tapping a notification and routing accordingly.",
+        "Mark-as-read behavior remains correct."
+      ],
+      "acceptance_criteria": [
+        "Tests cover: creating a notification with target and navigating to the target route/screen"
+      ]
+    },
+    {
+      "area": "Docs & contracts",
+      "goal": "Make future push + Kakao share easy later.",
+      "requirements": [
+        "Create ops/DEEPLINKS.md describing: URL formats, mobile scheme, routing rules, auth/onboarding return-to handling.",
+        "Create ops/SHARING_MODEL.md describing: what gets shared (game vs invite), localized message templates, privacy considerations.",
+        "Update ops/API_CONTRACTS.md if endpoints/fields change."
+      ],
+      "acceptance_criteria": [
+        "Docs match implementation and tests",
+        "Tradeoffs explicitly recorded (e.g., placeholder domain strategy)"
+      ]
+    }
+  },
+
+  "execution_plan_for_ide": {
+    "workflow": "sequential",
+    "manifest_updates": {
+      "on_start": {
+        "step_id": "STEP-0007",
+        "status": "IN_PROGRESS",
+        "fields_to_update": ["updated_at", "started_at", "agent"]
+      },
+      "on_success": {
+        "status": "COMPLETED",
+        "fields_to_update": ["updated_at", "completed_at", "artifacts", "notes"]
+      },
+      "on_blocked": {
+        "status": "BLOCKED",
+        "fields_to_update": ["updated_at", "notes"]
+      },
+      "on_failed": {
+        "status": "FAILED",
+        "fields_to_update": ["updated_at", "notes"]
+      }
+    },
+    "required_evidence_to_capture": [
+      "environment_readiness_actions",
+      "api_changes_summary",
+      "web_routing_and_share_evidence",
+      "mobile_linking_and_share_evidence",
+      "tests_results",
+      "file_changes_list",
+      "major_decisions_and_tradeoffs"
+    ],
+    "tasks": [
+      {
+        "id": "T1",
+        "name": "Ensure infra running (executor-owned)",
+        "objective": "Auto-start Docker/infra if needed; confirm readiness for tests.",
+        "constraints": ["No delegation to owner"],
+        "acceptance": ["Tests can run green reliably"]
+      },
+      {
+        "id": "T2",
+        "name": "Implement deep link routing (Web + Mobile)",
+        "objective": "Add canonical routes and mobile deep link handlers with return-to flow.",
+        "constraints": ["Respect auth + onboarding gating"],
+        "acceptance": ["Key paths work; tests exist"]
+      },
+      {
+        "id": "T3",
+        "name": "Add share UX for game + invites (Web + Mobile)",
+        "objective": "Share buttons, localized templates, and fallbacks.",
+        "constraints": ["No external credentials"],
+        "acceptance": ["Share outputs correct links; localized strings used"]
+      },
+      {
+        "id": "T4",
+        "name": "Make notifications actionable",
+        "objective": "Notification targets route user to game/invite and mark read properly.",
+        "constraints": ["Preserve existing notification model auditability"],
+        "acceptance": ["Tap-through works; tests exist"]
+      },
+      {
+        "id": "T5",
+        "name": "Docs + manifest + report",
+        "objective": "Write docs, update manifest, produce complete report.",
+        "constraints": ["No placeholders"],
+        "acceptance": ["Docs complete; manifest updated; report complete"]
+      }
+    ],
+    "checks_to_run_before_finish": [
+      { "name": "root_lint", "cmd": "pnpm -r lint", "must_pass": true },
+      { "name": "root_test", "cmd": "pnpm -r test", "must_pass": true }
+    ]
+  },
+
+  "report_contract": {
+    "report_path": "reports/STEP-0007.report.json",
+    "report_schema": {
+      "step_id": "STEP-0007",
+      "status": "COMPLETED|COMPLETED_WITH_NOTES|BLOCKED|FAILED",
+      "summary": "string",
+      "environment_readiness": {
+        "os_detected": "string",
+        "docker_status": "running|not_installed|blocked|failed",
+        "docker_actions_taken": ["string"],
+        "infra_status": "running|blocked|failed",
+        "infra_evidence": "string"
+      },
+      "major_decisions": [
+        { "area": "string", "decision": "string", "reason": "string", "tradeoffs": "string" }
+      ],
+      "commands_run": [
+        { "cmd": "string", "cwd": "string", "exit_code": 0, "stdout_tail": "string", "stderr_tail": "string" }
+      ],
+      "tests": [
+        { "name": "string", "cmd": "string", "passed": true, "notes": "string" }
+      ],
+      "files_changed": [
+        { "path": "string", "change_type": "created|modified|deleted" }
+      ],
+      "acceptance_checklist": [
+        { "requirement": "string", "met": true, "evidence": "string" }
+      ],
+      "errors": [
+        { "where": "string", "error": "string", "how_fixed_or_next_steps": "string" }
+      ],
+      "automation_limitations": [
+        { "limitation": "string", "evidence": "string", "required_owner_permission_or_action": "string" }
+      ],
+      "manifest_update": {
+        "path": "ops/manifest.json",
+        "final_status_written": "string",
+        "updated_at_written": "string"
+      },
+      "next_recommendations": ["string"],
+      "link_formats": {
+        "web_game_url": "string",
+        "web_invite_url": "string",
+        "mobile_game_deeplink": "string",
+        "mobile_invite_deeplink": "string"
+      },
+      "navigation_matrix_summary": [
+        {
+          "entry": "string",
+          "state": "unauthenticated|needs_onboarding|ready",
+          "result": "string"
+        }
+      ]
+    },
+    "must_be_filled": true
+  },
+
+  "final_instruction_to_ide": "Execute this prompt exactly. Do not delegate any execution to the owner. Choose implementation freely. Update ops/manifest.json and write a complete reports/STEP-0007.report.json with no placeholders."
+}
+

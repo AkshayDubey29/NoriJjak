@@ -1,0 +1,301 @@
+{
+  "prompt_meta": {
+    "prompt_id": "STEP-0013",
+    "title": "GitHub Integration + Build Speed: Fix Next.js web build hang, accelerate pnpm monorepo builds with caching, push to GitHub with guard rails",
+    "created_by": "ChatGPT",
+    "executed_by": "__IDE_AGENT__",
+    "timezone": "Asia/Seoul",
+    "product_identity": {
+      "name_ko_one_word": "놀이짝",
+      "name_en": "NoriJjak",
+      "primary_locales": ["ko-KR", "en-US"],
+      "release_policy": "GA_ONLY_FIRST_PUBLIC_RELEASE"
+    },
+    "repo": {
+      "git_remote_name": "origin",
+      "git_remote_url": "https://github.com/AkshayDubey29/NoriJjak.git",
+      "default_branch": "main",
+      "push_required": true
+    },
+    "links": {
+      "manifest_path": "ops/manifest.json",
+      "report_path": "reports/STEP-0013.report.json"
+    }
+  },
+
+  "non_negotiable_rules": {
+    "implementation_autonomy": true,
+    "chatgpt_does_not_instruct_code": true,
+    "ide_chooses_stack_and_patterns": true,
+    "ide_must_document_major_choices": true,
+    "no_scope_creep": true,
+    "no_skipping_tests": true,
+    "all_user_visible_text_localized": true,
+    "always_update_manifest": true,
+    "always_write_report": true,
+    "report_must_have_no_placeholders": true,
+    "executor_must_not_delegate_actions_to_owner": true,
+    "no_public_release_unless_explicitly_allowed": true,
+
+    "must_fix_web_build_gate": true,
+    "must_optimize_build_speed": true,
+    "must_push_to_github": true,
+    "guard_rails_required": true
+  },
+
+  "owner_actions": [
+    {
+      "id": "OWNER-STEP-0013-APPROVAL-1",
+      "when": "after STEP-0013 report is shared with ChatGPT",
+      "instruction": "Approve the Git workflow/guard rails described in ops/GIT_WORKFLOW.md and ops/CI_CACHING.md. Approval only; no local command execution.",
+      "expected_output": "APPROVE or provide edits",
+      "must_not_require_execution": true
+    }
+  ],
+
+  "required_repo_contract": {
+    "must_exist_folders": [
+      "prompts",
+      "reports",
+      "ops",
+      "infra",
+      "apps/api",
+      "apps/web",
+      "apps/mobile",
+      "packages/shared"
+    ],
+    "must_exist_files": [
+      "ops/manifest.json",
+      "ops/PROTOCOL.md",
+      "ops/ARCHITECTURE.md",
+      "ops/RELEASE_GATES.md",
+      "ops/DB_MIGRATION_POLICY.md",
+      "ops/REPO_INTEGRITY.md"
+    ],
+    "source_of_truth_manifest": "ops/manifest.json"
+  },
+
+  "step_objectives": {
+    "goal": "Make builds reliable and fast, then push to GitHub with enforcement guard rails so development speed increases without risking corruption or broken main.",
+    "outcomes": [
+      "apps/web build hang/fail is resolved; pnpm build gates can pass reliably",
+      "pnpm monorepo build time is improved via caching/config (local + CI) and documented with before/after timings",
+      "GitHub remote is configured and code is pushed to https://github.com/AkshayDubey29/NoriJjak.git on main",
+      "Guard rails exist: pre-push or equivalent enforcement so bad changes are blocked; CI required checks are stable and documented",
+      "CI caches are configured for pnpm + (optional) Next build cache to speed pipelines"
+    ],
+    "constraints": [
+      "No new product features (no new domains, screens, flows). This step is build/release/dev-speed only.",
+      "No external paid services.",
+      "Owner does not execute local commands; IDE must run everything. If GitHub auth is needed, capture as limitation with exact remediation."
+    ],
+    "definition_of_done": [
+      "pnpm -r build succeeds (including apps/web) and no longer hangs; root gates are green locally",
+      "Build speed improvements implemented and measured (before/after) for pnpm -r build (or the chosen canonical build command)",
+      "CI updated with effective caching (pnpm store + build caches as applicable) and documented",
+      "Git configured: origin set to repo URL, main branch pushed, and CI workflows present in repo",
+      "Guard rails implemented (pre-push hooks and/or branch protection attempt via gh; minimum: local hooks + CI required checks documented)",
+      "Docs created/updated: ops/GIT_WORKFLOW.md, ops/CI_CACHING.md, ops/BUILD_TROUBLESHOOTING.md",
+      "Manifest updated + reports/STEP-0013.report.json produced"
+    ]
+  },
+
+  "deliverables_outcomes": [
+    {
+      "area": "Fix apps/web build hang/fail",
+      "goal": "Make Next.js build reliable and deterministic.",
+      "requirements": [
+        "Identify root cause of apps/web build hang/fail and fix it.",
+        "Ensure build does not rely on missing env vars for production build (provide safe defaults or documented build-time env policy).",
+        "Ensure build can run in CI headlessly."
+      ],
+      "acceptance_criteria": [
+        "pnpm -r build passes",
+        "Report includes root cause analysis and evidence (logs/timings)"
+      ]
+    },
+    {
+      "area": "Build speed optimization (local + CI)",
+      "goal": "Reduce iteration time without weakening quality gates.",
+      "requirements": [
+        "Implement caching and/or orchestration so repeated builds are significantly faster.",
+        "CI must cache pnpm store at minimum; optionally cache Next build artifacts safely.",
+        "Choose a canonical build command and document it.",
+        "Capture before/after timings for the same command on the same machine."
+      ],
+      "acceptance_criteria": [
+        "Report includes before/after wall-clock build times and what changed",
+        "CI workflow shows cache hit/miss outputs and improved job duration notes"
+      ]
+    },
+    {
+      "area": "GitHub push + guard rails",
+      "goal": "Push code to GitHub with enforcement that prevents broken main.",
+      "requirements": [
+        "Configure git remote origin to repo URL and push main.",
+        "Ensure .gitignore is correct for node/next/expo/prisma artifacts.",
+        "Guard rails: implement a pre-push (or equivalent) hook that runs integrity + lint + test (and optionally build) with a reasonable strategy; document how to bypass in emergencies.",
+        "CI workflows must run release gates + integrity and have stable job names intended for 'required checks'.",
+        "Attempt branch protection setup via GitHub CLI if available and authenticated; if not possible, document exact limitation and the minimal owner action needed."
+      ],
+      "acceptance_criteria": [
+        "Repo has main branch with code and CI workflows present",
+        "Report includes git commands run and push evidence (commit hash + remote confirmation logs)",
+        "Guard rails are present in repo (not only local untracked hooks) and documented"
+      ]
+    }
+  ],
+
+  "execution_plan_for_ide": {
+    "workflow": "sequential",
+    "manifest_updates": {
+      "on_start": {
+        "step_id": "STEP-0013",
+        "status": "IN_PROGRESS",
+        "fields_to_update": ["updated_at", "started_at", "agent"]
+      },
+      "on_success": {
+        "status": "COMPLETED",
+        "fields_to_update": ["updated_at", "completed_at", "artifacts", "notes"]
+      },
+      "on_blocked": {
+        "status": "BLOCKED",
+        "fields_to_update": ["updated_at", "notes"]
+      },
+      "on_failed": {
+        "status": "FAILED",
+        "fields_to_update": ["updated_at", "notes"]
+      }
+    },
+
+    "prechecks": [
+      {
+        "name": "tooling_presence",
+        "commands": ["node -v", "pnpm -v", "git --version"],
+        "on_fail": "BLOCKED"
+      },
+      {
+        "name": "repo_state_sanity",
+        "commands": ["git rev-parse --is-inside-work-tree", "git status --porcelain"],
+        "on_fail": "BLOCKED"
+      }
+    ],
+
+    "required_evidence_to_capture": [
+      "commands_run_with_exit_codes",
+      "build_timings_before_after",
+      "ci_cache_configuration_changes",
+      "web_build_root_cause_notes",
+      "git_remote_and_push_evidence",
+      "file_changes_list",
+      "major_decisions_and_tradeoffs"
+    ],
+
+    "tasks": [
+      {
+        "id": "T1",
+        "name": "Diagnose & fix apps/web build hang/failure",
+        "objective": "Make Next.js build complete successfully and deterministically.",
+        "constraints": ["No feature work", "Keep changes minimal and safe"],
+        "acceptance": ["pnpm --filter apps/web build succeeds and pnpm -r build succeeds"]
+      },
+      {
+        "id": "T2",
+        "name": "Optimize monorepo build speed",
+        "objective": "Implement caching/orchestration to speed up pnpm -r build locally and in CI.",
+        "constraints": ["Do not weaken gates", "Must document canonical build command and cache strategy"],
+        "acceptance": ["Before/after timings captured and meaningful improvement shown (or explained if not possible)"]
+      },
+      {
+        "id": "T3",
+        "name": "GitHub integration and push",
+        "objective": "Set origin remote and push main branch to the GitHub repo.",
+        "constraints": ["No owner command execution", "If auth required, attempt standard non-interactive methods first, then report limitation clearly"],
+        "acceptance": ["git remote -v shows origin set; push succeeds; commit hash recorded"]
+      },
+      {
+        "id": "T4",
+        "name": "Guard rails enforcement",
+        "objective": "Add guard rails for pushing/merging to main via hooks + CI required checks policy docs.",
+        "constraints": ["Must be repo-stored and reproducible; do not rely solely on local untracked hooks"],
+        "acceptance": ["Pre-push (or equivalent) is active; CI checks stable and documented; attempt branch protection via gh if feasible"]
+      },
+      {
+        "id": "T5",
+        "name": "Docs + manifest + report",
+        "objective": "Write docs, update manifest, produce complete report.",
+        "constraints": ["No placeholders"],
+        "acceptance": ["Docs complete; manifest updated; report complete"]
+      }
+    ],
+
+    "checks_to_run_before_finish": [
+      { "name": "integrity", "cmd": "pnpm -r integrity", "must_pass": true },
+      { "name": "lint", "cmd": "pnpm -r lint", "must_pass": true },
+      { "name": "test", "cmd": "pnpm -r test", "must_pass": true },
+      { "name": "build", "cmd": "pnpm -r build", "must_pass": true }
+    ]
+  },
+
+  "report_contract": {
+    "report_path": "reports/STEP-0013.report.json",
+    "report_schema": {
+      "step_id": "STEP-0013",
+      "status": "COMPLETED|COMPLETED_WITH_NOTES|BLOCKED|FAILED",
+      "summary": "string",
+      "major_decisions": [
+        { "area": "string", "decision": "string", "reason": "string", "tradeoffs": "string" }
+      ],
+      "commands_run": [
+        { "cmd": "string", "cwd": "string", "exit_code": 0, "stdout_tail": "string", "stderr_tail": "string" }
+      ],
+      "build_timings": {
+        "canonical_build_cmd": "string",
+        "before_seconds": 0,
+        "after_seconds": 0,
+        "notes": "string"
+      },
+      "ci_caching": {
+        "pnpm_cache": "enabled|disabled",
+        "next_cache": "enabled|disabled|not_applicable",
+        "evidence": "string"
+      },
+      "git_status": {
+        "origin": "string",
+        "branch": "string",
+        "pushed_commit": "string",
+        "push_evidence": "string"
+      },
+      "tests": [
+        { "name": "string", "cmd": "string", "passed": true, "notes": "string" }
+      ],
+      "build_gates": [
+        { "name": "string", "cmd": "string", "passed": true, "notes": "string" }
+      ],
+      "integrity_checks": [
+        { "name": "string", "cmd": "string", "passed": true, "notes": "string" }
+      ],
+      "files_changed": [
+        { "path": "string", "change_type": "created|modified|deleted" }
+      ],
+      "errors": [
+        { "where": "string", "error": "string", "how_fixed_or_next_steps": "string" }
+      ],
+      "automation_limitations": [
+        { "limitation": "string", "evidence": "string", "required_owner_permission_or_action": "string" }
+      ],
+      "manifest_update": {
+        "path": "ops/manifest.json",
+        "final_status_written": "string",
+        "updated_at_written": "string"
+      },
+      "next_recommendations": ["string"]
+    },
+    "must_be_filled": true
+  },
+
+  "docs_required": [
+    "ops/GIT_WORKFLOW.md",
+    "ops/CI_CACHING.md",
+    "ops/BUILD_TROUB_
+

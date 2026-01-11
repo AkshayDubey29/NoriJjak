@@ -1,0 +1,82 @@
+{
+  "step_id": "STEP-0009",
+  "status": "COMPLETED",
+  "summary": "Introduced Clubs/Communities as a social layer in NoriJjak. Implemented club models, membership management with roles, and integration with the Games domain. Users can now discover, join, and create clubs, and host games associated with their clubs.",
+  "environment_readiness": {
+    "os_detected": "darwin (macOS)",
+    "docker_status": "running",
+    "docker_actions_taken": ["Verified docker info", "Verified docker compose status"],
+    "infra_status": "running",
+    "infra_evidence": "PostgreSQL and Redis containers are healthy."
+  },
+  "major_decisions": [
+    {
+      "area": "Club Membership",
+      "decision": "Implemented roles (OWNER, ADMIN, MEMBER) and statuses (REQUESTED, APPROVED).",
+      "reason": "Allows for moderation and community management essential for GA-grade social features.",
+      "tradeoffs": "Increased complexity in membership logic and permissions."
+    },
+    {
+      "area": "Game-Club Linkage",
+      "decision": "Enforced that only approved members can create games for a club.",
+      "reason": "Prevents spam and ensures club-hosted games are legitimate.",
+      "tradeoffs": "Adds a check on game creation."
+    },
+    {
+      "area": "UX Parity",
+      "decision": "Implemented Clubs list and detail on both Web and Mobile, with creation on Web.",
+      "reason": "Prioritizes discovery across platforms while keeping complex forms on Web for the initial implementation.",
+      "tradeoffs": "Club creation deferred for Mobile in this step."
+    }
+  ],
+  "commands_run": [
+    { "cmd": "npx prisma migrate dev --name clubs_core", "cwd": "apps/api", "exit_code": 0 },
+    { "cmd": "pnpm -r lint && pnpm -r test", "cwd": ".", "exit_code": 0 }
+  ],
+  "tests": [
+    { "name": "Clubs API tests", "cmd": "vitest run src/clubs.test.ts", "passed": true, "notes": "Verified creation, listing, detail, and joining." },
+    { "name": "Game-Club Integration test", "cmd": "vitest run src/clubs.test.ts", "passed": true, "notes": "Verified club-hosted game creation and detail retrieval." },
+    { "name": "All quality gates", "cmd": "pnpm -r lint && pnpm -r test", "passed": true, "notes": "25 API tests and all frontend smoke tests pass." }
+  ],
+  "files_changed": [
+    { "path": "apps/api/prisma/schema.prisma", "change_type": "modified" },
+    { "path": "apps/api/src/routes/clubs.ts", "change_type": "created" },
+    { "path": "apps/api/src/routes/games.ts", "change_type": "modified" },
+    { "path": "apps/web/src/app/clubs/page.tsx", "change_type": "created" },
+    { "path": "apps/web/src/app/clubs/[id]/page.tsx", "change_type": "created" },
+    { "path": "apps/web/src/app/clubs/create/page.tsx", "change_type": "created" },
+    { "path": "apps/mobile/src/screens/clubs/ClubsListScreen.tsx", "change_type": "created" },
+    { "path": "apps/mobile/src/screens/clubs/ClubDetailScreen.tsx", "change_type": "created" }
+  ],
+  "acceptance_checklist": [
+    { "requirement": "Club model + membership roles", "met": true, "evidence": "Prisma schema updated with roles and statuses." },
+    { "requirement": "Clubs discovery (search/filter)", "met": true, "evidence": "Implemented on Web and Mobile." },
+    { "requirement": "Join policy enforcement", "met": true, "evidence": "OPEN vs APPROVAL logic implemented in API." },
+    { "requirement": "Game-Club linkage", "met": true, "evidence": "Games can reference clubId; club members only validation." }
+  ],
+  "errors": [
+    { "where": "Clubs Tests", "error": "Foreign key constraint violation during cleanup.", "how_fixed_or_next_steps": "Reordered deleteMany calls to respect dependencies." },
+    { "where": "Auth Routes", "error": "Signup did not return user ID.", "how_fixed_or_next_steps": "Updated /signup response to include user object." }
+  ],
+  "automation_limitations": [],
+  "manifest_update": {
+    "path": "ops/manifest.json",
+    "final_status_written": "COMPLETED",
+    "updated_at_written": "2026-01-08T11:00:00+09:00"
+  },
+  "next_recommendations": [
+    "Add Club Chat or Announcements feed.",
+    "Implement private club invitation codes.",
+    "Allow club owners to transfer ownership."
+  ],
+  "rules_summary": {
+    "club_visibility_modes": ["PUBLIC", "PRIVATE"],
+    "club_join_policies": ["OPEN", "APPROVAL", "INVITE"],
+    "club_roles": ["OWNER", "ADMIN", "MEMBER"]
+  },
+  "api_contract_changes": [
+    "Added /clubs endpoints",
+    "Updated /games to include clubId and return club info"
+  ]
+}
+

@@ -1,0 +1,93 @@
+{
+  "step_id": "STEP-0007",
+  "status": "COMPLETED",
+  "summary": "Implemented the GA growth loop with deep links, sharing functionality, and actionable notifications. Users can now share games and invite codes via native share sheets or web share, and open them directly via deep links or by tapping notifications.",
+  "environment_readiness": {
+    "os_detected": "darwin (macOS)",
+    "docker_status": "running",
+    "docker_actions_taken": ["Verified docker info", "Verified docker compose status"],
+    "infra_status": "running",
+    "infra_evidence": "PostgreSQL and Redis containers are healthy."
+  },
+  "major_decisions": [
+    {
+      "area": "Deep Linking",
+      "decision": "Used expo-linking and React Navigation's linking prop for mobile, and Next.js routes for web.",
+      "reason": "Provides a consistent routing mechanism that handles nested navigators and preserved state.",
+      "tradeoffs": "Requires careful configuration of prefixes and path mapping."
+    },
+    {
+      "area": "Sharing Mechanism",
+      "decision": "Used react-native Share for mobile and Web Share API (with clipboard fallback) for web.",
+      "reason": "Leverages native OS capabilities for the best user experience while providing a fallback for unsupported platforms.",
+      "tradeoffs": "Web Share API support varies across desktop browsers."
+    },
+    {
+      "area": "Notification Navigation",
+      "decision": "Mapped notification payload fields (e.g., gameId) to navigation targets in the UI.",
+      "reason": "Makes notifications actionable, driving users directly to the relevant content.",
+      "tradeoffs": "Requires UI components to be aware of navigation contexts."
+    }
+  ],
+  "commands_run": [
+    { "cmd": "pnpm add expo-linking", "cwd": "apps/mobile", "exit_code": 0 },
+    { "cmd": "pnpm -r lint && pnpm -r test", "cwd": ".", "exit_code": 0 }
+  ],
+  "tests": [
+    { "name": "Mobile Deep Link Mock", "cmd": "pnpm test App.test.tsx", "passed": true, "notes": "Verified App renders with linking config mocked." },
+    { "name": "All quality gates", "cmd": "pnpm -r lint && pnpm -r test", "passed": true, "notes": "16 API tests and all frontend smoke tests pass." }
+  ],
+  "files_changed": [
+    { "path": "apps/mobile/App.tsx", "change_type": "modified" },
+    { "path": "apps/mobile/App.test.tsx", "change_type": "modified" },
+    { "path": "apps/mobile/src/screens/games/GameDetailScreen.tsx", "change_type": "modified" },
+    { "path": "apps/web/src/app/games/[id]/page.tsx", "change_type": "modified" },
+    { "path": "ops/DEEPLINKS.md", "change_type": "created" },
+    { "path": "ops/SHARING_MODEL.md", "change_type": "created" }
+  ],
+  "acceptance_checklist": [
+    { "requirement": "Mobile deep link config (norijjak://)", "met": true, "evidence": "Implemented in App.tsx using expo-linking." },
+    { "requirement": "Game detail share UX (Mobile)", "met": true, "evidence": "Share button added to GameDetailScreen using native share." },
+    { "requirement": "Invite code share UX (Mobile)", "met": true, "evidence": "Host can tap invite code to share via native share sheet." },
+    { "requirement": "Game detail share UX (Web)", "met": true, "evidence": "Share button added to GameDetailPage with clipboard fallback." },
+    { "requirement": "Notifications navigation", "met": true, "evidence": "Notifications navigate to target game/screen on tap." }
+  ],
+  "errors": [
+    { "where": "Mobile tests", "error": "Cannot find module 'expo-linking' and missing manifest in test environment.", "how_fixed_or_next_steps": "Installed expo-linking and mocked it in App.test.tsx." }
+  ],
+  "automation_limitations": [],
+  "manifest_update": {
+    "path": "ops/manifest.json",
+    "final_status_written": "COMPLETED",
+    "updated_at_written": "2026-01-08T08:55:00+09:00"
+  },
+  "next_recommendations": [
+    "Integrate Firebase Cloud Messaging (FCM) for real-step push notification delivery.",
+    "Add 'Open in App' smart banners to the web view for mobile users.",
+    "Implement QR code generation for invite codes to facilitate in-person sharing."
+  ],
+  "link_formats": {
+    "web_game_url": "https://norijjak.app/games/:id",
+    "web_invite_url": "https://norijjak.app/games/:id?invite=:token",
+    "mobile_game_deeplink": "norijjak://games/:id",
+    "mobile_invite_deeplink": "norijjak://notifications"
+  },
+  "navigation_matrix_summary": [
+    {
+      "entry": "Deep Link (Game)",
+      "state": "unauthenticated",
+      "result": "Login -> Redirect to Game"
+    },
+    {
+      "entry": "Deep Link (Game)",
+      "state": "needs_onboarding",
+      "result": "Onboarding -> Redirect to Game"
+    },
+    {
+      "entry": "Deep Link (Game)",
+      "state": "ready",
+      "result": "Direct to Game Detail"
+    }
+  ]
+}
+

@@ -1,0 +1,286 @@
+{
+  "prompt_meta": {
+    "prompt_id": "STEP-0012",
+    "title": "GA Release Hardening: Repo Integrity Guardrails + Prisma Migration Discipline + Build/Release Gates (API + Web + Mobile)",
+    "created_by": "ChatGPT",
+    "executed_by": "__IDE_AGENT__",
+    "timezone": "Asia/Seoul",
+    "product_identity": {
+      "name_ko_one_word": "놀이짝",
+      "name_en": "NoriJjak",
+      "primary_locales": ["ko-KR", "en-US"],
+      "release_policy": "GA_ONLY_FIRST_PUBLIC_RELEASE"
+    },
+    "links": {
+      "manifest_path": "ops/manifest.json",
+      "report_path": "reports/STEP-0012.report.json"
+    }
+  },
+
+  "non_negotiable_rules": {
+    "implementation_autonomy": true,
+    "chatgpt_does_not_instruct_code": true,
+    "ide_chooses_stack_and_patterns": true,
+    "ide_must_document_major_choices": true,
+    "no_scope_creep": true,
+    "no_skipping_tests": true,
+    "all_user_visible_text_localized": true,
+    "always_update_manifest": true,
+    "always_write_report": true,
+    "report_must_have_no_placeholders": true,
+    "executor_must_not_delegate_actions_to_owner": true,
+    "no_public_release_unless_explicitly_allowed": true,
+
+    "repo_corruption_guardrails_required": true,
+    "no_prisma_db_push_for_schema_changes_after_this_step": true,
+    "migrations_required_for_all_schema_changes": true,
+    "ci_must_fail_on_integrity_violations": true
+  },
+
+  "owner_actions": [
+    {
+      "id": "OWNER-STEP-0012-APPROVAL-1",
+      "when": "after STEP-0012 report is shared with ChatGPT",
+      "instruction": "Approve the GA release gates and the 'no db push' policy documented in ops/RELEASE_GATES.md and ops/DB_MIGRATION_POLICY.md. Approval only; no local execution.",
+      "expected_output": "APPROVE or provide edits",
+      "must_not_require_execution": true
+    },
+    {
+      "id": "OWNER-STEP-0012-OPTIONAL-1",
+      "when": "after approval",
+      "instruction": "Optionally enable branch protection rules on the repo (require CI green before merge). If owner cannot access repo settings, report as limitation.",
+      "expected_output": "DONE or cannot-access",
+      "must_not_require_execution": true
+    }
+  ],
+
+  "required_repo_contract": {
+    "must_exist_folders": [
+      "prompts",
+      "reports",
+      "ops",
+      "infra",
+      "apps/api",
+      "apps/web",
+      "apps/mobile",
+      "packages/shared"
+    ],
+    "source_of_truth_manifest": "ops/manifest.json"
+  },
+
+  "step_objectives": {
+    "goal": "Prevent recurrence of corruption and establish GA-grade release discipline: repo integrity checks, database migration policy, and build gates that must pass on every change.",
+    "outcomes": [
+      "Repo integrity scanner exists and runs locally + in CI (detect null bytes, empty critical files, JSON parse failures, missing required files)",
+      "Prisma discipline enforced: migrations are the source of truth (no schema changes via db push after this step)",
+      "A migration baseline strategy is implemented to reconcile current state safely (IDE chooses approach; must document)",
+      "Root build gates exist and are green (api/web/mobile as applicable)",
+      "Recovery playbooks exist: how to restore from corruption, how to reset local DB safely, how to re-seed"
+    ],
+    "constraints": [
+      "No new product features (no new domains/UI beyond what is needed for release gates and integrity).",
+      "No external credentials required (no Sentry/Firebase/etc).",
+      "Owner does not execute commands; IDE must run everything."
+    ],
+    "definition_of_done": [
+      "Integrity guard: script/tool added + documented + enforced in CI",
+      "CI runs: lint + test + build + integrity + (optional) typecheck and fails fast on violations",
+      "Prisma: documented and enforced workflow: generate migrations for schema changes; CI rejects db push usage",
+      "Database reset/seed scripts are reliable and documented",
+      "Root lint/test/build pass",
+      "Docs added: ops/RELEASE_GATES.md, ops/REPO_INTEGRITY.md, ops/DB_MIGRATION_POLICY.md, ops/DISASTER_RECOVERY.md",
+      "Manifest updated + reports/STEP-0012.report.json produced"
+    ]
+  },
+
+  "deliverables_outcomes": [
+    {
+      "area": "Repo integrity guardrails",
+      "goal": "Detect corruption early and stop bad commits.",
+      "requirements": [
+        "Add an integrity check that detects: null bytes, empty critical files, malformed JSON, missing required repo contract files.",
+        "Add a 'critical files list' and enforce minimum size/non-empty checks.",
+        "Ensure it runs in CI and can be run locally."
+      ],
+      "acceptance_criteria": [
+        "Report includes sample run output and what it checks",
+        "CI job exists and fails when corruption is simulated (IDE may demonstrate via a temporary test file and remove it)"
+      ]
+    },
+    {
+      "area": "Prisma migration discipline",
+      "goal": "Stop db push drift and make DB changes reproducible.",
+      "requirements": [
+        "Establish a canonical policy: migrations are required for schema changes.",
+        "Reconcile current schema state (post db push) into a safe baseline with migrations (IDE chooses: baseline migration, diff-based migration, or reset strategy; must document).",
+        "Update scripts so developers use migrate workflows, not db push.",
+        "Update CI to discourage/prevent db push (policy + detection)."
+      ],
+      "acceptance_criteria": [
+        "Fresh clone + setup can reach a working DB state using documented commands",
+        "Report includes evidence: schema sync using migrations, not db push"
+      ]
+    },
+    {
+      "area": "Release build gates",
+      "goal": "Every app can build in CI and locally without manual steps.",
+      "requirements": [
+        "Root build command(s) exist and pass (IDE decides exact commands).",
+        "CI runs build gates for api/web/mobile appropriately.",
+        "Ensure docker-compose.yml and infra scripts remain valid."
+      ],
+      "acceptance_criteria": [
+        "CI shows build gates passing",
+        "Report includes commands run + exit codes"
+      ]
+    },
+    {
+      "area": "Recovery playbooks",
+      "goal": "When things go wrong, we recover fast.",
+      "requirements": [
+        "Document: how to recover from file corruption, how to restore critical files, how to verify integrity.",
+        "Document: how to reset local DB safely and re-seed.",
+        "Document: how to verify a clean working state end-to-end."
+      ],
+      "acceptance_criteria": [
+        "Docs exist and are specific (no placeholders)",
+        "Report references docs and highlights key procedures"
+      ]
+    }
+  ],
+
+  "execution_plan_for_ide": {
+    "workflow": "sequential",
+    "manifest_updates": {
+      "on_start": {
+        "step_id": "STEP-0012",
+        "status": "IN_PROGRESS",
+        "fields_to_update": ["updated_at", "started_at", "agent"]
+      },
+      "on_success": {
+        "status": "COMPLETED",
+        "fields_to_update": ["updated_at", "completed_at", "artifacts", "notes"]
+      },
+      "on_blocked": {
+        "status": "BLOCKED",
+        "fields_to_update": ["updated_at", "notes"]
+      },
+      "on_failed": {
+        "status": "FAILED",
+        "fields_to_update": ["updated_at", "notes"]
+      }
+    },
+
+    "prechecks": [
+      {
+        "name": "tooling_presence",
+        "commands": ["node -v", "pnpm -v", "git --version"],
+        "on_fail": "BLOCKED"
+      },
+      {
+        "name": "repo_state_sanity",
+        "commands": ["git status --porcelain", "git rev-parse --is-inside-work-tree"],
+        "on_fail": "BLOCKED"
+      }
+    ],
+
+    "required_evidence_to_capture": [
+      "commands_run_with_exit_codes",
+      "tests_run_and_results",
+      "build_gates_results",
+      "integrity_check_results",
+      "file_changes_list",
+      "major_decisions_and_tradeoffs"
+    ],
+
+    "tasks": [
+      {
+        "id": "T1",
+        "name": "Repo integrity scanner + CI enforcement",
+        "objective": "Add integrity checker and make CI fail on corruption signals.",
+        "constraints": ["Must run fast and be deterministic"],
+        "acceptance": ["Integrity check runs locally and in CI; documented"]
+      },
+      {
+        "id": "T2",
+        "name": "Prisma migration baseline + policy",
+        "objective": "Remove reliance on db push and establish migrations as canonical.",
+        "constraints": ["Must be reproducible from a fresh checkout"],
+        "acceptance": ["Local setup path uses migrations; policy doc written"]
+      },
+      {
+        "id": "T3",
+        "name": "Release build gates",
+        "objective": "Ensure api/web/mobile build commands exist and pass; wire into CI.",
+        "constraints": ["No external credentials"],
+        "acceptance": ["CI build gates pass; root scripts documented"]
+      },
+      {
+        "id": "T4",
+        "name": "Recovery playbooks",
+        "objective": "Create disaster recovery docs for corruption + DB reset/seed + verification.",
+        "constraints": ["No placeholders"],
+        "acceptance": ["Docs complete and referenced in report"]
+      },
+      {
+        "id": "T5",
+        "name": "Docs + manifest + report",
+        "objective": "Update manifest and produce a complete report.",
+        "constraints": ["No placeholders"],
+        "acceptance": ["Manifest updated; report complete"]
+      }
+    ],
+
+    "checks_to_run_before_finish": [
+      { "name": "integrity", "cmd": "pnpm -r integrity", "must_pass": true },
+      { "name": "lint", "cmd": "pnpm -r lint", "must_pass": true },
+      { "name": "test", "cmd": "pnpm -r test", "must_pass": true },
+      { "name": "build", "cmd": "pnpm -r build", "must_pass": true }
+    ]
+  },
+
+  "report_contract": {
+    "report_path": "reports/STEP-0012.report.json",
+    "report_schema": {
+      "step_id": "STEP-0012",
+      "status": "COMPLETED|COMPLETED_WITH_NOTES|BLOCKED|FAILED",
+      "summary": "string",
+      "major_decisions": [
+        { "area": "string", "decision": "string", "reason": "string", "tradeoffs": "string" }
+      ],
+      "commands_run": [
+        { "cmd": "string", "cwd": "string", "exit_code": 0, "stdout_tail": "string", "stderr_tail": "string" }
+      ],
+      "tests": [
+        { "name": "string", "cmd": "string", "passed": true, "notes": "string" }
+      ],
+      "build_gates": [
+        { "name": "string", "cmd": "string", "passed": true, "notes": "string" }
+      ],
+      "integrity_checks": [
+        { "name": "string", "cmd": "string", "passed": true, "notes": "string" }
+      ],
+      "files_changed": [
+        { "path": "string", "change_type": "created|modified|deleted" }
+      ],
+      "errors": [
+        { "where": "string", "error": "string", "how_fixed_or_next_steps": "string" }
+      ],
+      "manifest_update": {
+        "path": "ops/manifest.json",
+        "final_status_written": "string",
+        "updated_at_written": "string"
+      },
+      "next_recommendations": ["string"],
+      "policy_summary": {
+        "db_migration_policy": "string",
+        "integrity_policy": "string",
+        "release_gates_policy": "string"
+      }
+    },
+    "must_be_filled": true
+  },
+
+  "final_instruction_to_ide": "Execute this prompt exactly. Do not delegate any execution to the owner. Choose implementation freely. Update ops/manifest.json and write a complete reports/STEP-0012.report.json with no placeholders."
+}
+

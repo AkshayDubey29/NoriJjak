@@ -1,0 +1,342 @@
+{
+  "prompt_meta": {
+    "prompt_id": "STEP-0011",
+    "title": "Trust Layer (GA): Ratings & Reviews for Players/Venues/Clubs + Reputation Badges + Profile Social Proof (API + Web + Mobile)",
+    "created_by": "ChatGPT",
+    "executed_by": "__IDE_AGENT__",
+    "timezone": "Asia/Seoul",
+    "product_identity": {
+      "name_ko_one_word": "놀이짝",
+      "name_en": "NoriJjak",
+      "primary_locales": ["ko-KR", "en-US"],
+      "release_policy": "GA_ONLY_FIRST_PUBLIC_RELEASE"
+    },
+    "links": {
+      "manifest_path": "ops/manifest.json",
+      "report_path": "reports/STEP-0011.report.json"
+    }
+  },
+
+  "non_negotiable_rules": {
+    "implementation_autonomy": true,
+    "chatgpt_does_not_instruct_code": true,
+    "ide_chooses_stack_and_patterns": true,
+    "ide_must_document_major_choices": true,
+    "no_scope_creep": true,
+    "no_skipping_tests": true,
+    "all_user_visible_text_localized": true,
+    "always_update_manifest": true,
+    "always_write_report": true,
+    "report_must_have_no_placeholders": true,
+    "executor_must_not_delegate_actions_to_owner": true,
+    "no_public_release_unless_explicitly_allowed": true,
+    "no_payments_no_booking_in_this_step": true,
+    "no_external_credentials_required_in_this_step": true,
+    "privacy_first_no_precise_gps_required": true,
+    "abuse_resistance_required": true
+  },
+
+  "owner_actions": [
+    {
+      "id": "OWNER-STEP-0011-APPROVAL-1",
+      "when": "after STEP-0011 report is shared with ChatGPT",
+      "instruction": "Approve Rating/Review rules and badge names/thresholds documented in ops/RATINGS_RULES.md and ops/REPUTATION_MODEL.md. Approval only; no execution.",
+      "expected_output": "APPROVE or provide edits",
+      "must_not_require_execution": true
+    }
+  ],
+
+  "required_repo_contract": {
+    "must_exist_folders": [
+      "prompts",
+      "reports",
+      "ops",
+      "infra",
+      "apps/api",
+      "apps/web",
+      "apps/mobile",
+      "packages/shared"
+    ],
+    "source_of_truth_manifest": "ops/manifest.json"
+  },
+
+  "step_objectives": {
+    "goal": "Add a GA-grade Trust Layer: structured ratings/reviews for players, venues, and clubs; aggregate reputation; and show social proof in profiles to drive safer matches and retention.",
+    "outcomes": [
+      "Players can rate other players after a completed game (one rating per rater->ratee per game)",
+      "Venues can be rated when a game had a venue attached (after completion)",
+      "Clubs can be rated under a clear eligibility policy (IDE chooses policy; must document and enforce)",
+      "Aggregated reputation is computed and displayed: averages, counts, and badges",
+      "Abuse-resistant controls exist: eligibility checks, edit windows, report review, and anti-spam constraints",
+      "Web + Mobile UX exists for: leaving ratings, viewing reputation summaries, and seeing badges",
+      "All visible text localized KO/EN via shared dictionary",
+      "Docs updated to support future: moderation UI, verified profiles, ranking feeds"
+    ],
+    "constraints": [
+      "No external review providers or moderation SaaS.",
+      "No public “wall of shame”: avoid exposing personal data beyond reputation summary; IDE must document safe display choices.",
+      "No complex ML scoring: simple deterministic aggregation is fine, but must be documented and testable."
+    ],
+    "definition_of_done": [
+      "IDE ensures Docker/infra is running (auto-start if needed) and migrations applied",
+      "API endpoints exist for creating/updating ratings, listing ratings summary, and viewing user/venue/club reputation summaries",
+      "Eligibility enforced server-side (only valid raters can rate; only after game completion)",
+      "Review reporting endpoint exists (reuse safety/report concepts or implement a new review-report model; document)",
+      "Web: rating flows available from game detail/completed state and profile/venue/club pages show summaries",
+      "Mobile: same core rating flow and reputation viewing",
+      "Root lint/test passes",
+      "Docs created/updated: ops/RATINGS_RULES.md, ops/REPUTATION_MODEL.md, ops/REVIEW_MODERATION_PLACEHOLDERS.md, ops/API_CONTRACTS.md updated",
+      "Manifest updated + reports/STEP-0011.report.json produced"
+    ]
+  },
+
+  "deliverables_outcomes": [
+    {
+      "area": "Environment readiness (executor-owned)",
+      "goal": "No owner execution; infra must be up for DB-backed reputation.",
+      "requirements": [
+        "Ensure Docker daemon is running (auto-start/install attempt as needed).",
+        "Ensure infra containers are up (compose up if needed).",
+        "Apply DB migrations required for ratings/reputation."
+      ],
+      "acceptance_criteria": [
+        "Report includes docker info + compose ps evidence (if used)",
+        "DB-backed tests pass"
+      ]
+    },
+    {
+      "area": "Rating models (Players/Venues/Clubs)",
+      "goal": "A consistent, auditable rating system.",
+      "requirements": [
+        "Rating scale must be defined (e.g., 1-5).",
+        "Player rating must be linked to gameId, raterId, rateeUserId.",
+        "Venue rating must be linked to gameId, raterId, venueId (only if venueId exists on game).",
+        "Club rating must be linked to raterId and clubId under an eligibility rule (IDE chooses; must document and enforce).",
+        "Support optional short structured feedback (categories) and optional comment, with strict length limits (abuse resistance).",
+        "Support updating a rating within a bounded window (IDE chooses) or not; must document tradeoff."
+      ],
+      "acceptance_criteria": [
+        "Docs define schemas and uniqueness constraints (one rating per entity per game where applicable)",
+        "API tests validate uniqueness and eligibility checks"
+      ]
+    },
+    {
+      "area": "Eligibility rules (abuse resistance)",
+      "goal": "Only legitimate ratings allowed.",
+      "requirements": [
+        "Player ratings: only host/approved participants can rate other approved participants of the same completed game.",
+        "Venue ratings: only approved participants of a completed game with that venue can rate it.",
+        "Club ratings: clear rule chosen and enforced (e.g., only participants of a completed club-hosted game, or only approved club members with minimum tenure).",
+        "Prevent self-rating and duplicate rating attempts.",
+        "Define cancellation behavior (CANCELLED games cannot be rated) and enforce."
+      ],
+      "acceptance_criteria": [
+        "API tests cover allowed/denied cases (unauth, requested/waitlist, cancelled, not in game, self-rate, duplicate)"
+      ]
+    },
+    {
+      "area": "Reputation aggregation + badges",
+      "goal": "Meaningful reputation without being gameable.",
+      "requirements": [
+        "Compute summary fields for each target type: average rating, rating count, and optionally category averages (if categories exist).",
+        "Badge system: deterministic badges derived from thresholds (count + average + safety signals). IDE chooses badge set; must document.",
+        "Aggregation strategy documented (simple average vs bayesian smoothing etc.).",
+        "Ensure performance: avoid N+1 queries; document approach."
+      ],
+      "acceptance_criteria": [
+        "API tests validate aggregation correctness on sample data",
+        "Docs list badges and exact thresholds/logic"
+      ]
+    },
+    {
+      "area": "Review reporting + moderation placeholders",
+      "goal": "GA safety for reviews.",
+      "requirements": [
+        "Users can report a rating/review (reason codes + optional note).",
+        "Persist report with metadata: reporterId, targetType, targetId, ratingId, createdAt.",
+        "Moderation placeholders doc: define future admin review actions (hide review, remove badge, suspend user) but do not build admin UI now."
+      ],
+      "acceptance_criteria": [
+        "API tests verify report creation and validation",
+        "Docs define reason codes and moderation plan"
+      ]
+    },
+    {
+      "area": "Web UX",
+      "goal": "End-to-end rating flows and social proof.",
+      "requirements": [
+        "From a completed game detail: users can rate players (and venue/club if applicable).",
+        "Profile page shows reputation summary and badges.",
+        "Venue and club pages show rating summaries and counts.",
+        "Localization KO/EN for all visible strings."
+      ],
+      "acceptance_criteria": [
+        "Web tests cover: completed game rating CTA appears, submit rating flow mocked, profile shows badges"
+      ]
+    },
+    {
+      "area": "Mobile UX",
+      "goal": "Same core trust loop on mobile.",
+      "requirements": [
+        "From a completed game detail: rating entry UI exists (simple form).",
+        "Profile shows reputation summary and badges.",
+        "Venue and club screens show rating summaries.",
+        "Localization KO/EN."
+      ],
+      "acceptance_criteria": [
+        "Mobile tests cover: rating screen renders, submission state handling mocked, badges render"
+      ]
+    },
+    {
+      "area": "Docs & contracts",
+      "goal": "Make reputation a stable platform feature.",
+      "requirements": [
+        "Create ops/RATINGS_RULES.md (eligibility, timing, duplicates, cancellation handling, comment limits).",
+        "Create ops/REPUTATION_MODEL.md (aggregation, badge logic, display rules).",
+        "Create ops/REVIEW_MODERATION_PLACEHOLDERS.md (future admin actions, audit trail needs).",
+        "Update ops/API_CONTRACTS.md with endpoints, payloads, and errors."
+      ],
+      "acceptance_criteria": [
+        "Docs match implementation and tests",
+        "Tradeoffs recorded clearly (edit window, comment policy, aggregation method)"
+      ]
+    }
+  ],
+
+  "execution_plan_for_ide": {
+    "workflow": "sequential",
+    "manifest_updates": {
+      "on_start": {
+        "step_id": "STEP-0011",
+        "status": "IN_PROGRESS",
+        "fields_to_update": ["updated_at", "started_at", "agent"]
+      },
+      "on_success": {
+        "status": "COMPLETED",
+        "fields_to_update": ["updated_at", "completed_at", "artifacts", "notes"]
+      },
+      "on_blocked": {
+        "status": "BLOCKED",
+        "fields_to_update": ["updated_at", "notes"]
+      },
+      "on_failed": {
+        "status": "FAILED",
+        "fields_to_update": ["updated_at", "notes"]
+      }
+    },
+    "required_evidence_to_capture": [
+      "environment_readiness_actions",
+      "migration_evidence",
+      "api_tests_results",
+      "web_tests_results",
+      "mobile_tests_results",
+      "file_changes_list",
+      "major_decisions_and_tradeoffs"
+    ],
+    "tasks": [
+      {
+        "id": "T1",
+        "name": "Ensure infra running (executor-owned)",
+        "objective": "Auto-start Docker/infra and confirm DB connectivity.",
+        "constraints": ["No delegation to owner"],
+        "acceptance": ["docker + infra running OR BLOCKED with exact OS/permission limitation"]
+      },
+      {
+        "id": "T2",
+        "name": "Rating models + migrations",
+        "objective": "Add rating/review models for players/venues/clubs with uniqueness constraints.",
+        "constraints": ["Auditable and abuse-resistant; document edit/comment policy"],
+        "acceptance": ["migrations applied; constraints validated in tests"]
+      },
+      {
+        "id": "T3",
+        "name": "API endpoints + tests",
+        "objective": "Implement create/update/list/summary endpoints with eligibility enforcement and aggregation tests.",
+        "constraints": ["Server-side enforcement; stable summaries"],
+        "acceptance": ["API tests cover core flows and edge cases"]
+      },
+      {
+        "id": "T4",
+        "name": "Review reporting + tests",
+        "objective": "Enable reporting of reviews and persist audit records.",
+        "constraints": ["Reason codes required; moderation placeholders doc"],
+        "acceptance": ["API tests cover report creation and validation"]
+      },
+      {
+        "id": "T5",
+        "name": "Web + Mobile UX",
+        "objective": "Add rating UI from completed game and show reputation summaries/badges on profile/venue/club.",
+        "constraints": ["No hard-coded visible strings"],
+        "acceptance": ["Web/Mobile tests pass"]
+      },
+      {
+        "id": "T6",
+        "name": "Docs + manifest + report",
+        "objective": "Write docs, update manifest, produce complete report.",
+        "constraints": ["No placeholders"],
+        "acceptance": ["Docs complete; manifest updated; report complete"]
+      }
+    ],
+    "checks_to_run_before_finish": [
+      { "name": "root_lint", "cmd": "pnpm -r lint", "must_pass": true },
+      { "name": "root_test", "cmd": "pnpm -r test", "must_pass": true }
+    ]
+  },
+
+  "report_contract": {
+    "report_path": "reports/STEP-0011.report.json",
+    "report_schema": {
+      "step_id": "STEP-0011",
+      "status": "COMPLETED|COMPLETED_WITH_NOTES|BLOCKED|FAILED",
+      "summary": "string",
+      "environment_readiness": {
+        "os_detected": "string",
+        "docker_status": "running|not_installed|blocked|failed",
+        "docker_actions_taken": ["string"],
+        "infra_status": "running|blocked|failed",
+        "infra_evidence": "string"
+      },
+      "major_decisions": [
+        { "area": "string", "decision": "string", "reason": "string", "tradeoffs": "string" }
+      ],
+      "commands_run": [
+        { "cmd": "string", "cwd": "string", "exit_code": 0, "stdout_tail": "string", "stderr_tail": "string" }
+      ],
+      "tests": [
+        { "name": "string", "cmd": "string", "passed": true, "notes": "string" }
+      ],
+      "files_changed": [
+        { "path": "string", "change_type": "created|modified|deleted" }
+      ],
+      "acceptance_checklist": [
+        { "requirement": "string", "met": true, "evidence": "string" }
+      ],
+      "errors": [
+        { "where": "string", "error": "string", "how_fixed_or_next_steps": "string" }
+      ],
+      "automation_limitations": [
+        { "limitation": "string", "evidence": "string", "required_owner_permission_or_action": "string" }
+      ],
+      "manifest_update": {
+        "path": "ops/manifest.json",
+        "final_status_written": "string",
+        "updated_at_written": "string"
+      },
+      "next_recommendations": ["string"],
+      "rules_summary": {
+        "player_rating_eligibility": "string",
+        "venue_rating_eligibility": "string",
+        "club_rating_eligibility": "string",
+        "edit_window_policy": "string",
+        "comment_policy": "string",
+        "aggregation_strategy": "string",
+        "badge_list": ["string"]
+      },
+      "api_contract_changes": ["string"]
+    },
+    "must_be_filled": true
+  },
+
+  "final_instruction_to_ide": "Execute this prompt exactly. Do not delegate any execution to the owner. Choose implementation freely. Update ops/manifest.json and write a complete reports/STEP-0011.report.json with no placeholders."
+}
+

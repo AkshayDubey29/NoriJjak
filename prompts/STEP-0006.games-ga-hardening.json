@@ -1,0 +1,315 @@
+{
+  "prompt_meta": {
+    "prompt_id": "STEP-0006",
+    "title": "Games GA Hardening: approval workflow + private invites + host management + pagination/filters + in-app notifications (store-only)",
+    "created_by": "ChatGPT",
+    "executed_by": "__IDE_AGENT__",
+    "timezone": "Asia/Seoul",
+    "product_identity": {
+      "name_ko_one_word": "놀이짝",
+      "name_en": "NoriJjak",
+      "primary_locales": ["ko-KR", "en-US"],
+      "release_policy": "GA_ONLY_FIRST_PUBLIC_RELEASE"
+    },
+    "links": {
+      "manifest_path": "ops/manifest.json",
+      "report_path": "reports/STEP-0006.report.json"
+    }
+  },
+
+  "non_negotiable_rules": {
+    "implementation_autonomy": true,
+    "chatgpt_does_not_instruct_code": true,
+    "ide_chooses_stack_and_patterns": true,
+    "ide_must_document_major_choices": true,
+    "no_scope_creep": true,
+    "no_skipping_tests": true,
+    "all_user_visible_text_localized": true,
+    "always_update_manifest": true,
+    "always_write_report": true,
+    "report_must_have_no_placeholders": true,
+    "executor_must_not_delegate_actions_to_owner": true,
+    "no_public_release_unless_explicitly_allowed": true,
+    "no_payments_no_venue_booking_no_chat_in_this_step": true
+  },
+
+  "owner_actions": [
+    {
+      "id": "OWNER-STEP-0006-APPROVAL-1",
+      "when": "after STEP-0006 report is shared with ChatGPT",
+      "instruction": "Approve the final rules for: (1) Approval-based joins, (2) Private game invitations, (3) Waitlist promotion behavior. (IDE documents in ops/GAME_RULES.md updates.)",
+      "expected_output": "APPROVE or provide edits",
+      "must_not_require_execution": true
+    }
+  ],
+
+  "required_repo_contract": {
+    "must_exist_folders": [
+      "prompts",
+      "reports",
+      "ops",
+      "infra",
+      "apps/api",
+      "apps/web",
+      "apps/mobile",
+      "packages/shared"
+    ],
+    "source_of_truth_manifest": "ops/manifest.json"
+  },
+
+  "step_objectives": {
+    "goal": "Make Games feature GA-ready by completing approval joins, private invites, host management, pagination/filtering, and auditable in-app notifications.",
+    "outcomes": [
+      "Approval joinPolicy fully supported across API/Web/Mobile (request → approve/deny → state transitions)",
+      "Private games supported with invite mechanism (link/code/token) and host controls",
+      "Host management UX exists (requests, participants, waitlist, cancel/edit)",
+      "Game list endpoints have pagination + stable ordering and better filters",
+      "In-app notifications are persisted and viewable (no push delivery required yet)",
+      "Comprehensive tests exist for OPEN + APPROVAL + PRIVATE flows"
+    ],
+    "constraints": [
+      "No payments, no venue booking integrations, no chat/messaging.",
+      "IDE chooses invite mechanism (token/code/link) and must document security tradeoffs.",
+      "Keep location privacy-safe (coarse homeArea/radius).",
+      "Must build on existing auth + onboarding gating."
+    ],
+    "definition_of_done": [
+      "IDE ensures Docker/infra is running (auto-start if needed) and migrations applied",
+      "API tests cover: OPEN join, APPROVAL join, PRIVATE invites, capacity/waitlist, host permissions",
+      "Web supports: create/edit/cancel + host manage + invite + approvals",
+      "Mobile supports: list/detail/join + approval state visibility + invite join flow + basic host manage (at least approve/deny and cancel); if any host tools deferred, document precisely",
+      "In-app notifications can be listed/marked read on Web and Mobile",
+      "Root lint/test pass",
+      "Docs updated/added: ops/GAME_RULES.md, ops/API_CONTRACTS.md, ops/INVITE_MODEL.md, ops/NOTIFICATIONS_MODEL.md",
+      "Manifest updated and report produced"
+    ]
+  },
+
+  "deliverables_outcomes": [
+    {
+      "area": "Environment readiness (executor-owned)",
+      "goal": "No manual owner actions; infra must be up.",
+      "requirements": [
+        "Ensure Docker daemon is running (auto-start/install attempt as needed).",
+        "Ensure infra containers are up (compose up if needed).",
+        "Run migrations for any new models/fields."
+      ],
+      "acceptance_criteria": [
+        "Report contains docker info + compose ps evidence",
+        "DB-backed tests pass"
+      ]
+    },
+    {
+      "area": "Approval join policy end-to-end",
+      "goal": "APPROVAL flow must be complete and consistent.",
+      "requirements": [
+        "When joinPolicy=APPROVAL: joining creates a REQUESTED state; host can APPROVE or DENY.",
+        "Capacity rules enforced: APPROVED counts toward capacity; REQUESTED does not (unless IDE decides otherwise and documents).",
+        "Waitlist interaction defined and implemented consistently (document rules)."
+      ],
+      "acceptance_criteria": [
+        "API tests cover REQUESTED → APPROVED/DENIED transitions and permissions",
+        "Web+Mobile UI shows correct state for requester and host"
+      ]
+    },
+    {
+      "area": "Private games + invitations",
+      "goal": "PRIVATE games must be joinable only via invitation.",
+      "requirements": [
+        "Define and implement an invitation mechanism (invite token/code/link) for private games.",
+        "Host can create/revoke invites and view invite usage (basic).",
+        "Non-invited users cannot join private games via list/discovery (server-side enforced)."
+      ],
+      "acceptance_criteria": [
+        "API tests cover access control for PRIVATE games",
+        "Invite redemption flow tested",
+        "Docs include security considerations (guessability, expiry, revocation)"
+      ]
+    },
+    {
+      "area": "Host management",
+      "goal": "Host can manage the game without hacks.",
+      "requirements": [
+        "Host can: approve/deny requests, remove participants if rules allow (optional), cancel game, edit basic details (time/capacity/notes) within defined constraints.",
+        "All actions must be permission-checked server-side."
+      ],
+      "acceptance_criteria": [
+        "API tests cover host-only actions and reject non-host attempts",
+        "Web host manage UX exists and is localized"
+      ]
+    },
+    {
+      "area": "Pagination + stable ordering + filters",
+      "goal": "Scalable and consistent discovery.",
+      "requirements": [
+        "Games list endpoint supports pagination (cursor or page) with stable sorting (e.g., startTime then id).",
+        "Filters include: sportId, time window, status, visibility, homeArea (and any other existing preference-based filters as feasible).",
+        "Return shape should include enough info to render cards without extra round trips (IDE decides; document)."
+      ],
+      "acceptance_criteria": [
+        "API tests validate pagination consistency and filter correctness"
+      ]
+    },
+    {
+      "area": "In-app notifications (store-only)",
+      "goal": "Auditable user communication foundation without push delivery yet.",
+      "requirements": [
+        "Persist notifications for key events: join requested, approved, denied, cancelled, waitlist promoted (as applicable).",
+        "Provide endpoints to list notifications and mark read.",
+        "Web + Mobile screens to view notifications list."
+      ],
+      "acceptance_criteria": [
+        "API tests cover creation and read/unread behavior",
+        "Web + Mobile render notifications and can mark read"
+      ]
+    },
+    {
+      "area": "Docs",
+      "goal": "Clear rules and contracts for GA.",
+      "requirements": [
+        "Update ops/GAME_RULES.md to include APPROVAL + PRIVATE + waitlist rules clearly.",
+        "Update ops/API_CONTRACTS.md with new endpoints/fields.",
+        "Create ops/INVITE_MODEL.md describing invitation mechanism + security.",
+        "Create ops/NOTIFICATIONS_MODEL.md describing notification types and payloads."
+      ],
+      "acceptance_criteria": [
+        "Docs match implementation and tests",
+        "Tradeoffs explicitly recorded"
+      ]
+    }
+  ],
+
+  "execution_plan_for_ide": {
+    "workflow": "sequential",
+    "manifest_updates": {
+      "on_start": {
+        "step_id": "STEP-0006",
+        "status": "IN_PROGRESS",
+        "fields_to_update": ["updated_at", "started_at", "agent"]
+      },
+      "on_success": {
+        "status": "COMPLETED",
+        "fields_to_update": ["updated_at", "completed_at", "artifacts", "notes"]
+      },
+      "on_blocked": {
+        "status": "BLOCKED",
+        "fields_to_update": ["updated_at", "notes"]
+      },
+      "on_failed": {
+        "status": "FAILED",
+        "fields_to_update": ["updated_at", "notes"]
+      }
+    },
+    "required_evidence_to_capture": [
+      "environment_readiness_actions",
+      "migration_evidence",
+      "api_tests_results",
+      "web_tests_results",
+      "mobile_tests_results",
+      "file_changes_list",
+      "major_decisions_and_tradeoffs"
+    ],
+    "tasks": [
+      {
+        "id": "T1",
+        "name": "Ensure infra running (executor-owned)",
+        "objective": "Auto-start Docker/infra and confirm DB connectivity.",
+        "constraints": ["No delegation to owner"],
+        "acceptance": ["docker + infra running OR BLOCKED with exact OS/permission limitation"]
+      },
+      {
+        "id": "T2",
+        "name": "Approval joins + host actions",
+        "objective": "Complete APPROVAL workflow end-to-end with tests and localized UI.",
+        "constraints": ["GA-grade permission checks"],
+        "acceptance": ["API/Web/Mobile flows work; tests pass"]
+      },
+      {
+        "id": "T3",
+        "name": "Private invites",
+        "objective": "Implement invitation mechanism + host controls + tests.",
+        "constraints": ["Security tradeoffs documented"],
+        "acceptance": ["Private access enforced; invite flow works"]
+      },
+      {
+        "id": "T4",
+        "name": "Pagination/filters hardening",
+        "objective": "Implement stable pagination and improve filtering with tests.",
+        "constraints": ["Stable ordering required"],
+        "acceptance": ["Pagination tested and stable"]
+      },
+      {
+        "id": "T5",
+        "name": "In-app notifications",
+        "objective": "Persist and render notifications; mark read.",
+        "constraints": ["No push sending"],
+        "acceptance": ["Tests pass; Web+Mobile screens exist"]
+      },
+      {
+        "id": "T6",
+        "name": "Docs + manifest + report",
+        "objective": "Update docs, update manifest, produce complete report.",
+        "constraints": ["No placeholders"],
+        "acceptance": ["Docs complete; manifest updated; report complete"]
+      }
+    ],
+    "checks_to_run_before_finish": [
+      { "name": "root_lint", "cmd": "pnpm -r lint", "must_pass": true },
+      { "name": "root_test", "cmd": "pnpm -r test", "must_pass": true }
+    ]
+  },
+
+  "report_contract": {
+    "report_path": "reports/STEP-0006.report.json",
+    "report_schema": {
+      "step_id": "STEP-0006",
+      "status": "COMPLETED|COMPLETED_WITH_NOTES|BLOCKED|FAILED",
+      "summary": "string",
+      "environment_readiness": {
+        "os_detected": "string",
+        "docker_status": "running|not_installed|blocked|failed",
+        "docker_actions_taken": ["string"],
+        "infra_status": "running|blocked|failed",
+        "infra_evidence": "string"
+      },
+      "major_decisions": [
+        { "area": "string", "decision": "string", "reason": "string", "tradeoffs": "string" }
+      ],
+      "commands_run": [
+        { "cmd": "string", "cwd": "string", "exit_code": 0, "stdout_tail": "string", "stderr_tail": "string" }
+      ],
+      "tests": [
+        { "name": "string", "cmd": "string", "passed": true, "notes": "string" }
+      ],
+      "files_changed": [
+        { "path": "string", "change_type": "created|modified|deleted" }
+      ],
+      "acceptance_checklist": [
+        { "requirement": "string", "met": true, "evidence": "string" }
+      ],
+      "errors": [
+        { "where": "string", "error": "string", "how_fixed_or_next_steps": "string" }
+      ],
+      "automation_limitations": [
+        { "limitation": "string", "evidence": "string", "required_owner_permission_or_action": "string" }
+      ],
+      "manifest_update": {
+        "path": "ops/manifest.json",
+        "final_status_written": "string",
+        "updated_at_written": "string"
+      },
+      "next_recommendations": ["string"],
+      "rules_summary": {
+        "approval_flow": "string",
+        "private_invites": "string",
+        "waitlist_policy": "string",
+        "pagination_strategy": "string",
+        "notification_types": ["string"]
+      }
+    },
+    "must_be_filled": true
+  },
+
+  "final_instruction_to_ide": "Execute this prompt exactly. Do not delegate any execution to the owner. Choose implementation freely. Update ops/manifest.json and write a complete reports/STEP-0006.report.json with no placeholders."
+}
+

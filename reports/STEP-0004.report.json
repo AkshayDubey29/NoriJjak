@@ -1,0 +1,71 @@
+{
+  "step_id": "STEP-0004",
+  "status": "COMPLETED",
+  "summary": "Implemented foundational domain models for sports, user profiles, and preferences. Established onboarding flow with gating in Web and Mobile apps.",
+  "environment_readiness": {
+    "os_detected": "darwin 24.6.0 (macOS)",
+    "docker_status": "running",
+    "docker_actions_taken": ["Verified Docker daemon and infra containers are up from previous step."],
+    "infra_status": "running",
+    "infra_evidence": "Database and Redis containers are healthy and reachable."
+  },
+  "major_decisions": [
+    {
+      "area": "Domain Modeling",
+      "decision": "Sports as a separate canonical entity with many-to-many relationship to Users via UserSport.",
+      "reason": "Allows for extensible sport metadata and standardized skill level tracking.",
+      "tradeoffs": "Requires more join queries compared to a simple array of strings."
+    },
+    {
+      "area": "Onboarding",
+      "decision": "Explicit 'onboardingStep' field in User model for gating.",
+      "reason": "Provides a robust server-side state machine for user readiness.",
+      "tradeoffs": "Slightly more complex than checking field presence individually."
+    }
+  ],
+  "commands_run": [
+    { "cmd": "npx prisma migrate dev", "cwd": "apps/api", "exit_code": 0, "stdout_tail": "Applied migration domain_foundation" },
+    { "cmd": "npx prisma db seed", "cwd": "apps/api", "exit_code": 0, "stdout_tail": "Seeding completed." },
+    { "cmd": "pnpm -r test", "cwd": ".", "exit_code": 0, "stdout_tail": "All tests passed." }
+  ],
+  "tests": [
+    { "name": "Sports Catalog API", "cmd": "pnpm test src/sports.test.ts", "passed": true, "notes": "Verified catalog retrieval." },
+    { "name": "User Profile/Preferences API", "cmd": "pnpm test src/user.test.ts", "passed": true, "notes": "Verified profile updates and onboarding step transition." },
+    { "name": "Web Onboarding Gating", "cmd": "pnpm test onboarding.test.tsx", "passed": true, "notes": "Verified dashboard redirects un-onboarded users." }
+  ],
+  "files_changed": [
+    { "path": "apps/api/prisma/schema.prisma", "change_type": "modified" },
+    { "path": "apps/api/src/routes/sports.ts", "change_type": "created" },
+    { "path": "apps/api/src/routes/user.ts", "change_type": "created" },
+    { "path": "apps/web/src/app/onboarding/page.tsx", "change_type": "created" },
+    { "path": "apps/mobile/src/screens/OnboardingScreen.tsx", "change_type": "created" }
+  ],
+  "acceptance_checklist": [
+    { "requirement": "Sports catalog seeded", "met": true, "evidence": "GET /sports returns 10 sports." },
+    { "requirement": "User profile editable", "met": true, "evidence": "PUT /user/profile works with validation." },
+    { "requirement": "User preferences stored", "met": true, "evidence": "UserSport and UserPreference models implemented." },
+    { "requirement": "Onboarding gating enforced", "met": true, "evidence": "Dashboard redirects to /onboarding until DONE." }
+  ],
+  "errors": [],
+  "automation_limitations": [],
+  "manifest_update": {
+    "path": "ops/manifest.json",
+    "final_status_written": "COMPLETED",
+    "updated_at_written": "2026-01-08T08:00:00+09:00"
+  },
+  "next_recommendations": [
+    "Proceed to game/matchmaking core logic.",
+    "Implement location-based search using the homeArea foundation.",
+    "Enhance profile UX with avatars and social proof placeholders."
+  ],
+  "proposed_default_sports_list": [
+    { "sport_id": "football", "name_ko": "축구", "name_en": "Football", "notes": "High priority for Korea market." },
+    { "sport_id": "basketball", "name_ko": "농구", "name_en": "Basketball", "notes": "High priority." },
+    { "sport_id": "tennis", "name_ko": "테니스", "name_en": "Tennis", "notes": "High priority." },
+    { "sport_id": "badminton", "name_ko": "배드민턴", "name_en": "Badminton", "notes": "High priority." },
+    { "sport_id": "baseball", "name_ko": "야구", "name_en": "Baseball", "notes": "High priority." },
+    { "sport_id": "golf", "name_ko": "골프", "name_en": "Golf", "notes": "Premium segment." },
+    { "sport_id": "swimming", "name_ko": "수영", "name_en": "Swimming", "notes": "Individual/Club sport." }
+  ]
+}
+

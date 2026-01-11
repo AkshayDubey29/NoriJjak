@@ -1,0 +1,39 @@
+name: Release Gates
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  gates:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18"
+
+      - name: Install Dependencies
+        run: pnpm install --frozen-lockfile
+        # If pnpm is not available globally in the image, we might need to enable it via corepack or setup-node
+        # Adding corepack enable for safety
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Repo Integrity
+        run: pnpm integrity
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Test
+        run: pnpm test
+
+      - name: Build
+        run: pnpm build

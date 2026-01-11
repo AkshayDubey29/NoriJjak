@@ -1,0 +1,295 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id              String           @id @default(uuid())
+  email           String           @unique
+  passwordHash    String
+  displayName     String?
+  locale          String           @default("ko-KR")
+  timezone        String           @default("Asia/Seoul")
+  bio             String?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  deletedAt       DateTime?
+  onboardingStep  String           @default("START") // START, PROFILE, SPORTS, DONE
+  consents        Consent[]
+  deletionRequest DeletionRequest?
+  preferences     UserPreference?
+  userSports      UserSport[]
+  deviceTokens    DeviceToken[]
+  hostedGames     Game[]           @relation("HostedGames")
+  participations  Participant[]
+  notifications   Notification[]
+  clubMemberships ClubMember[]
+  chatMessages    ChatMessage[]
+  blockedUsers    Block[]          @relation("BlockingUsers")
+  blockedBy       Block[]          @relation("BlockedByUsers")
+  reportsMade     Report[]         @relation("Reporter")
+  reportsReceived Report[]         @relation("ReportedUser")
+  ratingsMade     Rating[]         @relation("Rater")
+  ratingsReceived Rating[]         @relation("TargetUser")
+}
+
+model Consent {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  type      String // e.g., "TERMS", "PRIVACY", "LOCATION"
+  version   String
+  accepted  Boolean
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, type])
+}
+
+model DeletionRequest {
+  id        String   @id @default(uuid())
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id])
+  reason    String?
+  status    String   @default("PENDING") // PENDING, COMPLETED, CANCELLED
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Sport {
+  id          String      @id @default(uuid())
+  slug        String      @unique // e.g., "football"
+  name_ko     String
+  name_en     String
+  userSports  UserSport[]
+  games       Game[]
+  venues      Venue[]     @relation("VenueSports")
+  clubs       Club[]      @relation("ClubSports")
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}
+
+model UserPreference {
+  id              String      @id @default(uuid())
+  userId          String      @unique
+  user            User        @relation(fields: [userId], references: [id])
+  homeArea        String? // Coarse area representation
+  preferredRadius Int         @default(10) // km
+  availability    Json? // Simple structure: { "weekdays": ["MON", "WED"], "times": ["EVENING"] }
+  updatedAt       DateTime    @updatedAt
+}
+
+model UserSport {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  sportId   String
+  sport     Sport    @relation(fields: [sportId], references: [id])
+  level     String // e.g., "BEGINNER", "INTERMEDIATE", "ADVANCED"
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, sportId])
+}
+
+model DeviceToken {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  platform  String // "IOS", "ANDROID", "WEB"
+  token     String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Venue {
+  id          String   @id @default(uuid())
+  name        String
+  area        String // e.g., "Seoul Gangnam-gu"
+  address     String?
+  category    String // e.g., "PUBLIC_PARK", "PRIVATE_CENTER", "SCHOOL"
+  amenities   Json? // e.g., ["PARKING", "SHOWER", "RENTAL"]
+  images      Json? // e.g., ["url1", "url2"]
+  contact     String?
+  mapLink     String?
+  status      String   @default("ACTIVE") // ACTIVE, INACTIVE
+  sports      Sport[]  @relation("VenueSports")
+  games       Game[]
+  ratings     Rating[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Club {
+  id          String       @id @default(uuid())
+  name        String
+  description String?
+  visibility  String       @default("PUBLIC") // PUBLIC, PRIVATE
+  joinPolicy  String       @default("OPEN") // OPEN, APPROVAL, INVITE
+  homeArea    String // Coarse area representation
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  sports      Sport[]      @relation("ClubSports")
+  members     ClubMember[]
+  games       Game[]
+  ratings     Rating[]
+}
+
+model ClubMember {
+  id        String   @id @default(uuid())
+  clubId    String
+  club      Club     @relation(fields: [clubId], references: [id])
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  role      String   @default("MEMBER") // OWNER, ADMIN, MEMBER
+  status    String   @default("APPROVED") // REQUESTED, APPROVED, DENIED
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([clubId, userId])
+}
+
+model Game {
+  id           String        @id @default(uuid())
+  sportId      String
+  sport        Sport         @relation(fields: [sportId], references: [id])
+  hostId       String
+  host         User          @relation("HostedGames", fields: [hostId], references: [id])
+  venueId      String?
+  venue        Venue?        @relation(fields: [venueId], references: [id])
+  clubId       String?
+  club         Club?         @relation(fields: [clubId], references: [id])
+  title        String
+  description  String?
+  startTime    DateTime
+  endTime      DateTime
+  homeArea     String // For coarse filtering
+  capacity     Int
+  visibility   String        @default("PUBLIC") // PUBLIC, PRIVATE
+  joinPolicy   String        @default("OPEN") // OPEN, APPROVAL
+  status       String        @default("OPEN") // OPEN, CANCELLED, COMPLETED
+  participants Participant[]
+  invites      GameInvite[]
+  chatMessages ChatMessage[]
+  ratings      Rating[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+}
+
+model Participant {
+  id        String   @id @default(uuid())
+  gameId    String
+  game      Game     @relation(fields: [gameId], references: [id])
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  role      String   @default("PARTICIPANT") // HOST, PARTICIPANT
+  status    String   @default("APPROVED") // REQUESTED, APPROVED, DENIED, CANCELLED, LEFT, WAITLISTED
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([gameId, userId])
+}
+
+model GameInvite {
+  id        String    @id @default(uuid())
+  gameId    String
+  game      Game      @relation(fields: [gameId], references: [id])
+  token     String    @unique
+  maxUses   Int       @default(1)
+  uses      Int       @default(0)
+  expiresAt DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model ChatMessage {
+  id        String   @id @default(uuid())
+  gameId    String
+  game      Game     @relation(fields: [gameId], references: [id])
+  senderId  String
+  sender    User     @relation(fields: [senderId], references: [id])
+  body      String
+  isDeleted Boolean  @default(false)
+  reports   Report[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([gameId, createdAt])
+}
+
+model Block {
+  id            String   @id @default(uuid())
+  blockerId     String
+  blocker       User     @relation("BlockingUsers", fields: [blockerId], references: [id])
+  blockedId     String
+  blocked       User     @relation("BlockedByUsers", fields: [blockedId], references: [id])
+  createdAt     DateTime @default(now())
+
+  @@unique([blockerId, blockedId])
+}
+
+model Rating {
+  id            String   @id @default(uuid())
+  gameId        String?
+  game          Game?    @relation(fields: [gameId], references: [id])
+  raterId       String
+  rater         User     @relation("Rater", fields: [raterId], references: [id])
+  
+  // Target of the rating
+  targetUserId  String?
+  targetUser    User?    @relation("TargetUser", fields: [targetUserId], references: [id])
+  targetVenueId String?
+  targetVenue   Venue?   @relation(fields: [targetVenueId], references: [id])
+  targetClubId  String?
+  targetClub    Club?    @relation(fields: [targetClubId], references: [id])
+
+  score         Int // 1-5
+  comment       String?
+  categories    Json? // e.g., ["SKILL", "MANNER", "PUNCTUALITY"] for users; ["CLEANLINESS", "EQUIPMENT"] for venues
+  
+  reports       Report[] @relation("ReportedRating")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@unique([raterId, gameId, targetUserId])
+  @@unique([raterId, gameId, targetVenueId])
+  @@unique([raterId, targetClubId])
+  @@index([targetUserId])
+  @@index([targetVenueId])
+  @@index([targetClubId])
+}
+
+model Report {
+  id            String       @id @default(uuid())
+  reporterId    String
+  reporter      User         @relation("Reporter", fields: [reporterId], references: [id])
+  reportedId    String
+  reportedUser  User         @relation("ReportedUser", fields: [reportedId], references: [id])
+  messageId     String?
+  message       ChatMessage? @relation(fields: [messageId], references: [id])
+  ratingId      String?
+  rating        Rating?      @relation("ReportedRating", fields: [ratingId], references: [id])
+  gameId        String?
+  reasonCode    String // e.g., "SPAM", "ABUSE", "INAPPROPRIATE"
+  note          String?
+  status        String       @default("PENDING") // PENDING, RESOLVED, DISMISSED
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  type      String // e.g., "GAME_REQUEST", "GAME_APPROVED", "GAME_DENIED", "GAME_CANCELLED", "WAITLIST_PROMOTED"
+  payload   Json // Store relevant data like gameId, gameTitle, etc.
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

@@ -1,0 +1,297 @@
+{
+  "prompt_meta": {
+    "prompt_id": "STEP-0004",
+    "title": "Domain Foundation (GA-grade): Sports catalog + User Profile + Preferences + Onboarding capture + (optional) device tokens",
+    "created_by": "ChatGPT",
+    "executed_by": "__IDE_AGENT__",
+    "timezone": "Asia/Seoul",
+    "product_identity": {
+      "name_ko_one_word": "놀이짝",
+      "name_en": "NoriJjak",
+      "primary_locales": ["ko-KR", "en-US"],
+      "release_policy": "GA_ONLY_FIRST_PUBLIC_RELEASE"
+    },
+    "links": {
+      "manifest_path": "ops/manifest.json",
+      "report_path": "reports/STEP-0004.report.json"
+    }
+  },
+
+  "non_negotiable_rules": {
+    "implementation_autonomy": true,
+    "chatgpt_does_not_instruct_code": true,
+    "ide_chooses_stack_and_patterns": true,
+    "ide_must_document_major_choices": true,
+    "no_scope_creep": true,
+    "no_skipping_tests": true,
+    "all_user_visible_text_localized": true,
+    "always_update_manifest": true,
+    "always_write_report": true,
+    "report_must_have_no_placeholders": true,
+    "executor_must_not_delegate_actions_to_owner": true,
+    "no_public_release_unless_explicitly_allowed": true,
+    "no_booking_no_payments_no_chat_no_matchmaking_yet": true
+  },
+
+  "owner_actions": [
+    {
+      "id": "OWNER-STEP-0004-APPROVAL-1",
+      "when": "after STEP-0004 report is shared with ChatGPT",
+      "instruction": "Approve default sports list for Korea launch wedge (IDE proposes list; you approve/reject).",
+      "expected_output": "APPROVE or provide edits",
+      "must_not_require_execution": true
+    }
+  ],
+
+  "required_repo_contract": {
+    "must_exist_folders": [
+      "prompts",
+      "reports",
+      "ops",
+      "infra",
+      "apps/api",
+      "apps/web",
+      "apps/mobile",
+      "packages/shared"
+    ],
+    "source_of_truth_manifest": "ops/manifest.json"
+  },
+
+  "step_objectives": {
+    "goal": "Create the foundational domain models and UX for sports + user profile + preferences that all future features (games, venues, clubs, achievements) will depend on, with GA-quality validation and tests.",
+    "outcomes": [
+      "Sports catalog exists (seeded and retrievable)",
+      "User profile exists and editable (localized UI web+mobile)",
+      "User preferences exist and editable (sports selection + skill/level + location area + availability basics)",
+      "Post-signup onboarding captures minimum required setup before user can proceed",
+      "Optional foundation: device tokens + notification preferences persisted (no sending yet)"
+    ],
+    "constraints": [
+      "IDE chooses how to represent sports, skill levels, availability, and location (must be simple and extendable).",
+      "No real map integration required yet; store user-selected home area and preferred radius in a simple, privacy-safe way.",
+      "No booking, payments, chat, partner portal, or matchmaking algorithms in this step."
+    ],
+    "definition_of_done": [
+      "IDE ensures Docker/infra is running (auto-start if needed) and API can access DB/cache",
+      "API endpoints exist for: sports catalog, profile, preferences, onboarding completion state",
+      "Web and Mobile have localized screens to view/edit profile + preferences and complete onboarding",
+      "Automated tests pass for API + Web + Mobile for the above",
+      "Docs added: ops/DOMAIN_MODEL.md and ops/ONBOARDING_REQUIREMENTS.md",
+      "Manifest updated and STEP report produced"
+    ]
+  },
+
+  "deliverables_outcomes": [
+    {
+      "area": "Environment readiness (executor-owned)",
+      "goal": "Keep automation consistent: infra must be running for DB-backed models.",
+      "requirements": [
+        "Detect OS and ensure Docker daemon is running (auto-start/install attempts as needed).",
+        "Bring up infra via docker compose if not already running.",
+        "Ensure API has correct env/config to connect and run migrations."
+      ],
+      "acceptance_criteria": [
+        "Report includes docker/compose evidence",
+        "API can read/write DB during tests"
+      ]
+    },
+    {
+      "area": "Sports catalog",
+      "goal": "A canonical sports list (extensible) used by both Web and Mobile.",
+      "requirements": [
+        "Persist sports catalog in DB (or a documented equivalent) and provide an API to list and fetch details.",
+        "Seed an initial default list appropriate for Korea (IDE proposes).",
+        "Expose localized labels for sports (KO/EN) via the app's i18n approach."
+      ],
+      "acceptance_criteria": [
+        "Sports list endpoint returns stable IDs and localized display labels",
+        "Tests validate catalog retrieval and seed idempotency"
+      ]
+    },
+    {
+      "area": "User profile",
+      "goal": "Editable profile foundation for identity and future social features.",
+      "requirements": [
+        "Profile fields must include at minimum: displayName, locale, timezone, and at least one public-facing profile attribute (IDE chooses; must be safe and optional).",
+        "Profile must be retrievable and updatable for authenticated users.",
+        "Input validation and safe defaults must exist."
+      ],
+      "acceptance_criteria": [
+        "API tests cover: get profile, update profile, invalid payload rejection",
+        "Web+Mobile screens allow viewing and editing profile with localized labels"
+      ]
+    },
+    {
+      "area": "User preferences",
+      "goal": "Capture preferences needed to power discovery later.",
+      "requirements": [
+        "Preferences must include at minimum: selected sports (with per-sport level/skill), home area (coarse), preferred radius, and basic availability (simple representation).",
+        "Preferences must be retrievable and updatable for authenticated users.",
+        "Preferences must be linked to onboarding completion."
+      ],
+      "acceptance_criteria": [
+        "API tests cover: set/get preferences and validation for sports IDs/levels",
+        "Onboarding completion toggles only when minimum required preferences exist"
+      ]
+    },
+    {
+      "area": "Onboarding gating (GA-grade)",
+      "goal": "Prevent a half-configured account from entering the product.",
+      "requirements": [
+        "Define a minimum onboarding requirement set (e.g., accept policies already exists; now also require sports selection + home area).",
+        "Expose an API for onboarding status and enforce gating on protected UI routes/screens.",
+        "Web+Mobile must route user to onboarding until completed."
+      ],
+      "acceptance_criteria": [
+        "Automated test: new user cannot access main app area until onboarding complete",
+        "Automated test: after completing onboarding, access is allowed"
+      ]
+    },
+    {
+      "area": "Optional: device tokens + notification preferences (no sending)",
+      "goal": "Prepare for push/email notifications later without implementing notification delivery.",
+      "requirements": [
+        "Persist device token registration per user (platform + token) OR provide a documented reason to defer.",
+        "Persist notification preferences (simple structure)."
+      ],
+      "acceptance_criteria": [
+        "API tests cover create/update/remove device token OR explicit deferral documented in report and ops/DOMAIN_MODEL.md"
+      ]
+    },
+    {
+      "area": "Docs",
+      "goal": "Keep GA build predictable and auditable.",
+      "requirements": [
+        "Create ops/DOMAIN_MODEL.md documenting: sports, profile, preferences, onboarding state, and how it will extend to games/venues later.",
+        "Create ops/ONBOARDING_REQUIREMENTS.md documenting the minimum required fields and why.",
+        "If any tradeoffs exist (e.g., coarse location strategy), document them."
+      ],
+      "acceptance_criteria": [
+        "Docs match the implemented behavior and are clear enough for future steps"
+      ]
+    }
+  ],
+
+  "execution_plan_for_ide": {
+    "workflow": "sequential",
+    "manifest_updates": {
+      "on_start": {
+        "step_id": "STEP-0004",
+        "status": "IN_PROGRESS",
+        "fields_to_update": ["updated_at", "started_at", "agent"]
+      },
+      "on_success": {
+        "status": "COMPLETED",
+        "fields_to_update": ["updated_at", "completed_at", "artifacts", "notes"]
+      },
+      "on_blocked": {
+        "status": "BLOCKED",
+        "fields_to_update": ["updated_at", "notes"]
+      },
+      "on_failed": {
+        "status": "FAILED",
+        "fields_to_update": ["updated_at", "notes"]
+      }
+    },
+    "required_evidence_to_capture": [
+      "environment_readiness_actions",
+      "migration_or_schema_change_evidence",
+      "api_tests_results",
+      "web_tests_results",
+      "mobile_tests_results",
+      "file_changes_list",
+      "major_decisions_and_tradeoffs"
+    ],
+    "tasks": [
+      {
+        "id": "T1",
+        "name": "Ensure infra is running (executor-owned)",
+        "objective": "Start Docker/infra automatically and confirm DB connectivity.",
+        "constraints": ["No delegation to owner"],
+        "acceptance": ["docker + infra running OR BLOCKED with exact OS/permission limitation"]
+      },
+      {
+        "id": "T2",
+        "name": "Implement sports catalog + seed",
+        "objective": "Create persistent sports list with localized labels and stable IDs.",
+        "constraints": ["Extendable design", "document tradeoffs"],
+        "acceptance": ["API list works", "tests pass", "seed idempotent"]
+      },
+      {
+        "id": "T3",
+        "name": "Implement profile + preferences APIs",
+        "objective": "Authenticated endpoints for profile/preferences with validation and tests.",
+        "constraints": ["GA-grade validation", "no new product features"],
+        "acceptance": ["API tests pass"]
+      },
+      {
+        "id": "T4",
+        "name": "Web + Mobile onboarding + settings UX (localized)",
+        "objective": "Screens for onboarding, profile, preferences; gating enforced.",
+        "constraints": ["No hard-coded visible strings"],
+        "acceptance": ["Web + Mobile tests pass"]
+      },
+      {
+        "id": "T5",
+        "name": "Docs + manifest",
+        "objective": "Write docs, update manifest, produce report.",
+        "constraints": ["No placeholders"],
+        "acceptance": ["Docs complete", "Manifest updated", "Report complete"]
+      }
+    ],
+    "checks_to_run_before_finish": [
+      { "name": "root_lint", "cmd": "pnpm -r lint", "must_pass": true },
+      { "name": "root_test", "cmd": "pnpm -r test", "must_pass": true }
+    ]
+  },
+
+  "report_contract": {
+    "report_path": "reports/STEP-0004.report.json",
+    "report_schema": {
+      "step_id": "STEP-0004",
+      "status": "COMPLETED|COMPLETED_WITH_NOTES|BLOCKED|FAILED",
+      "summary": "string",
+      "environment_readiness": {
+        "os_detected": "string",
+        "docker_status": "running|not_installed|blocked|failed",
+        "docker_actions_taken": ["string"],
+        "infra_status": "running|blocked|failed",
+        "infra_evidence": "string"
+      },
+      "major_decisions": [
+        { "area": "string", "decision": "string", "reason": "string", "tradeoffs": "string" }
+      ],
+      "commands_run": [
+        { "cmd": "string", "cwd": "string", "exit_code": 0, "stdout_tail": "string", "stderr_tail": "string" }
+      ],
+      "tests": [
+        { "name": "string", "cmd": "string", "passed": true, "notes": "string" }
+      ],
+      "files_changed": [
+        { "path": "string", "change_type": "created|modified|deleted" }
+      ],
+      "acceptance_checklist": [
+        { "requirement": "string", "met": true, "evidence": "string" }
+      ],
+      "errors": [
+        { "where": "string", "error": "string", "how_fixed_or_next_steps": "string" }
+      ],
+      "automation_limitations": [
+        { "limitation": "string", "evidence": "string", "required_owner_permission_or_action": "string" }
+      ],
+      "manifest_update": {
+        "path": "ops/manifest.json",
+        "final_status_written": "string",
+        "updated_at_written": "string"
+      },
+      "next_recommendations": ["string"],
+      "proposed_default_sports_list": [
+        { "sport_id": "string", "name_ko": "string", "name_en": "string", "notes": "string" }
+      ]
+    },
+    "must_be_filled": true
+  },
+
+  "final_instruction_to_ide": "Execute this prompt exactly. Do not delegate any execution to the owner. Choose implementation freely. Update ops/manifest.json and write a complete reports/STEP-0004.report.json with no placeholders."
+}
+

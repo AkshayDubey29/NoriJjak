@@ -1,0 +1,330 @@
+{
+  "prompt_meta": {
+    "prompt_id": "STEP-0008",
+    "title": "Venues Core (GA-grade): venues catalog + discover/search + attach venue to games (API + Web + Mobile)",
+    "created_by": "ChatGPT",
+    "executed_by": "__IDE_AGENT__",
+    "timezone": "Asia/Seoul",
+    "product_identity": {
+      "name_ko_one_word": "놀이짝",
+      "name_en": "NoriJjak",
+      "primary_locales": ["ko-KR", "en-US"],
+      "release_policy": "GA_ONLY_FIRST_PUBLIC_RELEASE"
+    },
+    "links": {
+      "manifest_path": "ops/manifest.json",
+      "report_path": "reports/STEP-0008.report.json"
+    }
+  },
+
+  "non_negotiable_rules": {
+    "implementation_autonomy": true,
+    "chatgpt_does_not_instruct_code": true,
+    "ide_chooses_stack_and_patterns": true,
+    "ide_must_document_major_choices": true,
+    "no_scope_creep": true,
+    "no_skipping_tests": true,
+    "all_user_visible_text_localized": true,
+    "always_update_manifest": true,
+    "always_write_report": true,
+    "report_must_have_no_placeholders": true,
+    "executor_must_not_delegate_actions_to_owner": true,
+    "no_public_release_unless_explicitly_allowed": true,
+    "no_payments_no_booking_no_partner_portal_in_this_step": true,
+    "no_maps_sdk_credentials_required_in_this_step": true
+  },
+
+  "owner_actions": [
+    {
+      "id": "OWNER-STEP-0008-APPROVAL-1",
+      "when": "after STEP-0008 report is shared with ChatGPT",
+      "instruction": "Approve the initial seeded venue set strategy for Korea wedge (what cities/areas and how many venues) described in ops/VENUE_RULES.md. Approval only; no execution.",
+      "expected_output": "APPROVE or provide edits",
+      "must_not_require_execution": true
+    }
+  ],
+
+  "required_repo_contract": {
+    "must_exist_folders": [
+      "prompts",
+      "reports",
+      "ops",
+      "infra",
+      "apps/api",
+      "apps/web",
+      "apps/mobile",
+      "packages/shared"
+    ],
+    "source_of_truth_manifest": "ops/manifest.json"
+  },
+
+  "step_objectives": {
+    "goal": "Introduce Venues as a first-class domain so Games can reference a canonical place, users can discover venues, and the product becomes location-realistic for Korea GA.",
+    "outcomes": [
+      "Venues exist as a canonical catalog (seeded and retrievable)",
+      "Users can browse/search/filter venues (sport support + homeArea)",
+      "Games can be created/updated with an optional venueId (and show venue details on game detail pages)",
+      "Web + Mobile include venue browse + selection UX and are localized KO/EN",
+      "API contract and venue model are documented and stable for future steps (partner claiming, booking, maps)"
+    ],
+    "constraints": [
+      "No payments, no booking/reservations, no partner portal/claiming.",
+      "No external map SDK keys required. (Optional: store a mapLink string or optional lat/lng field for future use, but do not require a provider.)",
+      "Location handling must remain privacy-safe: use coarse administrative areas (e.g., city/gu/dong) and optional address text; do not require precise user GPS."
+    ],
+    "definition_of_done": [
+      "IDE ensures Docker/infra is running (auto-start if needed) and migrations/seeds applied",
+      "API endpoints exist for venues list/search/detail and for setting a game's venueId; tests pass",
+      "Web: venues list/detail + venue picker integrated into game create/edit; tests cover key flows",
+      "Mobile: venues list/detail + venue picker integrated into game create/edit OR game edit (IDE decides; document parity plan if any deferral)",
+      "Root lint/test passes",
+      "Docs created/updated: ops/VENUE_MODEL.md, ops/VENUE_RULES.md, ops/GAME_VENUE_INTEGRATION.md, ops/API_CONTRACTS.md updated",
+      "Manifest updated and reports/STEP-0008.report.json produced"
+    ]
+  },
+
+  "deliverables_outcomes": [
+    {
+      "area": "Environment readiness (executor-owned)",
+      "goal": "No owner execution; infra must be up for DB-backed venues.",
+      "requirements": [
+        "Ensure Docker daemon is running (auto-start/install attempt as needed).",
+        "Ensure infra containers are up (compose up if needed).",
+        "Apply DB migrations required for venue models and game linkage."
+      ],
+      "acceptance_criteria": [
+        "Report includes docker info + compose ps evidence (if used)",
+        "DB-backed tests pass"
+      ]
+    },
+    {
+      "area": "Venue domain model",
+      "goal": "A venue model that supports Korea reality and future expansion.",
+      "requirements": [
+        "Venue must include at minimum: name, area fields (coarse), address text (optional), supported sports (many-to-many), and a type/category (IDE chooses).",
+        "Optional-but-recommended fields: amenities, images (urls), contact, mapLink, and status (ACTIVE only is fine for now).",
+        "Ensure stable IDs for venues and consistent response shapes."
+      ],
+      "acceptance_criteria": [
+        "Model supports search/filtering cleanly",
+        "Docs describe all fields and intended future extensions (claiming/booking/maps)"
+      ]
+    },
+    {
+      "area": "Venue seed strategy",
+      "goal": "Start with a small, believable seed set for Korea wedge.",
+      "requirements": [
+        "Seed an initial set of venues (small but realistic). IDE decides size; document rationale.",
+        "Seed should be idempotent and safe to run repeatedly.",
+        "Seed includes KO/EN-friendly naming strategy (do not translate proper nouns incorrectly; document approach)."
+      ],
+      "acceptance_criteria": [
+        "Seed idempotency tested or validated",
+        "Report includes the final seeded count and sample entries"
+      ]
+    },
+    {
+      "area": "API: Venues endpoints",
+      "goal": "Stable endpoints for browse/search/detail.",
+      "requirements": [
+        "Endpoints to list venues with pagination and stable ordering.",
+        "Filters at minimum: sportId, area (homeArea or similar), and free-text query (name).",
+        "Venue detail endpoint returns enough data for UI.",
+        "Input validation and safe error handling."
+      ],
+      "acceptance_criteria": [
+        "API tests cover filtering, pagination stability, and detail retrieval",
+        "Error cases tested (bad sportId, invalid pagination cursor, etc.)"
+      ]
+    },
+    {
+      "area": "Games ↔ Venues integration",
+      "goal": "Games can reference venues and show them.",
+      "requirements": [
+        "Game create/update supports optional venueId (validated).",
+        "Game detail returns linked venue summary (and optionally a denormalized snapshot if IDE prefers; document tradeoffs).",
+        "If game venue changes, record notifications for participants (store-only, reuse existing notification system)."
+      ],
+      "acceptance_criteria": [
+        "API tests cover: creating game with venueId; rejecting invalid venueId; reading game detail includes venue",
+        "Notification created on venue change (if implemented) is tested"
+      ]
+    },
+    {
+      "area": "Web UX: Venues + Picker",
+      "goal": "Users can browse venues and choose one for a game.",
+      "requirements": [
+        "Venues list + venue detail pages exist.",
+        "Game create/edit flow includes a venue picker (browse/search/select).",
+        "All visible text localized KO/EN via shared dictionary."
+      ],
+      "acceptance_criteria": [
+        "Web tests cover venue list render and selecting venue in game flow",
+        "Onboarding gating still enforced where appropriate"
+      ]
+    },
+    {
+      "area": "Mobile UX: Venues + Picker",
+      "goal": "Same core loop on mobile.",
+      "requirements": [
+        "Mobile venues list + venue detail screens exist.",
+        "Venue selection integrated into game create/edit OR at least game creation (IDE decides). If any part deferred, document precisely with next-step parity plan.",
+        "All visible text localized KO/EN via shared dictionary."
+      ],
+      "acceptance_criteria": [
+        "Mobile tests cover rendering venues list/detail and selection state management headlessly",
+        "Manual run evidence documented (how to see venues + pick one)"
+      ]
+    },
+    {
+      "area": "Docs",
+      "goal": "Prepare for partner claiming + booking later without redesign.",
+      "requirements": [
+        "Create ops/VENUE_MODEL.md describing schema, relationships, and future fields.",
+        "Create ops/VENUE_RULES.md describing seeding strategy, area strategy, and naming/localization approach.",
+        "Create ops/GAME_VENUE_INTEGRATION.md describing how games attach venues and what UI/UX rules apply.",
+        "Update ops/API_CONTRACTS.md accordingly."
+      ],
+      "acceptance_criteria": [
+        "Docs match implementation and tests",
+        "Tradeoffs recorded clearly"
+      ]
+    }
+  ],
+
+  "execution_plan_for_ide": {
+    "workflow": "sequential",
+    "manifest_updates": {
+      "on_start": {
+        "step_id": "STEP-0008",
+        "status": "IN_PROGRESS",
+        "fields_to_update": ["updated_at", "started_at", "agent"]
+      },
+      "on_success": {
+        "status": "COMPLETED",
+        "fields_to_update": ["updated_at", "completed_at", "artifacts", "notes"]
+      },
+      "on_blocked": {
+        "status": "BLOCKED",
+        "fields_to_update": ["updated_at", "notes"]
+      },
+      "on_failed": {
+        "status": "FAILED",
+        "fields_to_update": ["updated_at", "notes"]
+      }
+    },
+    "required_evidence_to_capture": [
+      "environment_readiness_actions",
+      "migration_evidence",
+      "seed_evidence",
+      "api_tests_results",
+      "web_tests_results",
+      "mobile_tests_results",
+      "file_changes_list",
+      "major_decisions_and_tradeoffs"
+    ],
+    "tasks": [
+      {
+        "id": "T1",
+        "name": "Ensure infra running (executor-owned)",
+        "objective": "Auto-start Docker/infra and confirm DB connectivity.",
+        "constraints": ["No delegation to owner"],
+        "acceptance": ["docker + infra running OR BLOCKED with exact OS/permission limitation"]
+      },
+      {
+        "id": "T2",
+        "name": "Venue model + migrations + seed",
+        "objective": "Add venue models, migrations, and idempotent seed for initial venues.",
+        "constraints": ["Extendable model; Korea wedge oriented"],
+        "acceptance": ["migrations applied; seed idempotent; tests pass"]
+      },
+      {
+        "id": "T3",
+        "name": "Venues API + tests",
+        "objective": "List/search/detail endpoints with pagination and filters.",
+        "constraints": ["Stable ordering required"],
+        "acceptance": ["API tests cover filters + pagination stability"]
+      },
+      {
+        "id": "T4",
+        "name": "Games ↔ Venues integration + tests",
+        "objective": "Attach venueId to games, return venue on game detail, notify on changes (store-only).",
+        "constraints": ["Reuse existing notifications model"],
+        "acceptance": ["API tests cover attach/read/notify"]
+      },
+      {
+        "id": "T5",
+        "name": "Web + Mobile UX",
+        "objective": "Add venue browse/detail and integrate venue selection into game flow.",
+        "constraints": ["No hard-coded visible strings"],
+        "acceptance": ["Web/Mobile tests pass"]
+      },
+      {
+        "id": "T6",
+        "name": "Docs + manifest + report",
+        "objective": "Write docs, update manifest, produce complete report.",
+        "constraints": ["No placeholders"],
+        "acceptance": ["Docs complete; manifest updated; report complete"]
+      }
+    ],
+    "checks_to_run_before_finish": [
+      { "name": "root_lint", "cmd": "pnpm -r lint", "must_pass": true },
+      { "name": "root_test", "cmd": "pnpm -r test", "must_pass": true }
+    ]
+  },
+
+  "report_contract": {
+    "report_path": "reports/STEP-0008.report.json",
+    "report_schema": {
+      "step_id": "STEP-0008",
+      "status": "COMPLETED|COMPLETED_WITH_NOTES|BLOCKED|FAILED",
+      "summary": "string",
+      "environment_readiness": {
+        "os_detected": "string",
+        "docker_status": "running|not_installed|blocked|failed",
+        "docker_actions_taken": ["string"],
+        "infra_status": "running|blocked|failed",
+        "infra_evidence": "string"
+      },
+      "major_decisions": [
+        { "area": "string", "decision": "string", "reason": "string", "tradeoffs": "string" }
+      ],
+      "commands_run": [
+        { "cmd": "string", "cwd": "string", "exit_code": 0, "stdout_tail": "string", "stderr_tail": "string" }
+      ],
+      "tests": [
+        { "name": "string", "cmd": "string", "passed": true, "notes": "string" }
+      ],
+      "files_changed": [
+        { "path": "string", "change_type": "created|modified|deleted" }
+      ],
+      "acceptance_checklist": [
+        { "requirement": "string", "met": true, "evidence": "string" }
+      ],
+      "errors": [
+        { "where": "string", "error": "string", "how_fixed_or_next_steps": "string" }
+      ],
+      "automation_limitations": [
+        { "limitation": "string", "evidence": "string", "required_owner_permission_or_action": "string" }
+      ],
+      "manifest_update": {
+        "path": "ops/manifest.json",
+        "final_status_written": "string",
+        "updated_at_written": "string"
+      },
+      "next_recommendations": ["string"],
+      "seed_summary": {
+        "seeded_venues_count": 0,
+        "seeded_areas": ["string"],
+        "sample_venues": [
+          { "venue_id": "string", "name": "string", "area": "string", "sports": ["string"] }
+        ]
+      },
+      "api_contract_changes": ["string"]
+    },
+    "must_be_filled": true
+  },
+
+  "final_instruction_to_ide": "Execute this prompt exactly. Do not delegate any execution to the owner. Choose implementation freely. Update ops/manifest.json and write a complete reports/STEP-0008.report.json with no placeholders."
+}
+

@@ -1,0 +1,85 @@
+{
+  "step_id": "STEP-0006",
+  "status": "COMPLETED",
+  "summary": "Hardened the Games feature for GA. Implemented approval-based joins, private game invitations, host management tools, stable pagination, and auditable in-app notifications across API, Web, and Mobile.",
+  "environment_readiness": {
+    "os_detected": "darwin (macOS)",
+    "docker_status": "running",
+    "docker_actions_taken": ["Verified docker info", "Verified docker compose status"],
+    "infra_status": "running",
+    "infra_evidence": "PostgreSQL and Redis containers are healthy."
+  },
+  "major_decisions": [
+    {
+      "area": "Invitation Mechanism",
+      "decision": "Used 8-character random alphanumeric tokens for private game invitations.",
+      "reason": "Balances ease of manual entry on mobile with sufficient entropy to prevent brute-forcing.",
+      "tradeoffs": "Requires Host to explicitly generate and share codes."
+    },
+    {
+      "area": "Notifications",
+      "decision": "Implemented store-only in-app notifications with read tracking.",
+      "reason": "Provides a foundation for user communication and audit trail before full push integration.",
+      "tradeoffs": "Users must check the app to see updates; push delivery is deferred to a later step."
+    },
+    {
+      "area": "Test Stability",
+      "decision": "Switched API tests to run sequentially and used unique test user emails per file.",
+      "reason": "Prevents database row collisions and relation conflicts during parallel test execution.",
+      "tradeoffs": "Slightly longer test duration but significantly higher reliability."
+    }
+  ],
+  "commands_run": [
+    { "cmd": "npx prisma migrate dev --name hardening_notifications", "cwd": "apps/api", "exit_code": 0 },
+    { "cmd": "pnpm -r lint && pnpm -r test", "cwd": ".", "exit_code": 0 }
+  ],
+  "tests": [
+    { "name": "API Games Hardening Tests", "cmd": "pnpm test src/games_hardening.test.ts", "passed": true, "notes": "Covers Approval joins, Private invitations, and Pagination." },
+    { "name": "API Auth Tests", "cmd": "pnpm test src/auth.test.ts", "passed": true, "notes": "Verified logout and protection with isolated users." },
+    { "name": "Web & Mobile Smoke Tests", "cmd": "pnpm -r test", "passed": true, "notes": "All frontend smoke tests pass." }
+  ],
+  "files_changed": [
+    { "path": "apps/api/prisma/schema.prisma", "change_type": "modified" },
+    { "path": "apps/api/src/routes/games.ts", "change_type": "modified" },
+    { "path": "apps/api/src/routes/notifications.ts", "change_type": "created" },
+    { "path": "apps/api/src/games_hardening.test.ts", "change_type": "created" },
+    { "path": "apps/web/src/app/games/", "change_type": "modified" },
+    { "path": "apps/web/src/app/notifications/", "change_type": "created" },
+    { "path": "apps/mobile/src/screens/games/", "change_type": "modified" },
+    { "path": "apps/mobile/src/screens/notifications/", "change_type": "created" },
+    { "path": "ops/GAME_RULES.md", "change_type": "modified" },
+    { "path": "ops/API_CONTRACTS.md", "change_type": "modified" },
+    { "path": "ops/INVITE_MODEL.md", "change_type": "created" },
+    { "path": "ops/NOTIFICATIONS_MODEL.md", "change_type": "created" }
+  ],
+  "acceptance_checklist": [
+    { "requirement": "Approval join policy (request → approve/deny)", "met": true, "evidence": "Implemented in API and UI; tested in games_hardening.test.ts." },
+    { "requirement": "Private games + invite codes", "met": true, "evidence": "Visibility support added; invite token redemption tested." },
+    { "requirement": "Host management UX", "met": true, "evidence": "Approvals and invite generation available in Web and Mobile detail views." },
+    { "requirement": "Pagination + stable ordering", "met": true, "evidence": "Cursor-based pagination implemented in GET /games." },
+    { "requirement": "In-app notifications", "met": true, "evidence": "Notifications persisted for key events and viewable in dedicated screens." }
+  ],
+  "errors": [
+    { "where": "API Tests", "error": "401 errors and foreign key violations during parallel test runs.", "how_fixed_or_next_steps": "Isolated test users with unique emails and set Vitest to run sequentially for API." },
+    { "where": "Web Linting", "error": "Explicit any types in notifications payload.", "how_fixed_or_next_steps": "Added specific payload interface." }
+  ],
+  "automation_limitations": [],
+  "manifest_update": {
+    "path": "ops/manifest.json",
+    "final_status_written": "COMPLETED",
+    "updated_at_written": "2026-01-08T08:45:00+09:00"
+  },
+  "next_recommendations": [
+    "Integrate Firebase Cloud Messaging (FCM) for real-time push notifications.",
+    "Implement real-time game status updates using WebSockets (Socket.io).",
+    "Add 'Share' functionality to easily send Invite Codes to external apps."
+  ],
+  "rules_summary": {
+    "approval_flow": "Users request join; Host approves/denies; Notifications triggered at each step.",
+    "private_invites": "8-char alphanumeric tokens; Host-generated; Required for private visibility.",
+    "waitlist_policy": "Automatic promotion on vacancy; Promotion follows joinPolicy (instant or requested).",
+    "pagination_strategy": "Stable cursor-based pagination using [startTime, id] fields.",
+    "notification_types": ["GAME_REQUEST", "GAME_APPROVED", "GAME_DENIED", "GAME_CANCELLED", "WAITLIST_PROMOTED"]
+  }
+}
+
