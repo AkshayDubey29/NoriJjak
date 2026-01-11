@@ -30,7 +30,6 @@ const rateLimit = async (req: Request, res: Response, next: () => void) => {
 };
 
 router.post('/signup', rateLimit, async (req: Request, res: Response) => {
-  console.log('Signup request received:', req.body);
   try {
     const data = SignupSchema.parse(req.body);
     const existingUser = await prisma.user.findUnique({ where: { email: data.email } });
