@@ -1,0 +1,417 @@
+{
+  "prompt_meta": {
+    "prompt_id": "STEP-0020",
+    "title": "Remediate STEP-0019: Scope Compliance + Hard Proof + Merge to main + Guardrails (No new UI modules)",
+    "created_by": "ChatGPT",
+    "executed_by": "__IDE_AGENT__",
+    "timezone": "Asia/Seoul",
+    "product_identity": {
+      "name_ko_one_word": "놀이짝",
+      "name_en": "NoriJjak",
+      "primary_locales": ["ko-KR", "en-US"]
+    },
+    "repo": {
+      "git_remote_name": "origin",
+      "git_remote_url": "https://github.com/AkshayDubey29/NoriJjak.git",
+      "default_branch": "main",
+      "push_required": true,
+      "branch_naming_rule": "step-0020/*"
+    },
+    "links": {
+      "manifest_path": "ops/manifest.json",
+      "report_path": "reports/STEP-0020.report.json",
+      "evidence_dir": "reports/assets/STEP-0020/"
+    }
+  },
+
+  "non_negotiable_rules": {
+    "implementation_autonomy": true,
+    "chatgpt_does_not_instruct_code": true,
+    "no_scope_creep": true,
+    "no_skipping_tests": true,
+    "all_user_visible_text_localized": true,
+    "must_not_commit_secrets": true,
+    "always_update_manifest": true,
+    "always_write_report": true,
+    "report_must_have_no_placeholders": true,
+    "executor_must_not_delegate_actions_to_owner": true,
+    "owner_must_not_be_asked_to_run_commands": true,
+
+    "this_step_is_remediation_only": true,
+    "no_new_ui_redesign_work": true,
+    "no_new_features": true,
+
+    "must_push_to_main": true,
+    "must_capture_hard_evidence": true,
+    "must_run_full_root_gates_with_evidence": true
+  },
+
+  "scope_rules": {
+    "allowed_changes": [
+      "Fix incorrect branch/merge state",
+      "Remove/revert any unintended API changes from STEP-0019 unless absolutely required for Auth/Onboarding correctness",
+      "If API changes are required, they must be minimal, documented, and fully tested",
+      "Improve proof assets (screenshots, logs) for Auth/Onboarding only",
+      "Add guardrails to prevent future scope violations (scripts/docs/CI checks)"
+    ],
+    "disallowed_changes": [
+      "Any redesign or new UI work beyond Auth/Onboarding (already done in STEP-0019)",
+      "Any changes to Games/Clubs/Venues/Chat/Notifications/Profile UI (except compile fix if broken)",
+      "Any new backend features"
+    ]
+  },
+
+  "step_objectives": {
+    "goal": "Make STEP-0019 truly shippable: correct branch strategy, remove scope creep, add proof evidence, run full gates, and ensure main is green.",
+    "outcomes": [
+      "STEP-0019 work is on main (merge or fast-forward) with clear commit hash",
+      "No unintended API changes remain (or minimal justified fixes only)",
+      "Full root gates executed with evidence: integrity + lint + test + build",
+      "Hard proof assets exist for premium Auth/Onboarding UX (screenshots include loading/error/resume)",
+      "Guardrails added so IDE cannot silently violate scope/branch rules again"
+    ],
+    "definition_of_done": [
+      "main branch contains STEP-0019 changes",
+      "Any unintended API edits are reverted OR justified + tested",
+      "pnpm -r integrity/lint/test/build all pass with captured command outputs",
+      "Evidence assets meet requirements (see below)",
+      "Push to origin/main completed and reported"
+    ]
+  },
+
+  "evidence_requirements": {
+    "android_emulator_required": true,
+    "must_capture": [
+      "At least 14 Android screenshots for Auth/Onboarding including: login, signup, validation error, network error, loading state, onboarding steps 1-5, resume after restart, success",
+      "At least 1 screenshot/video-proof showing the emulator running (AVD name visible via emulator UI or a captured command output + screenshot pairing)",
+      "Logs of the exact commands used to boot emulator and launch app (stdout_tail in report)"
+    ],
+    "storage_rule": "All assets saved under reports/assets/STEP-0020/ and referenced in report."
+  },
+
+  "guardrails_to_add": {
+    "required": [
+      "A scope-guard mechanism that fails CI (or fails a local check) if files outside allowed scope are modified for a step prompt",
+      "A branch rule guard: step prompts must end with code on main (merge or direct push) and report must include main commit hash",
+      "Update ops/PROTOCOL.md with these rules and enforcement approach"
+    ],
+    "notes": "IDE chooses implementation (scripts/CI). No secrets."
+  },
+
+  "execution_plan_for_ide": {
+    "workflow": "sequential",
+    "tasks": [
+      {
+        "id": "T1",
+        "name": "Repo/Branch remediation",
+        "objective": "Move STEP-0019 changes onto main properly (merge PR or merge branch locally) and ensure origin/main is updated.",
+        "acceptance": [
+          "origin/main updated",
+          "report includes main commit hash and push evidence"
+        ]
+      },
+      {
+        "id": "T2",
+        "name": "Scope creep removal",
+        "objective": "Identify why apps/api files changed in STEP-0019; revert them unless strictly required for Auth/Onboarding correctness. If required, document and add/adjust tests.",
+        "acceptance": [
+          "Either API changes are reverted OR justified + tested",
+          "report lists exactly what remained and why"
+        ]
+      },
+      {
+        "id": "T3",
+        "name": "Hard proof capture for Auth/Onboarding",
+        "objective": "Re-run emulator flows and capture the required screenshots (loading/error/resume included).",
+        "acceptance": [
+          "assets exist under evidence_dir",
+          "report references them"
+        ]
+      },
+      {
+        "id": "T4",
+        "name": "Run full root gates with evidence",
+        "objective": "Run pnpm -r integrity, lint, test, build (no skipping) and capture outputs in report.",
+        "acceptance": [
+          "All gates pass",
+          "commands_run includes exit codes and stdout/stderr tails"
+        ]
+      },
+      {
+        "id": "T5",
+        "name": "Add guardrails",
+        "objective": "Add CI/local checks so future steps cannot (a) push to wrong branch, (b) modify out-of-scope modules without failing, (c) claim completion without gates/evidence.",
+        "acceptance": [
+          "Guardrails documented and enforced",
+          "CI fails on violations"
+        ]
+      }
+    ],
+    "checks_to_run_before_finish": [
+      { "name": "integrity", "cmd": "pnpm -r integrity", "must_pass": true },
+      { "name": "lint", "cmd": "pnpm -r lint", "must_pass": true },
+      { "name": "test", "cmd": "pnpm -r test", "must_pass": true },
+      { "name": "build", "cmd": "pnpm -r build", "must_pass": true }
+    ]
+  },
+
+  "report_contract": {
+    "report_path": "reports/STEP-0020.report.json",
+    "report_schema": {
+      "step_id": "STEP-0020",
+      "status": "COMPLETED|COMPLETED_WITH_NOTES|BLOCKED|FAILED",
+      "summary": "string",
+      "major_decisions": [
+        { "area": "string", "decision": "string", "reason": "string", "tradeoffs": "string" }
+      ],
+      "commands_run": [
+        { "cmd": "string", "cwd": "string", "exit_code": 0, "stdout_tail": "string", "stderr_tail": "string" }
+      ],
+      "scope_audit": {
+        "step_0019_unintended_changes_found": true,
+        "what_changed_out_of_scope": ["string"],
+        "what_was_reverted": ["string"],
+        "what_remained_and_why": ["string"]
+      },
+      "ui_evidence": {
+        "android_emulator": { "ran": true, "avd_name": "string", "evidence_notes": "string" },
+        "screenshots": ["string"],
+        "notes": "string"
+      },
+      "guardrails": {
+        "added": ["string"],
+        "how_enforced": "string",
+        "how_to_use": "string"
+      },
+      "files_changed": [
+        { "path": "string", "change_type": "created|modified|deleted" }
+      ],
+      "git_push": {
+        "origin": "string",
+        "branch": "main",
+        "pushed_commit": "string",
+        "push_evidence": "string"
+      },
+      "errors": [
+        { "where": "string", "error": "string", "how_fixed_or_next_steps": "string" }
+      ],
+      "manifest_update": {
+        "path": "ops/manifest.json",
+        "final_status_written": "string",
+        "updated_at_written": "string"
+      },
+      "next_recommendations": ["string"]
+    }
+  },
+
+  "final_instruction_to_ide": "Execute this prompt exactly. This is remediation only: fix branch/main, remove scope creep, capture hard proof for Auth/Onboarding, run full root gates with evidence, add guardrails, push to origin/main, update ops/manifest.json, and write a complete reports/STEP-0020.report.json with no placeholders. Do not ask the owner to run commands."
+}
+{
+  "prompt_meta": {
+    "prompt_id": "STEP-0020",
+    "title": "Remediate STEP-0019: Scope Compliance + Hard Proof + Merge to main + Guardrails (No new UI modules)",
+    "created_by": "ChatGPT",
+    "executed_by": "__IDE_AGENT__",
+    "timezone": "Asia/Seoul",
+    "product_identity": {
+      "name_ko_one_word": "놀이짝",
+      "name_en": "NoriJjak",
+      "primary_locales": ["ko-KR", "en-US"]
+    },
+    "repo": {
+      "git_remote_name": "origin",
+      "git_remote_url": "https://github.com/AkshayDubey29/NoriJjak.git",
+      "default_branch": "main",
+      "push_required": true,
+      "branch_naming_rule": "step-0020/*"
+    },
+    "links": {
+      "manifest_path": "ops/manifest.json",
+      "report_path": "reports/STEP-0020.report.json",
+      "evidence_dir": "reports/assets/STEP-0020/"
+    }
+  },
+
+  "non_negotiable_rules": {
+    "implementation_autonomy": true,
+    "chatgpt_does_not_instruct_code": true,
+    "no_scope_creep": true,
+    "no_skipping_tests": true,
+    "all_user_visible_text_localized": true,
+    "must_not_commit_secrets": true,
+    "always_update_manifest": true,
+    "always_write_report": true,
+    "report_must_have_no_placeholders": true,
+    "executor_must_not_delegate_actions_to_owner": true,
+    "owner_must_not_be_asked_to_run_commands": true,
+
+    "this_step_is_remediation_only": true,
+    "no_new_ui_redesign_work": true,
+    "no_new_features": true,
+
+    "must_push_to_main": true,
+    "must_capture_hard_evidence": true,
+    "must_run_full_root_gates_with_evidence": true
+  },
+
+  "scope_rules": {
+    "allowed_changes": [
+      "Fix incorrect branch/merge state",
+      "Remove/revert any unintended API changes from STEP-0019 unless absolutely required for Auth/Onboarding correctness",
+      "If API changes are required, they must be minimal, documented, and fully tested",
+      "Improve proof assets (screenshots, logs) for Auth/Onboarding only",
+      "Add guardrails to prevent future scope violations (scripts/docs/CI checks)"
+    ],
+    "disallowed_changes": [
+      "Any redesign or new UI work beyond Auth/Onboarding (already done in STEP-0019)",
+      "Any changes to Games/Clubs/Venues/Chat/Notifications/Profile UI (except compile fix if broken)",
+      "Any new backend features"
+    ]
+  },
+
+  "step_objectives": {
+    "goal": "Make STEP-0019 truly shippable: correct branch strategy, remove scope creep, add proof evidence, run full gates, and ensure main is green.",
+    "outcomes": [
+      "STEP-0019 work is on main (merge or fast-forward) with clear commit hash",
+      "No unintended API changes remain (or minimal justified fixes only)",
+      "Full root gates executed with evidence: integrity + lint + test + build",
+      "Hard proof assets exist for premium Auth/Onboarding UX (screenshots include loading/error/resume)",
+      "Guardrails added so IDE cannot silently violate scope/branch rules again"
+    ],
+    "definition_of_done": [
+      "main branch contains STEP-0019 changes",
+      "Any unintended API edits are reverted OR justified + tested",
+      "pnpm -r integrity/lint/test/build all pass with captured command outputs",
+      "Evidence assets meet requirements (see below)",
+      "Push to origin/main completed and reported"
+    ]
+  },
+
+  "evidence_requirements": {
+    "android_emulator_required": true,
+    "must_capture": [
+      "At least 14 Android screenshots for Auth/Onboarding including: login, signup, validation error, network error, loading state, onboarding steps 1-5, resume after restart, success",
+      "At least 1 screenshot/video-proof showing the emulator running (AVD name visible via emulator UI or a captured command output + screenshot pairing)",
+      "Logs of the exact commands used to boot emulator and launch app (stdout_tail in report)"
+    ],
+    "storage_rule": "All assets saved under reports/assets/STEP-0020/ and referenced in report."
+  },
+
+  "guardrails_to_add": {
+    "required": [
+      "A scope-guard mechanism that fails CI (or fails a local check) if files outside allowed scope are modified for a step prompt",
+      "A branch rule guard: step prompts must end with code on main (merge or direct push) and report must include main commit hash",
+      "Update ops/PROTOCOL.md with these rules and enforcement approach"
+    ],
+    "notes": "IDE chooses implementation (scripts/CI). No secrets."
+  },
+
+  "execution_plan_for_ide": {
+    "workflow": "sequential",
+    "tasks": [
+      {
+        "id": "T1",
+        "name": "Repo/Branch remediation",
+        "objective": "Move STEP-0019 changes onto main properly (merge PR or merge branch locally) and ensure origin/main is updated.",
+        "acceptance": [
+          "origin/main updated",
+          "report includes main commit hash and push evidence"
+        ]
+      },
+      {
+        "id": "T2",
+        "name": "Scope creep removal",
+        "objective": "Identify why apps/api files changed in STEP-0019; revert them unless strictly required for Auth/Onboarding correctness. If required, document and add/adjust tests.",
+        "acceptance": [
+          "Either API changes are reverted OR justified + tested",
+          "report lists exactly what remained and why"
+        ]
+      },
+      {
+        "id": "T3",
+        "name": "Hard proof capture for Auth/Onboarding",
+        "objective": "Re-run emulator flows and capture the required screenshots (loading/error/resume included).",
+        "acceptance": [
+          "assets exist under evidence_dir",
+          "report references them"
+        ]
+      },
+      {
+        "id": "T4",
+        "name": "Run full root gates with evidence",
+        "objective": "Run pnpm -r integrity, lint, test, build (no skipping) and capture outputs in report.",
+        "acceptance": [
+          "All gates pass",
+          "commands_run includes exit codes and stdout/stderr tails"
+        ]
+      },
+      {
+        "id": "T5",
+        "name": "Add guardrails",
+        "objective": "Add CI/local checks so future steps cannot (a) push to wrong branch, (b) modify out-of-scope modules without failing, (c) claim completion without gates/evidence.",
+        "acceptance": [
+          "Guardrails documented and enforced",
+          "CI fails on violations"
+        ]
+      }
+    ],
+    "checks_to_run_before_finish": [
+      { "name": "integrity", "cmd": "pnpm -r integrity", "must_pass": true },
+      { "name": "lint", "cmd": "pnpm -r lint", "must_pass": true },
+      { "name": "test", "cmd": "pnpm -r test", "must_pass": true },
+      { "name": "build", "cmd": "pnpm -r build", "must_pass": true }
+    ]
+  },
+
+  "report_contract": {
+    "report_path": "reports/STEP-0020.report.json",
+    "report_schema": {
+      "step_id": "STEP-0020",
+      "status": "COMPLETED|COMPLETED_WITH_NOTES|BLOCKED|FAILED",
+      "summary": "string",
+      "major_decisions": [
+        { "area": "string", "decision": "string", "reason": "string", "tradeoffs": "string" }
+      ],
+      "commands_run": [
+        { "cmd": "string", "cwd": "string", "exit_code": 0, "stdout_tail": "string", "stderr_tail": "string" }
+      ],
+      "scope_audit": {
+        "step_0019_unintended_changes_found": true,
+        "what_changed_out_of_scope": ["string"],
+        "what_was_reverted": ["string"],
+        "what_remained_and_why": ["string"]
+      },
+      "ui_evidence": {
+        "android_emulator": { "ran": true, "avd_name": "string", "evidence_notes": "string" },
+        "screenshots": ["string"],
+        "notes": "string"
+      },
+      "guardrails": {
+        "added": ["string"],
+        "how_enforced": "string",
+        "how_to_use": "string"
+      },
+      "files_changed": [
+        { "path": "string", "change_type": "created|modified|deleted" }
+      ],
+      "git_push": {
+        "origin": "string",
+        "branch": "main",
+        "pushed_commit": "string",
+        "push_evidence": "string"
+      },
+      "errors": [
+        { "where": "string", "error": "string", "how_fixed_or_next_steps": "string" }
+      ],
+      "manifest_update": {
+        "path": "ops/manifest.json",
+        "final_status_written": "string",
+        "updated_at_written": "string"
+      },
+      "next_recommendations": ["string"]
+    }
+  },
+
+  "final_instruction_to_ide": "Execute this prompt exactly. This is remediation only: fix branch/main, remove scope creep, capture hard proof for Auth/Onboarding, run full root gates with evidence, add guardrails, push to origin/main, update ops/manifest.json, and write a complete reports/STEP-0020.report.json with no placeholders. Do not ask the owner to run commands."
+}
+
